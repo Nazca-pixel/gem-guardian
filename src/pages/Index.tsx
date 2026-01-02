@@ -8,35 +8,94 @@ import { TransactionList } from "@/components/TransactionList";
 import { AccessoriesBar } from "@/components/AccessoriesBar";
 import { BadgesGrid } from "@/components/BadgesGrid";
 import { BottomNav } from "@/components/BottomNav";
-import { Bell, Settings } from "lucide-react";
-
-// Mock data for demonstration
-const mockTransactions = [
-  { id: "1", description: "Supermercato", amount: 45.80, category: "Spesa", emoji: "🛒", date: "Oggi", isIncome: false },
-  { id: "2", description: "Stipendio", amount: 1850, category: "Lavoro", emoji: "💼", date: "1 Gen", isIncome: true },
-  { id: "3", description: "Netflix", amount: 12.99, category: "Abbonamenti", emoji: "📺", date: "31 Dic", isIncome: false },
-  { id: "4", description: "Caffè", amount: 3.50, category: "Food", emoji: "☕", date: "31 Dic", isIncome: false },
-];
-
-const mockAccessories = [
-  { id: "1", emoji: "🎀", name: "Fiocco", bxpRequired: 0, isUnlocked: true },
-  { id: "2", emoji: "🎩", name: "Cappello", bxpRequired: 100, isUnlocked: true },
-  { id: "3", emoji: "👑", name: "Corona", bxpRequired: 500, isUnlocked: false },
-  { id: "4", emoji: "🌸", name: "Fiore", bxpRequired: 200, isUnlocked: false },
-  { id: "5", emoji: "🧣", name: "Sciarpa", bxpRequired: 300, isUnlocked: false },
-  { id: "6", emoji: "🎭", name: "Maschera", bxpRequired: 1000, isUnlocked: false },
-];
-
-const mockBadges = [
-  { id: "1", emoji: "🌟", name: "Prima Spesa", description: "Hai tracciato la tua prima spesa", isEarned: true, earnedDate: "15 Dic" },
-  { id: "2", emoji: "🔥", name: "7 Giorni", description: "Una settimana di tracciamento", isEarned: true, earnedDate: "22 Dic" },
-  { id: "3", emoji: "💎", name: "Risparmiatore", description: "Hai raggiunto il primo obiettivo", isEarned: true, earnedDate: "28 Dic" },
-  { id: "4", emoji: "🚀", name: "Super Saver", description: "Risparmia €500 in un mese", isEarned: false },
-  { id: "5", emoji: "🏅", name: "Maestro", description: "Raggiungi il livello 5", isEarned: false },
-  { id: "6", emoji: "👻", name: "Fantasma", description: "0 spese non necessarie per un mese", isEarned: false },
-];
+import { Bell, Settings, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
+import { it } from "date-fns/locale";
 
 const Index = () => {
+  const { signOut } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: companion, isLoading: companionLoading } = useCompanion();
+  const { data: savingsGoals } = useSavingsGoals();
+  const { data: transactions } = useTransactions();
+  const { data: accessories } = useAccessories();
+  const { data: userAccessories } = useUserAccessories();
+  const { data: badges } = useBadges();
+  const { data: userBadges } = useUserBadges();
+
+  const displayName = profile?.display_name || "Utente";
+  const currentMonth = format(new Date(), "MMMM yyyy", { locale: it });
+
+  // Calculate total balance from transactions
+  const totalBalance = transactions?.reduce((acc, t) => {
+    return acc + (t.is_income ? Number(t.amount) : -Number(t.amount));
+  }, 0) || 0;
+
+  // Calculate monthly change
+  const currentMonthStart = new Date();
+  currentMonthStart.setDate(1);
+  currentMonthStart.setHours(0, 0, 0, 0);
+  
+  const monthlyChange = transactions?.filter(t => 
+    new Date(t.transaction_date) >= currentMonthStart
+  ).reduce((acc, t) => {
+    return acc + (t.is_income ? Number(t.amount) : -Number(t.amount));
+  }, 0) || 0;
+
+  // Map accessories with unlock status
+  const mappedAccessories = accessories?.map(acc => ({
+    id: acc.id,
+    emoji: acc.emoji,
+    name: acc.name,
+    bxpRequired: acc.bxp_required,
+    isUnlocked: userAccessories?.some(ua => ua.accessory_id === acc.id) || 
+                (companion?.bxp || 0) >= acc.bxp_required,
+  })) || [];
+
+  // Map badges with earned status
+  const mappedBadges = badges?.map(badge => {
+    const userBadge = userBadges?.find(ub => ub.badge_id === badge.id);
+    return {
+      id: badge.id,
+      emoji: badge.emoji,
+      name: badge.name,
+      description: badge.description,
+      isEarned: !!userBadge,
+      earnedDate: userBadge?.earned_at ? format(new Date(userBadge.earned_at), "d MMM", { locale: it }) : undefined,
+    };
+  }) || [];
+
+  // Map transactions for display
+  const mappedTransactions = transactions?.slice(0, 5).map(t => ({
+    id: t.id,
+    description: t.description,
+    amount: Number(t.amount),
+    category: t.category,
+    emoji: t.emoji || "💰",
+    date: format(new Date(t.transaction_date), "d MMM", { locale: it }),
+    isIncome: t.is_income,
+  })) || [];
+
+  // Get first savings goal
+  const firstGoal = savingsGoals?.[0];
+
+  // Calculate FXP needed for next level
+  const getMaxFxpForLevel = (level: number) => (level) * 100;
+
+  if (companionLoading || profileLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto">
+        <Skeleton className="h-12 w-full mb-6 rounded-xl" />
+        <Skeleton className="h-64 w-full mb-6 rounded-3xl" />
+        <Skeleton className="h-24 w-full mb-4 rounded-2xl" />
+        <Skeleton className="h-32 w-full rounded-2xl" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
@@ -47,8 +106,8 @@ const Index = () => {
       >
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Ciao, Marco! 👋</h1>
-            <p className="text-xs text-muted-foreground">Gennaio 2026</p>
+            <h1 className="text-xl font-bold text-foreground">Ciao, {displayName}! 👋</h1>
+            <p className="text-xs text-muted-foreground capitalize">{currentMonth}</p>
           </div>
           <div className="flex items-center gap-2">
             <motion.button
@@ -61,9 +120,10 @@ const Index = () => {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              onClick={signOut}
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center"
             >
-              <Settings className="w-5 h-5 text-muted-foreground" />
+              <LogOut className="w-5 h-5 text-muted-foreground" />
             </motion.button>
           </div>
         </div>
@@ -85,44 +145,67 @@ const Index = () => {
           <div className="absolute top-8 right-16 w-2 h-2 bg-secondary rounded-full animate-sparkle" style={{ animationDelay: "0.5s" }} />
           
           <CompanionAnimal
-            level={4}
-            mood="happy"
-            fxp={340}
-            maxFxp={500}
-            name="Pippo"
+            level={companion?.level || 1}
+            mood={(companion?.mood as "happy" | "sad" | "excited") || "happy"}
+            fxp={companion?.fxp || 0}
+            maxFxp={getMaxFxpForLevel(companion?.level || 1)}
+            name={companion?.name || "Pippo"}
           />
         </motion.section>
 
         {/* XP Display */}
-        <XPDisplay fxp={1250} bxp={480} />
+        <XPDisplay fxp={companion?.fxp || 0} bxp={companion?.bxp || 0} />
 
         {/* Balance Card */}
         <BalanceCard
-          balance={3847.52}
-          monthlyChange={245}
-          lastSync="Oggi, 14:30"
+          balance={totalBalance}
+          monthlyChange={monthlyChange}
+          lastSync={format(new Date(), "'Oggi,' HH:mm", { locale: it })}
         />
 
         {/* Quick Actions */}
         <QuickActions />
 
         {/* Savings Goal */}
-        <SavingsGoalCard
-          goalName="Vacanza Estiva"
-          currentAmount={680}
-          targetAmount={1500}
-          deadline="Giugno 2026"
-          emoji="🏖️"
-        />
+        {firstGoal && (
+          <SavingsGoalCard
+            goalName={firstGoal.name}
+            currentAmount={Number(firstGoal.current_amount)}
+            targetAmount={Number(firstGoal.target_amount)}
+            deadline={firstGoal.deadline ? format(new Date(firstGoal.deadline), "MMMM yyyy", { locale: it }) : "Senza scadenza"}
+            emoji={firstGoal.emoji || "🎯"}
+          />
+        )}
 
         {/* Accessories */}
-        <AccessoriesBar accessories={mockAccessories} currentBxp={480} />
+        {mappedAccessories.length > 0 && (
+          <AccessoriesBar accessories={mappedAccessories} currentBxp={companion?.bxp || 0} />
+        )}
 
         {/* Badges */}
-        <BadgesGrid badges={mockBadges} />
+        {mappedBadges.length > 0 && (
+          <BadgesGrid badges={mappedBadges} />
+        )}
 
         {/* Recent Transactions */}
-        <TransactionList transactions={mockTransactions} />
+        {mappedTransactions.length > 0 && (
+          <TransactionList transactions={mappedTransactions} />
+        )}
+
+        {/* Empty state for new users */}
+        {mappedTransactions.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-card rounded-2xl p-6 shadow-card border border-border text-center"
+          >
+            <span className="text-4xl">📝</span>
+            <h3 className="font-bold text-foreground mt-3">Nessuna transazione</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Inizia a tracciare le tue spese per guadagnare BXP!
+            </p>
+          </motion.div>
+        )}
       </main>
 
       {/* Bottom Navigation */}
