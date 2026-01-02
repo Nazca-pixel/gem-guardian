@@ -14,7 +14,265 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accessories: {
+        Row: {
+          bxp_required: number
+          created_at: string
+          description: string | null
+          emoji: string
+          id: string
+          name: string
+        }
+        Insert: {
+          bxp_required?: number
+          created_at?: string
+          description?: string | null
+          emoji: string
+          id?: string
+          name: string
+        }
+        Update: {
+          bxp_required?: number
+          created_at?: string
+          description?: string | null
+          emoji?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      badges: {
+        Row: {
+          badge_type: string
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          name: string
+        }
+        Insert: {
+          badge_type: string
+          created_at?: string
+          description: string
+          emoji: string
+          id?: string
+          name: string
+        }
+        Update: {
+          badge_type?: string
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      companion_animals: {
+        Row: {
+          bxp: number
+          consecutive_failed_months: number
+          created_at: string
+          fxp: number
+          id: string
+          level: number
+          mood: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bxp?: number
+          consecutive_failed_months?: number
+          created_at?: string
+          fxp?: number
+          id?: string
+          level?: number
+          mood?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bxp?: number
+          consecutive_failed_months?: number
+          created_at?: string
+          fxp?: number
+          id?: string
+          level?: number
+          mood?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      savings_goals: {
+        Row: {
+          created_at: string
+          current_amount: number
+          deadline: string | null
+          emoji: string | null
+          id: string
+          is_completed: boolean
+          name: string
+          target_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_amount?: number
+          deadline?: string | null
+          emoji?: string | null
+          id?: string
+          is_completed?: boolean
+          name: string
+          target_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_amount?: number
+          deadline?: string | null
+          emoji?: string | null
+          id?: string
+          is_completed?: boolean
+          name?: string
+          target_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: Database["public"]["Enums"]["transaction_category"]
+          created_at: string
+          description: string
+          emoji: string | null
+          id: string
+          is_income: boolean
+          is_necessary: boolean
+          transaction_date: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: Database["public"]["Enums"]["transaction_category"]
+          created_at?: string
+          description: string
+          emoji?: string | null
+          id?: string
+          is_income?: boolean
+          is_necessary?: boolean
+          transaction_date?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: Database["public"]["Enums"]["transaction_category"]
+          created_at?: string
+          description?: string
+          emoji?: string | null
+          id?: string
+          is_income?: boolean
+          is_necessary?: boolean
+          transaction_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_accessories: {
+        Row: {
+          accessory_id: string
+          id: string
+          is_equipped: boolean
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          accessory_id: string
+          id?: string
+          is_equipped?: boolean
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          accessory_id?: string
+          id?: string
+          is_equipped?: boolean
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_accessories_accessory_id_fkey"
+            columns: ["accessory_id"]
+            isOneToOne: false
+            referencedRelation: "accessories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +281,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      transaction_category:
+        | "food"
+        | "transport"
+        | "entertainment"
+        | "shopping"
+        | "bills"
+        | "health"
+        | "education"
+        | "savings"
+        | "income"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +418,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      transaction_category: [
+        "food",
+        "transport",
+        "entertainment",
+        "shopping",
+        "bills",
+        "health",
+        "education",
+        "savings",
+        "income",
+        "other",
+      ],
+    },
   },
 } as const

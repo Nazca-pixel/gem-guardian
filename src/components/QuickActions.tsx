@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Wallet, PiggyBank, TrendingUp } from "lucide-react";
+import { AddTransactionModal } from "./AddTransactionModal";
+import { AddGoalModal } from "./AddGoalModal";
 
 interface QuickActionProps {
   icon: React.ReactNode;
@@ -27,46 +30,73 @@ const QuickAction = ({ icon, label, color, onClick }: QuickActionProps) => (
 );
 
 export const QuickActions = () => {
-  const actions = [
-    {
-      icon: <Plus className="w-5 h-5 text-primary-foreground" />,
-      label: "Spesa",
-      color: "gradient-hero",
-    },
-    {
-      icon: <Wallet className="w-5 h-5 text-secondary-foreground" />,
-      label: "Saldo",
-      color: "bg-secondary",
-    },
-    {
-      icon: <PiggyBank className="w-5 h-5 text-reward-foreground" />,
-      label: "Risparmia",
-      color: "gradient-reward",
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5 text-info-foreground" />,
-      label: "Report",
-      color: "bg-info",
-    },
-  ];
+  const [transactionModalOpen, setTransactionModalOpen] = useState(false);
+  const [goalModalOpen, setGoalModalOpen] = useState(false);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-      className="grid grid-cols-4 gap-3"
-    >
-      {actions.map((action, index) => (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-4 gap-3"
+      >
         <motion.div
-          key={action.label}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 * index }}
+          transition={{ delay: 0.1 }}
         >
-          <QuickAction {...action} />
+          <QuickAction
+            icon={<Plus className="w-5 h-5 text-primary-foreground" />}
+            label="Spesa"
+            color="gradient-hero"
+            onClick={() => setTransactionModalOpen(true)}
+          />
         </motion.div>
-      ))}
-    </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <QuickAction
+            icon={<Wallet className="w-5 h-5 text-secondary-foreground" />}
+            label="Saldo"
+            color="bg-secondary"
+          />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <QuickAction
+            icon={<PiggyBank className="w-5 h-5 text-reward-foreground" />}
+            label="Obiettivo"
+            color="gradient-reward"
+            onClick={() => setGoalModalOpen(true)}
+          />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <QuickAction
+            icon={<TrendingUp className="w-5 h-5 text-info-foreground" />}
+            label="Report"
+            color="bg-info"
+          />
+        </motion.div>
+      </motion.div>
+
+      <AddTransactionModal
+        isOpen={transactionModalOpen}
+        onClose={() => setTransactionModalOpen(false)}
+      />
+      <AddGoalModal
+        isOpen={goalModalOpen}
+        onClose={() => setGoalModalOpen(false)}
+      />
+    </>
   );
 };
