@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Home, PieChart, Trophy, User } from "lucide-react";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -33,14 +33,18 @@ const NavItem = ({ icon, label, isActive, onClick }: NavItemProps) => (
   </motion.button>
 );
 
-export const BottomNav = () => {
-  const [activeTab, setActiveTab] = useState("home");
+interface BottomNavProps {
+  activeTab?: string;
+}
+
+export const BottomNav = ({ activeTab = "home" }: BottomNavProps) => {
+  const navigate = useNavigate();
 
   const navItems = [
-    { id: "home", icon: <Home className="w-5 h-5" />, label: "Home" },
-    { id: "stats", icon: <PieChart className="w-5 h-5" />, label: "Report" },
-    { id: "ranks", icon: <Trophy className="w-5 h-5" />, label: "Classifica" },
-    { id: "profile", icon: <User className="w-5 h-5" />, label: "Profilo" },
+    { id: "home", icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
+    { id: "stats", icon: <PieChart className="w-5 h-5" />, label: "Report", path: "/reports" },
+    { id: "ranks", icon: <Trophy className="w-5 h-5" />, label: "Classifica", path: "/leaderboard" },
+    { id: "profile", icon: <User className="w-5 h-5" />, label: "Profilo", path: "/profile" },
   ];
 
   return (
@@ -56,7 +60,7 @@ export const BottomNav = () => {
             icon={item.icon}
             label={item.label}
             isActive={activeTab === item.id}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => navigate(item.path)}
           />
         ))}
       </div>

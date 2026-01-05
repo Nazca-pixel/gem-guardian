@@ -169,6 +169,7 @@ const Index = () => {
         {/* Savings Goal */}
         {firstGoal && (
           <SavingsGoalCard
+            id={firstGoal.id}
             goalName={firstGoal.name}
             currentAmount={Number(firstGoal.current_amount)}
             targetAmount={Number(firstGoal.target_amount)}

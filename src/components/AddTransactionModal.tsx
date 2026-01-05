@@ -4,7 +4,7 @@ import { X, Plus, Euro } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCreateTransaction } from "@/hooks/useUserData";
+import { useCreateTransaction, useUpdateCompanion, useCompanion } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
 
 interface AddTransactionModalProps {
@@ -31,6 +31,8 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
   const [isNecessary, setIsNecessary] = useState(true);
   
   const createTransaction = useCreateTransaction();
+  const updateCompanion = useUpdateCompanion();
+  const { data: companion } = useCompanion();
   const { toast } = useToast();
 
   const selectedCategory = categories.find(c => c.value === category);
@@ -59,10 +61,37 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
         transaction_date: new Date().toISOString().split('T')[0],
       });
 
-      toast({
-        title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
-        description: `${description} - €${amount}`,
-      });
+      // Calculate and award BXP for tracking expenses
+      if (companion) {
+        let bxpReward = 1; // Base reward for tracking
+        
+        if (!isIncome) {
+          // Extra BXP for necessary expenses
+          if (isNecessary) {
+            bxpReward += 2;
+          }
+          // Less BXP for unnecessary expenses (but still reward tracking)
+        } else {
+          // Extra BXP for tracking income
+          bxpReward += 1;
+        }
+
+        const newBxp = (companion.bxp || 0) + bxpReward;
+        
+        await updateCompanion.mutateAsync({
+          bxp: newBxp,
+        });
+
+        toast({
+          title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
+          description: `${description} - €${amount} (+${bxpReward} BXP)`,
+        });
+      } else {
+        toast({
+          title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
+          description: `${description} - €${amount}`,
+        });
+      }
 
       // Reset form
       setDescription("");
@@ -196,7 +225,7 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
                       </button>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Le spese non necessarie influenzano il tuo BXP
+                      Le spese necessarie danno +3 BXP, le altre +1 BXP
                     </p>
                   </div>
                 )}
