@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { Loader2, Mail, Lock, User, ArrowRight, ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const loginSchema = z.object({
   email: z.string().email("Email non valida"),
@@ -51,6 +52,15 @@ const Auth = () => {
     if (searchParams.get("mode") === "reset") {
       setMode("reset");
     }
+
+    // Listen for PASSWORD_RECOVERY event
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setMode("reset");
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [searchParams]);
 
   const validateForm = () => {
