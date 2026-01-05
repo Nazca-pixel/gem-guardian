@@ -42,6 +42,7 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isRecoverySession, setIsRecoverySession] = useState(false);
   
   const { signIn, signUp, resetPassword, updatePassword } = useAuth();
   const navigate = useNavigate();
@@ -49,14 +50,42 @@ const Auth = () => {
 
   // Check if user is coming from password reset email
   useEffect(() => {
-    if (searchParams.get("mode") === "reset") {
-      setMode("reset");
-    }
+    const handleRecovery = async () => {
+      // Check URL hash for recovery tokens
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get("access_token");
+      const type = hashParams.get("type");
+      
+      if (accessToken && type === "recovery") {
+        // Set the session from the recovery token
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: hashParams.get("refresh_token") || "",
+        });
+        
+        if (!error) {
+          setMode("reset");
+          setIsRecoverySession(true);
+          // Clean up the URL
+          window.history.replaceState(null, "", window.location.pathname + "?mode=reset");
+        }
+      } else if (searchParams.get("mode") === "reset") {
+        // Check if we already have a valid session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setMode("reset");
+          setIsRecoverySession(true);
+        }
+      }
+    };
+
+    handleRecovery();
 
     // Listen for PASSWORD_RECOVERY event
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setMode("reset");
+        setIsRecoverySession(true);
       }
     });
 
