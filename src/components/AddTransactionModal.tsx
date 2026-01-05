@@ -56,6 +56,7 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
         emoji: selectedCategory?.emoji || "💰",
         is_income: isIncome,
         is_necessary: isNecessary,
+        transaction_date: new Date().toISOString().split('T')[0],
       });
 
       toast({
