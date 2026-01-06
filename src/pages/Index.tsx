@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { CompanionAnimal } from "@/components/CompanionAnimal";
 import { XPDisplay } from "@/components/XPDisplay";
@@ -8,9 +9,12 @@ import { TransactionList } from "@/components/TransactionList";
 import { AccessoriesBar } from "@/components/AccessoriesBar";
 import { BadgesGrid } from "@/components/BadgesGrid";
 import { BottomNav } from "@/components/BottomNav";
-import { Bell, Settings, LogOut } from "lucide-react";
+import { LevelUpModal } from "@/components/LevelUpModal";
+import { AccessoryUnlockedToast } from "@/components/AccessoryUnlockedToast";
+import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
+import { LevelUpResult } from "@/hooks/useLevelUp";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -25,6 +29,19 @@ const Index = () => {
   const { data: userAccessories } = useUserAccessories();
   const { data: badges } = useBadges();
   const { data: userBadges } = useUserBadges();
+
+  const [levelUpData, setLevelUpData] = useState<LevelUpResult | null>(null);
+  const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+  const [unlockedAccessory, setUnlockedAccessory] = useState<{ name: string; emoji: string } | null>(null);
+
+  const handleLevelUp = (result: LevelUpResult) => {
+    setLevelUpData(result);
+    setShowLevelUpModal(true);
+  };
+
+  const handleAccessoryUnlocked = (accessory: { name: string; emoji: string }) => {
+    setUnlockedAccessory(accessory);
+  };
 
   const displayName = profile?.display_name || "Utente";
   const currentMonth = format(new Date(), "MMMM yyyy", { locale: it });
@@ -216,6 +233,21 @@ const Index = () => {
 
       {/* Bottom Navigation */}
       <BottomNav />
+
+      {/* Level Up Modal */}
+      <LevelUpModal
+        isOpen={showLevelUpModal}
+        onClose={() => setShowLevelUpModal(false)}
+        levelUpData={levelUpData}
+        companionName={companion?.name || "Pippo"}
+      />
+
+      {/* Accessory Unlocked Toast */}
+      <AccessoryUnlockedToast
+        isOpen={!!unlockedAccessory}
+        accessory={unlockedAccessory}
+        onClose={() => setUnlockedAccessory(null)}
+      />
     </div>
   );
 };
