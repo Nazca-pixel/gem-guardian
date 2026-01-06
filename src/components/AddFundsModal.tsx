@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Euro, Target } from "lucide-react";
+import { X, Plus, Euro } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLevelUp, LevelUpResult } from "@/hooks/useLevelUp";
 
 interface AddFundsModalProps {
   isOpen: boolean;
@@ -19,14 +20,16 @@ interface AddFundsModalProps {
     current_amount: number;
     target_amount: number;
   };
+  onLevelUp?: (result: LevelUpResult) => void;
 }
 
-export const AddFundsModal = ({ isOpen, onClose, goal }: AddFundsModalProps) => {
+export const AddFundsModal = ({ isOpen, onClose, goal, onLevelUp }: AddFundsModalProps) => {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { processLevelUp } = useLevelUp();
 
   const remaining = goal.target_amount - goal.current_amount;
   const progress = (goal.current_amount / goal.target_amount) * 100;
@@ -59,7 +62,7 @@ export const AddFundsModal = ({ isOpen, onClose, goal }: AddFundsModalProps) => 
 
       if (error) throw error;
 
-      // If goal completed, award FXP
+      // If goal completed, award FXP using the level-up system
       if (isCompleted && user) {
         const fxpReward = Math.round(goal.target_amount / 10); // 10% of goal as FXP
         
@@ -70,25 +73,20 @@ export const AddFundsModal = ({ isOpen, onClose, goal }: AddFundsModalProps) => 
           .single();
 
         if (companion) {
-          const newFxp = companion.fxp + fxpReward;
-          const fxpForNextLevel = companion.level * 100;
-          const shouldLevelUp = newFxp >= fxpForNextLevel;
+          const levelUpResult = await processLevelUp(
+            companion.level,
+            companion.fxp,
+            fxpReward
+          );
 
-          await supabase
-            .from("companion_animals")
-            .update({
-              fxp: shouldLevelUp ? newFxp - fxpForNextLevel : newFxp,
-              level: shouldLevelUp ? companion.level + 1 : companion.level,
-              mood: "excited",
-            })
-            .eq("user_id", user.id);
-
-          toast({
-            title: isCompleted ? "🎉 Obiettivo Raggiunto!" : "Fondi aggiunti! 💰",
-            description: isCompleted 
-              ? `Hai completato "${goal.name}"! +${fxpReward} FXP${shouldLevelUp ? " e Level Up! 🆙" : ""}`
-              : `€${amount} aggiunti a "${goal.name}"`,
-          });
+          if (levelUpResult.levelsGained > 0 && onLevelUp) {
+            onLevelUp(levelUpResult);
+          } else {
+            toast({
+              title: "🎉 Obiettivo Raggiunto!",
+              description: `Hai completato "${goal.name}"! +${fxpReward} FXP`,
+            });
+          }
         }
       } else {
         toast({

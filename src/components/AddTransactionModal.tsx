@@ -4,14 +4,15 @@ import { X, Plus, Euro } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCreateTransaction, useUpdateCompanion, useCompanion } from "@/hooks/useUserData";
+import { useCreateTransaction, useCompanion } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAccessoryUnlocked?: (accessory: { name: string; emoji: string }) => void;
 }
 
 const categories = [
@@ -26,17 +27,17 @@ const categories = [
   { value: "other", label: "Altro", emoji: "📦" },
 ] as const;
 
-export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProps) => {
+export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: AddTransactionModalProps) => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<typeof categories[number]["value"]>("other");
   const [isNecessary, setIsNecessary] = useState(true);
   
   const createTransaction = useCreateTransaction();
-  const updateCompanion = useUpdateCompanion();
   const { data: companion } = useCompanion();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { processBxpUpdate } = useLevelUp();
 
   const selectedCategory = categories.find(c => c.value === category);
   const isIncome = category === "income";
@@ -65,39 +66,27 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
       });
 
       const bxpReward = (() => {
-        let reward = 1; // Base reward for tracking
+        let reward = 1;
         if (!isIncome) {
-          if (isNecessary) reward += 2; // Necessary expense bonus
+          if (isNecessary) reward += 2;
         } else {
-          reward += 1; // Income bonus
+          reward += 1;
         }
         return reward;
       })();
 
       let awardedBxp = false;
 
-      if (user) {
+      if (user && companion) {
         try {
-          let currentBxp: number | undefined = companion?.bxp;
-
-          // Fallback: if the companion query isn't ready yet, read current BXP from DB
-          if (typeof currentBxp !== "number") {
-            const { data } = await supabase
-              .from("companion_animals")
-              .select("bxp")
-              .eq("user_id", user.id)
-              .maybeSingle();
-
-            currentBxp = data?.bxp ?? 0;
-          }
-
-          await updateCompanion.mutateAsync({
-            bxp: currentBxp + bxpReward,
-          });
-
+          const result = await processBxpUpdate(companion.bxp, bxpReward);
           awardedBxp = true;
+          
+          if (result.accessoriesUnlocked.length > 0 && onAccessoryUnlocked) {
+            onAccessoryUnlocked(result.accessoriesUnlocked[0]);
+          }
         } catch {
-          // Transaction is already saved; if XP update fails, we still keep going.
+          // Continue even if BXP update fails
         }
       }
 
@@ -106,7 +95,6 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
         description: `${description} - €${amount}${awardedBxp ? ` (+${bxpReward} BXP)` : ""}`,
       });
 
-      // Reset form
       setDescription("");
       setAmount("");
       setCategory("other");
