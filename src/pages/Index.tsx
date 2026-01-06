@@ -79,9 +79,6 @@ const Index = () => {
     isIncome: t.is_income,
   })) || [];
 
-  // Get first savings goal
-  const firstGoal = savingsGoals?.[0];
-
   // Calculate FXP needed for next level
   const getMaxFxpForLevel = (level: number) => (level) * 100;
 
@@ -166,18 +163,26 @@ const Index = () => {
         {/* Quick Actions */}
         <QuickActions />
 
-        {/* Savings Goal */}
-        {firstGoal && (
-          <SavingsGoalCard
-            id={firstGoal.id}
-            goalName={firstGoal.name}
-            currentAmount={Number(firstGoal.current_amount)}
-            targetAmount={Number(firstGoal.target_amount)}
-            deadline={firstGoal.deadline ? format(new Date(firstGoal.deadline), "MMMM yyyy", { locale: it }) : "Senza scadenza"}
-            emoji={firstGoal.emoji || "🎯"}
-          />
+        {/* Savings Goals */}
+        {savingsGoals && savingsGoals.length > 0 && (
+          <section className="space-y-3">
+            {savingsGoals.map((goal) => (
+              <SavingsGoalCard
+                key={goal.id}
+                id={goal.id}
+                goalName={goal.name}
+                currentAmount={Number(goal.current_amount)}
+                targetAmount={Number(goal.target_amount)}
+                deadline={
+                  goal.deadline
+                    ? format(new Date(goal.deadline), "MMMM yyyy", { locale: it })
+                    : "Senza scadenza"
+                }
+                emoji={goal.emoji || "🎯"}
+              />
+            ))}
+          </section>
         )}
-
         {/* Accessories */}
         {mappedAccessories.length > 0 && (
           <AccessoriesBar accessories={mappedAccessories} currentBxp={companion?.bxp || 0} />

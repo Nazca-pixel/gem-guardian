@@ -29,23 +29,78 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    let cancelled = false;
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const ensureUserBootstrap = async (uid: string) => {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("user_id", uid)
+          .maybeSingle();
+
+        if (!profile) {
+          await supabase.from("profiles").insert({
+            user_id: uid,
+          });
+        }
+
+        const { data: companion } = await supabase
+          .from("companion_animals")
+          .select("id")
+          .eq("user_id", uid)
+          .maybeSingle();
+
+        if (!companion) {
+          await supabase.from("companion_animals").insert({
+            user_id: uid,
+            name: "Pippo",
+            level: 1,
+            fxp: 0,
+            bxp: 0,
+            mood: "happy",
+            consecutive_failed_months: 0,
+          });
+        }
+      } catch {
+        // silent: bootstrap failures shouldn't block the UI
+      }
+    };
+
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      const uid = session?.user?.id;
+      if (uid) {
+        setTimeout(() => {
+          if (!cancelled) ensureUserBootstrap(uid);
+        }, 0);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return;
+
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+
+      const uid = session?.user?.id;
+      if (uid) {
+        setTimeout(() => {
+          if (!cancelled) ensureUserBootstrap(uid);
+        }, 0);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, displayName: string) => {

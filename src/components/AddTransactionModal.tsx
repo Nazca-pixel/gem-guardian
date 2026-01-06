@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateTransaction, useUpdateCompanion, useCompanion } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -33,6 +35,7 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
   const createTransaction = useCreateTransaction();
   const updateCompanion = useUpdateCompanion();
   const { data: companion } = useCompanion();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const selectedCategory = categories.find(c => c.value === category);
@@ -61,37 +64,47 @@ export const AddTransactionModal = ({ isOpen, onClose }: AddTransactionModalProp
         transaction_date: new Date().toISOString().split('T')[0],
       });
 
-      // Calculate and award BXP for tracking expenses
-      if (companion) {
-        let bxpReward = 1; // Base reward for tracking
-        
+      const bxpReward = (() => {
+        let reward = 1; // Base reward for tracking
         if (!isIncome) {
-          // Extra BXP for necessary expenses
-          if (isNecessary) {
-            bxpReward += 2;
-          }
-          // Less BXP for unnecessary expenses (but still reward tracking)
+          if (isNecessary) reward += 2; // Necessary expense bonus
         } else {
-          // Extra BXP for tracking income
-          bxpReward += 1;
+          reward += 1; // Income bonus
         }
+        return reward;
+      })();
 
-        const newBxp = (companion.bxp || 0) + bxpReward;
-        
-        await updateCompanion.mutateAsync({
-          bxp: newBxp,
-        });
+      let awardedBxp = false;
 
-        toast({
-          title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
-          description: `${description} - €${amount} (+${bxpReward} BXP)`,
-        });
-      } else {
-        toast({
-          title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
-          description: `${description} - €${amount}`,
-        });
+      if (user) {
+        try {
+          let currentBxp: number | undefined = companion?.bxp;
+
+          // Fallback: if the companion query isn't ready yet, read current BXP from DB
+          if (typeof currentBxp !== "number") {
+            const { data } = await supabase
+              .from("companion_animals")
+              .select("bxp")
+              .eq("user_id", user.id)
+              .maybeSingle();
+
+            currentBxp = data?.bxp ?? 0;
+          }
+
+          await updateCompanion.mutateAsync({
+            bxp: currentBxp + bxpReward,
+          });
+
+          awardedBxp = true;
+        } catch {
+          // Transaction is already saved; if XP update fails, we still keep going.
+        }
       }
+
+      toast({
+        title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
+        description: `${description} - €${amount}${awardedBxp ? ` (+${bxpReward} BXP)` : ""}`,
+      });
 
       // Reset form
       setDescription("");
