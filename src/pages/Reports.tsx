@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
+import { FullTransactionList } from "@/components/FullTransactionList";
 import { useTransactions } from "@/hooks/useUserData";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
@@ -36,6 +37,17 @@ const categoryLabels: Record<string, string> = {
 const Reports = () => {
   const navigate = useNavigate();
   const { data: transactions } = useTransactions();
+
+  // Map transactions for FullTransactionList
+  const mappedTransactions = transactions?.map((t) => ({
+    id: t.id,
+    description: t.description,
+    amount: Number(t.amount),
+    category: t.category,
+    emoji: t.emoji || "💰",
+    transaction_date: t.transaction_date,
+    is_income: t.is_income,
+  })) || [];
 
   // Calculate spending by category
   const expensesByCategory = transactions
@@ -244,8 +256,15 @@ const Reports = () => {
           </div>
         </motion.div>
 
+        {/* Full Transaction List with Filters */}
+        <FullTransactionList
+          transactions={mappedTransactions}
+          showFilters={true}
+          title="Tutte le Transazioni"
+        />
+
         {/* Empty State */}
-        {pieData.length === 0 && (
+        {pieData.length === 0 && mappedTransactions.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

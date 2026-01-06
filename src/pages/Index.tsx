@@ -5,7 +5,7 @@ import { XPDisplay } from "@/components/XPDisplay";
 import { BalanceCard } from "@/components/BalanceCard";
 import { SavingsGoalCard } from "@/components/SavingsGoalCard";
 import { QuickActions } from "@/components/QuickActions";
-import { TransactionList } from "@/components/TransactionList";
+import { FullTransactionList } from "@/components/FullTransactionList";
 import { AccessoriesBar } from "@/components/AccessoriesBar";
 import { BadgesGrid } from "@/components/BadgesGrid";
 import { BottomNav } from "@/components/BottomNav";
@@ -85,15 +85,15 @@ const Index = () => {
     };
   }) || [];
 
-  // Map transactions for display
-  const mappedTransactions = transactions?.slice(0, 5).map(t => ({
+  // Map transactions for FullTransactionList
+  const fullTransactions = transactions?.map(t => ({
     id: t.id,
     description: t.description,
     amount: Number(t.amount),
     category: t.category,
     emoji: t.emoji || "💰",
-    date: format(new Date(t.transaction_date), "d MMM", { locale: it }),
-    isIncome: t.is_income,
+    transaction_date: t.transaction_date,
+    is_income: t.is_income,
   })) || [];
 
   // Calculate FXP needed for next level
@@ -210,13 +210,15 @@ const Index = () => {
           <BadgesGrid badges={mappedBadges} />
         )}
 
-        {/* Recent Transactions */}
-        {mappedTransactions.length > 0 && (
-          <TransactionList transactions={mappedTransactions} />
-        )}
-
-        {/* Empty state for new users */}
-        {mappedTransactions.length === 0 && (
+        {/* Recent Transactions with Filters */}
+        {fullTransactions.length > 0 ? (
+          <FullTransactionList
+            transactions={fullTransactions}
+            showFilters={true}
+            title="Transazioni"
+            collapsible={true}
+          />
+        ) : (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
