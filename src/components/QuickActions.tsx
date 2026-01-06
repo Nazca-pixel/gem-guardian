@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Wallet, PiggyBank, TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { AddTransactionModal } from "./AddTransactionModal";
 import { AddGoalModal } from "./AddGoalModal";
 
@@ -30,6 +31,7 @@ const QuickAction = ({ icon, label, color, onClick }: QuickActionProps) => (
 );
 
 export const QuickActions = () => {
+  const navigate = useNavigate();
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
   const [goalModalOpen, setGoalModalOpen] = useState(false);
 
@@ -85,6 +87,7 @@ export const QuickActions = () => {
             icon={<TrendingUp className="w-5 h-5 text-info-foreground" />}
             label="Report"
             color="bg-info"
+            onClick={() => navigate("/reports")}
           />
         </motion.div>
       </motion.div>
