@@ -5,8 +5,10 @@ import { format, parse, startOfMonth, endOfMonth } from "date-fns";
 import { it } from "date-fns/locale";
 import { ChevronDown, TrendingUp, TrendingDown, Pencil, Trash2 } from "lucide-react";
 import { EditTransactionModal } from "./EditTransactionModal";
+import { SwipeableTransaction } from "./SwipeableTransaction";
 import { useDeleteTransaction } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,6 +67,7 @@ export const FullTransactionList = ({
 
   const { toast } = useToast();
   const deleteTransaction = useDeleteTransaction();
+  const isMobile = useIsMobile();
 
   const filteredTransactions = useMemo(() => {
     let filtered = [...transactions];
@@ -248,67 +251,90 @@ export const FullTransactionList = ({
 
                       {/* Transactions */}
                       <div className="divide-y divide-border">
-                        {items.map((transaction, index) => (
-                          <motion.div
-                            key={transaction.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.02 }}
-                            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
-                          >
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-lg shrink-0">
-                                {transaction.emoji}
+                        {items.map((transaction, index) => {
+                          const transactionContent = (
+                            <motion.div
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.02 }}
+                              className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+                            >
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-lg shrink-0">
+                                  {transaction.emoji}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="font-medium text-foreground text-sm truncate">
+                                    {transaction.description}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {categoryLabels[transaction.category] ||
+                                      transaction.category}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="min-w-0">
-                                <p className="font-medium text-foreground text-sm truncate">
-                                  {transaction.description}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {categoryLabels[transaction.category] ||
-                                    transaction.category}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`font-bold shrink-0 ${
-                                  transaction.is_income
-                                    ? "text-primary"
-                                    : "text-foreground"
-                                }`}
-                              >
-                                {transaction.is_income ? "+" : "-"}€
-                                {Math.abs(transaction.amount).toLocaleString()}
-                              </span>
                               
-                              {/* Action Buttons */}
-                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingTransaction(transaction);
-                                  }}
-                                  className="p-2 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-                                  aria-label="Modifica"
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`font-bold shrink-0 ${
+                                    transaction.is_income
+                                      ? "text-primary"
+                                      : "text-foreground"
+                                  }`}
                                 >
-                                  <Pencil className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setDeletingTransaction(transaction);
-                                  }}
-                                  className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                                  aria-label="Elimina"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                  {transaction.is_income ? "+" : "-"}€
+                                  {Math.abs(transaction.amount).toLocaleString()}
+                                </span>
+                                
+                                {/* Action Buttons - only show on desktop */}
+                                {!isMobile && (
+                                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingTransaction(transaction);
+                                      }}
+                                      className="p-2 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                                      aria-label="Modifica"
+                                    >
+                                      <Pencil className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeletingTransaction(transaction);
+                                      }}
+                                      className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                      aria-label="Elimina"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
+                            </motion.div>
+                          );
+
+                          // Wrap with swipeable on mobile
+                          if (isMobile) {
+                            return (
+                              <SwipeableTransaction
+                                key={transaction.id}
+                                transaction={transaction}
+                                onEdit={() => setEditingTransaction(transaction)}
+                                onDelete={() => setDeletingTransaction(transaction)}
+                              >
+                                {transactionContent}
+                              </SwipeableTransaction>
+                            );
+                          }
+
+                          return (
+                            <div key={transaction.id}>
+                              {transactionContent}
                             </div>
-                          </motion.div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   ))
