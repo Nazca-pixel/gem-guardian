@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Reports from "./pages/Reports";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
+import Bestiary from "./pages/Bestiary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bestiary"
+              element={
+                <ProtectedRoute>
+                  <Bestiary />
                 </ProtectedRoute>
               }
             />
