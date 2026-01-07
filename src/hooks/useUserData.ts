@@ -194,6 +194,69 @@ export const useCreateTransaction = () => {
     },
   });
 };
+export const useUpdateTransaction = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (transaction: {
+      id: string;
+      description: string;
+      amount: number;
+      category: "food" | "transport" | "entertainment" | "shopping" | "bills" | "health" | "education" | "savings" | "income" | "other";
+      emoji: string;
+      is_income: boolean;
+      is_necessary: boolean;
+      transaction_date?: string;
+    }) => {
+      if (!user) throw new Error("User not authenticated");
+      
+      const { data, error } = await supabase
+        .from("transactions")
+        .update({
+          description: transaction.description,
+          amount: transaction.amount,
+          category: transaction.category,
+          emoji: transaction.emoji,
+          is_income: transaction.is_income,
+          is_necessary: transaction.is_necessary,
+          transaction_date: transaction.transaction_date,
+        })
+        .eq("id", transaction.id)
+        .eq("user_id", user.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+    },
+  });
+};
+
+export const useDeleteTransaction = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (transactionId: string) => {
+      if (!user) throw new Error("User not authenticated");
+      
+      const { error } = await supabase
+        .from("transactions")
+        .delete()
+        .eq("id", transactionId)
+        .eq("user_id", user.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+    },
+  });
+};
 
 export const useAccessories = () => {
   return useQuery({
