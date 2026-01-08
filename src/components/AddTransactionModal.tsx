@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateTransaction, useCompanion } from "@/hooks/useUserData";
+import { useUpdateStreak } from "@/hooks/useStreak";
+import { getStreakBonus } from "@/components/StreakDisplay";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
@@ -35,6 +37,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: Ad
   
   const createTransaction = useCreateTransaction();
   const { data: companion } = useCompanion();
+  const updateStreak = useUpdateStreak();
   const { user } = useAuth();
   const { toast } = useToast();
   const { processBxpUpdate } = useLevelUp();
@@ -65,7 +68,25 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: Ad
         transaction_date: new Date().toISOString().split('T')[0],
       });
 
-      const bxpReward = (() => {
+      // Update streak
+      let streakBonus = 1;
+      let newStreak = companion?.current_streak || 0;
+      try {
+        const streakResult = await updateStreak.mutateAsync(companion?.last_activity_date || null);
+        newStreak = streakResult.current_streak;
+        streakBonus = getStreakBonus(newStreak);
+        
+        if (streakResult.isNewDay && newStreak > 1) {
+          toast({
+            title: `🔥 Streak di ${newStreak} giorni!`,
+            description: streakBonus > 1 ? `Bonus XP: +${Math.round((streakBonus - 1) * 100)}%` : "Continua così!",
+          });
+        }
+      } catch {
+        // Continue even if streak update fails
+      }
+
+      const baseBxpReward = (() => {
         let reward = 1;
         if (!isIncome) {
           if (isNecessary) reward += 2;
@@ -74,6 +95,9 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: Ad
         }
         return reward;
       })();
+
+      // Apply streak bonus
+      const bxpReward = Math.round(baseBxpReward * streakBonus);
 
       let awardedBxp = false;
 
@@ -92,7 +116,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: Ad
 
       toast({
         title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
-        description: `${description} - €${amount}${awardedBxp ? ` (+${bxpReward} BXP)` : ""}`,
+        description: `${description} - €${amount}${awardedBxp ? ` (+${bxpReward} BXP${streakBonus > 1 ? " 🔥" : ""})` : ""}`,
       });
 
       setDescription("");
