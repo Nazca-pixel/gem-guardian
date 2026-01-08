@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Sparkles, ChevronRight, ArrowLeft } from "lucide-react";
+import { Lock, Sparkles, Check, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import { 
@@ -13,6 +13,7 @@ import {
 } from "@/lib/monsters";
 import { 
   useCompanion, 
+  useUpdateCompanion,
   useTransactions, 
   useSavingsGoals,
   useUserBadges 
@@ -24,6 +25,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const rarityOrder = ["common", "uncommon", "rare", "epic", "legendary"] as const;
 
@@ -31,11 +34,15 @@ export default function Bestiary() {
   const navigate = useNavigate();
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
   const [filterRarity, setFilterRarity] = useState<Monster["rarity"] | "all">("all");
+  const { toast } = useToast();
 
   const { data: companion } = useCompanion();
+  const updateCompanion = useUpdateCompanion();
   const { data: transactions } = useTransactions();
   const { data: savingsGoals } = useSavingsGoals();
   const { data: userBadges } = useUserBadges();
+
+  const currentMonsterId = companion?.selected_monster_id || "phoenix";
 
   // Calculate user stats for unlock checking
   const userStats = useMemo(() => {
@@ -67,10 +74,28 @@ export default function Bestiary() {
       ...monster,
       isUnlocked: isMonsterUnlocked(monster, userStats),
       progress: getUnlockProgress(monster, userStats),
+      isSelected: monster.id === currentMonsterId,
     }));
-  }, [userStats, filterRarity]);
+  }, [userStats, filterRarity, currentMonsterId]);
 
   const unlockedCount = categorizedMonsters.filter(m => m.isUnlocked).length;
+
+  const handleSelectMonster = async (monsterId: string) => {
+    try {
+      await updateCompanion.mutateAsync({ selected_monster_id: monsterId });
+      toast({
+        title: "Compagno cambiato! 🎉",
+        description: `Hai selezionato ${monsters.find(m => m.id === monsterId)?.name}`,
+      });
+      setSelectedMonster(null);
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Impossibile cambiare il compagno",
+        variant: "destructive",
+      });
+    }
+  };
   const totalCount = categorizedMonsters.length;
 
   return (
@@ -144,11 +169,20 @@ export default function Bestiary() {
                 className={`
                   relative p-4 rounded-2xl border cursor-pointer transition-all
                   ${monster.isUnlocked 
-                    ? "bg-card border-border hover:border-primary/50 hover:shadow-lg" 
+                    ? monster.isSelected
+                      ? "bg-primary/10 border-primary shadow-lg ring-2 ring-primary/30"
+                      : "bg-card border-border hover:border-primary/50 hover:shadow-lg" 
                     : "bg-muted/50 border-border/50"
                   }
                 `}
               >
+                {/* Selected indicator */}
+                {monster.isSelected && (
+                  <div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                    <Check className="w-3 h-3 text-primary-foreground" />
+                  </div>
+                )}
+                
                 {/* Rarity indicator */}
                 <div className={`absolute top-2 right-2 w-2 h-2 rounded-full bg-gradient-to-r ${rarityColors[monster.rarity]}`} />
                 
@@ -289,6 +323,21 @@ export default function Bestiary() {
                         {selectedMonster.unlockCondition.description}
                       </span>
                     </div>
+                  )}
+
+                  {/* Select button for unlocked monsters */}
+                  {isUnlocked && (
+                    <Button
+                      onClick={() => handleSelectMonster(selectedMonster.id)}
+                      disabled={selectedMonster.id === currentMonsterId || updateCompanion.isPending}
+                      className="w-full mt-4 rounded-xl"
+                      variant={selectedMonster.id === currentMonsterId ? "secondary" : "default"}
+                    >
+                      {selectedMonster.id === currentMonsterId 
+                        ? "✓ Compagno attuale" 
+                        : "Seleziona come compagno"
+                      }
+                    </Button>
                   )}
                 </div>
               </>
