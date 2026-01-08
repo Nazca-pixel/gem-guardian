@@ -73,9 +73,12 @@ export type Database = {
           bxp: number
           consecutive_failed_months: number
           created_at: string
+          current_streak: number | null
           fxp: number
           id: string
+          last_activity_date: string | null
           level: number
+          longest_streak: number | null
           mood: string
           name: string
           selected_monster_id: string | null
@@ -86,9 +89,12 @@ export type Database = {
           bxp?: number
           consecutive_failed_months?: number
           created_at?: string
+          current_streak?: number | null
           fxp?: number
           id?: string
+          last_activity_date?: string | null
           level?: number
+          longest_streak?: number | null
           mood?: string
           name?: string
           selected_monster_id?: string | null
@@ -99,9 +105,12 @@ export type Database = {
           bxp?: number
           consecutive_failed_months?: number
           created_at?: string
+          current_streak?: number | null
           fxp?: number
           id?: string
+          last_activity_date?: string | null
           level?: number
+          longest_streak?: number | null
           mood?: string
           name?: string
           selected_monster_id?: string | null
