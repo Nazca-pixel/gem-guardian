@@ -11,6 +11,7 @@ export interface CompanionAnimal {
   bxp: number;
   mood: "happy" | "sad" | "excited";
   consecutive_failed_months: number;
+  selected_monster_id: string;
   created_at: string;
   updated_at: string;
 }

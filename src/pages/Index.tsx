@@ -164,6 +164,7 @@ const Index = () => {
             fxp={companion?.fxp || 0}
             maxFxp={getMaxFxpForLevel(companion?.level || 1)}
             name={companion?.name || "Pippo"}
+            selectedMonsterId={companion?.selected_monster_id || "phoenix"}
           />
         </motion.section>
 

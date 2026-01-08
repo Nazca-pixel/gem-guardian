@@ -78,6 +78,7 @@ export type Database = {
           level: number
           mood: string
           name: string
+          selected_monster_id: string | null
           updated_at: string
           user_id: string
         }
@@ -90,6 +91,7 @@ export type Database = {
           level?: number
           mood?: string
           name?: string
+          selected_monster_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -102,6 +104,7 @@ export type Database = {
           level?: number
           mood?: string
           name?: string
+          selected_monster_id?: string | null
           updated_at?: string
           user_id?: string
         }

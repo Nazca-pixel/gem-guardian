@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, Sparkles, Star } from "lucide-react";
+import { monsters, Monster } from "@/lib/monsters";
 
 interface CompanionAnimalProps {
   level: number;
@@ -8,25 +9,19 @@ interface CompanionAnimalProps {
   fxp: number;
   maxFxp: number;
   name: string;
+  selectedMonsterId?: string;
   onPet?: () => void;
 }
 
-const evolutionStages = [
-  { name: "Uovo", emoji: "🥚", minLevel: 1 },
-  { name: "Cucciolo", emoji: "🐣", minLevel: 2 },
-  { name: "Piccolo", emoji: "🐥", minLevel: 4 },
-  { name: "Giovane", emoji: "🐤", minLevel: 6 },
-  { name: "Adulto", emoji: "🐔", minLevel: 8 },
-  { name: "Epico", emoji: "🦅", minLevel: 10 },
-];
-
-const getEvolutionStage = (level: number) => {
-  for (let i = evolutionStages.length - 1; i >= 0; i--) {
-    if (level >= evolutionStages[i].minLevel) {
-      return evolutionStages[i];
+// Get the current evolution stage for a monster based on level
+const getEvolutionStage = (monster: Monster, level: number) => {
+  const evolutions = monster.evolutions;
+  for (let i = evolutions.length - 1; i >= 0; i--) {
+    if (level >= evolutions[i].minLevel) {
+      return evolutions[i];
     }
   }
-  return evolutionStages[0];
+  return evolutions[0];
 };
 
 export const CompanionAnimal = ({
@@ -35,10 +30,14 @@ export const CompanionAnimal = ({
   fxp,
   maxFxp,
   name,
+  selectedMonsterId = "phoenix",
   onPet,
 }: CompanionAnimalProps) => {
   const [isPetting, setIsPetting] = useState(false);
-  const stage = getEvolutionStage(level);
+  
+  // Find the selected monster or default to phoenix
+  const selectedMonster = monsters.find(m => m.id === selectedMonsterId) || monsters[0];
+  const stage = getEvolutionStage(selectedMonster, level);
   const progress = (fxp / maxFxp) * 100;
 
   const handlePet = () => {
