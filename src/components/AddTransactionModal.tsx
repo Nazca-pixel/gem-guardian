@@ -11,10 +11,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
 
+interface StreakMilestone {
+  milestone: number;
+  badgeName: string;
+}
+
 interface AddTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccessoryUnlocked?: (accessory: { name: string; emoji: string }) => void;
+  onStreakMilestone?: (data: StreakMilestone) => void;
 }
 
 const categories = [
@@ -29,7 +35,9 @@ const categories = [
   { value: "other", label: "Altro", emoji: "📦" },
 ] as const;
 
-export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: AddTransactionModalProps) => {
+const STREAK_MILESTONES = [7, 30, 100];
+
+export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onStreakMilestone }: AddTransactionModalProps) => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<typeof categories[number]["value"]>("other");
@@ -83,14 +91,17 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: Ad
           });
         }
         
-        // Show badge notifications
-        if (streakResult.newBadges.length > 0) {
-          streakResult.newBadges.forEach((badgeName) => {
-            toast({
-              title: "🏆 Nuovo Trofeo!",
-              description: badgeName,
+        // Show milestone celebration for streak badges
+        if (streakResult.newBadges.length > 0 && onStreakMilestone) {
+          // Find which milestone was reached
+          const reachedMilestone = STREAK_MILESTONES.find(m => newStreak >= m && newStreak < m + 1) || 
+                                   STREAK_MILESTONES.find(m => newStreak === m);
+          if (reachedMilestone) {
+            onStreakMilestone({
+              milestone: reachedMilestone,
+              badgeName: streakResult.newBadges[0],
             });
-          });
+          }
         }
       } catch {
         // Continue even if streak update fails

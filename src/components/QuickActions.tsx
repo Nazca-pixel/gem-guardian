@@ -30,7 +30,16 @@ const QuickAction = ({ icon, label, color, onClick }: QuickActionProps) => (
   </motion.button>
 );
 
-export const QuickActions = () => {
+interface StreakMilestone {
+  milestone: number;
+  badgeName: string;
+}
+
+interface QuickActionsProps {
+  onStreakMilestone?: (data: StreakMilestone) => void;
+}
+
+export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
   const navigate = useNavigate();
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
   const [goalModalOpen, setGoalModalOpen] = useState(false);
@@ -95,6 +104,7 @@ export const QuickActions = () => {
       <AddTransactionModal
         isOpen={transactionModalOpen}
         onClose={() => setTransactionModalOpen(false)}
+        onStreakMilestone={onStreakMilestone}
       />
       <AddGoalModal
         isOpen={goalModalOpen}
