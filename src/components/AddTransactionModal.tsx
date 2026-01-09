@@ -82,6 +82,16 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked }: Ad
             description: streakBonus > 1 ? `Bonus XP: +${Math.round((streakBonus - 1) * 100)}%` : "Continua così!",
           });
         }
+        
+        // Show badge notifications
+        if (streakResult.newBadges.length > 0) {
+          streakResult.newBadges.forEach((badgeName) => {
+            toast({
+              title: "🏆 Nuovo Trofeo!",
+              description: badgeName,
+            });
+          });
+        }
       } catch {
         // Continue even if streak update fails
       }

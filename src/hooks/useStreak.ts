@@ -9,7 +9,49 @@ interface StreakUpdate {
   last_activity_date: string;
   streakBroken: boolean;
   isNewDay: boolean;
+  newBadges: string[];
 }
+
+const STREAK_MILESTONES = [
+  { days: 7, badge_type: "streak_7" },
+  { days: 30, badge_type: "streak_30" },
+  { days: 100, badge_type: "streak_100" },
+];
+
+const checkAndAwardStreakBadges = async (userId: string, newStreak: number): Promise<string[]> => {
+  const newBadges: string[] = [];
+
+  // Get user's existing streak badges
+  const { data: userBadges } = await supabase
+    .from("user_badges")
+    .select("badge_id, badges(badge_type)")
+    .eq("user_id", userId);
+
+  const earnedBadgeTypes = userBadges?.map((ub: any) => ub.badges?.badge_type) || [];
+
+  // Check each milestone
+  for (const milestone of STREAK_MILESTONES) {
+    if (newStreak >= milestone.days && !earnedBadgeTypes.includes(milestone.badge_type)) {
+      // Get the badge id
+      const { data: badge } = await supabase
+        .from("badges")
+        .select("id, name")
+        .eq("badge_type", milestone.badge_type)
+        .single();
+
+      if (badge) {
+        // Award the badge
+        await supabase.from("user_badges").insert({
+          user_id: userId,
+          badge_id: badge.id,
+        });
+        newBadges.push(badge.name);
+      }
+    }
+  }
+
+  return newBadges;
+};
 
 export const useUpdateStreak = () => {
   const { user } = useAuth();
@@ -42,6 +84,7 @@ export const useUpdateStreak = () => {
           last_activity_date: today,
           streakBroken: false,
           isNewDay: false,
+          newBadges: [],
         };
       }
 
@@ -78,16 +121,21 @@ export const useUpdateStreak = () => {
 
       if (updateError) throw updateError;
 
+      // Check and award streak badges
+      const newBadges = await checkAndAwardStreakBadges(user.id, newStreak);
+
       return {
         current_streak: newStreak,
         longest_streak: newLongestStreak,
         last_activity_date: today,
         streakBroken,
         isNewDay: true,
+        newBadges,
       };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companion", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["user-badges"] });
     },
   });
 };
