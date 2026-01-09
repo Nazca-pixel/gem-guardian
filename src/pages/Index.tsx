@@ -13,6 +13,7 @@ import { LevelUpModal } from "@/components/LevelUpModal";
 import { AccessoryUnlockedToast } from "@/components/AccessoryUnlockedToast";
 import { StreakDisplay } from "@/components/StreakDisplay";
 import { StreakReminder } from "@/components/StreakReminder";
+import { StreakMilestoneModal } from "@/components/StreakMilestoneModal";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
@@ -35,6 +36,7 @@ const Index = () => {
   const [levelUpData, setLevelUpData] = useState<LevelUpResult | null>(null);
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   const [unlockedAccessory, setUnlockedAccessory] = useState<{ name: string; emoji: string } | null>(null);
+  const [streakMilestone, setStreakMilestone] = useState<{ milestone: number; badgeName: string } | null>(null);
 
   const handleLevelUp = (result: LevelUpResult) => {
     setLevelUpData(result);
@@ -193,7 +195,7 @@ const Index = () => {
         />
 
         {/* Quick Actions */}
-        <QuickActions />
+        <QuickActions onStreakMilestone={setStreakMilestone} />
 
         {/* Savings Goals */}
         {savingsGoals && savingsGoals.length > 0 && (
@@ -264,6 +266,14 @@ const Index = () => {
         isOpen={!!unlockedAccessory}
         accessory={unlockedAccessory}
         onClose={() => setUnlockedAccessory(null)}
+      />
+
+      {/* Streak Milestone Modal */}
+      <StreakMilestoneModal
+        isOpen={!!streakMilestone}
+        onClose={() => setStreakMilestone(null)}
+        milestone={streakMilestone?.milestone || 7}
+        badgeName={streakMilestone?.badgeName || ""}
       />
     </div>
   );
