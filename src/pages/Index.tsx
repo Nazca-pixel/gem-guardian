@@ -12,6 +12,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { LevelUpModal } from "@/components/LevelUpModal";
 import { AccessoryUnlockedToast } from "@/components/AccessoryUnlockedToast";
 import { StreakDisplay } from "@/components/StreakDisplay";
+import { StreakReminder } from "@/components/StreakReminder";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
@@ -168,6 +169,12 @@ const Index = () => {
             selectedMonsterId={companion?.selected_monster_id || "phoenix"}
           />
         </motion.section>
+
+        {/* Streak Reminder (at-risk warning) */}
+        <StreakReminder 
+          currentStreak={companion?.current_streak || 0}
+          lastActivityDate={companion?.last_activity_date || null}
+        />
 
         {/* Streak Display */}
         <StreakDisplay 
