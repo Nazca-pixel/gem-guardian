@@ -108,12 +108,61 @@ export const DevModePanel = ({ onStreakMilestone }: DevModePanelProps) => {
   };
 
   const unlockAllMonsters = async () => {
-    // All monsters are unlocked based on stats, so we just max out the stats
+    if (!user) return;
+    
+    // Step 1: Max out companion stats
     await updateCompanion.mutateAsync({
       level: 20,
       bxp: 5000,
       fxp: 1000,
+      current_streak: 100,
+      longest_streak: 100,
     });
+    
+    // Step 2: Unlock all badges (for badge-based unlocks)
+    if (badges) {
+      for (const badge of badges) {
+        await supabase
+          .from("user_badges")
+          .upsert({ user_id: user.id, badge_id: badge.id }, { onConflict: 'user_id,badge_id' });
+      }
+      queryClient.invalidateQueries({ queryKey: ["user_badges"] });
+    }
+    
+    // Step 3: Add test transactions if needed (for transaction-based unlocks)
+    const currentTxCount = transactions?.length || 0;
+    if (currentTxCount < 50) {
+      const txToAdd = 50 - currentTxCount;
+      for (let i = 0; i < txToAdd; i++) {
+        await supabase.from("transactions").insert({
+          user_id: user.id,
+          description: `Transazione test ${i + 1}`,
+          amount: 10,
+          category: "other",
+          emoji: "🧪",
+          is_income: false,
+          is_necessary: true,
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    }
+    
+    // Step 4: Add savings goals with high amounts (for savings-based unlocks)
+    const completedGoals = savingsGoals?.filter(g => g.is_completed).length || 0;
+    if (completedGoals < 3) {
+      for (let i = 0; i < 3 - completedGoals; i++) {
+        const { data: newGoal } = await supabase.from("savings_goals").insert({
+          user_id: user.id,
+          name: `Obiettivo completato ${i + 1}`,
+          emoji: "✅",
+          target_amount: 2000,
+          current_amount: 2000,
+          is_completed: true,
+        }).select().single();
+      }
+      queryClient.invalidateQueries({ queryKey: ["savings_goals"] });
+    }
+    
     toast({ title: "🐉 Tutti i mostriciattoli sbloccati!" });
   };
 

@@ -11,9 +11,10 @@ interface Badge {
 
 interface BadgesGridProps {
   badges: Badge[];
+  showDescriptions?: boolean;
 }
 
-export const BadgesGrid = ({ badges }: BadgesGridProps) => {
+export const BadgesGrid = ({ badges, showDescriptions = true }: BadgesGridProps) => {
   const earnedBadges = badges.filter(b => b.isEarned);
   const lockedBadges = badges.filter(b => !b.isEarned);
 
@@ -35,26 +36,38 @@ export const BadgesGrid = ({ badges }: BadgesGridProps) => {
 
       {/* Earned Badges */}
       {earnedBadges.length > 0 && (
-        <div className="grid grid-cols-4 gap-2 mb-4">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           {earnedBadges.map((badge, index) => (
             <motion.div
               key={badge.id}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1, type: "spring" }}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className="relative flex flex-col items-center p-2 rounded-xl bg-gradient-to-br from-reward/20 to-accent/20 border border-reward/30"
+              whileHover={{ scale: 1.02 }}
+              className="relative flex flex-col p-3 rounded-xl bg-gradient-to-br from-reward/20 to-accent/20 border border-reward/30"
             >
-              <motion.span 
-                className="text-3xl"
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
-              >
-                {badge.emoji}
-              </motion.span>
-              <span className="text-[10px] font-medium text-foreground text-center mt-1 leading-tight">
-                {badge.name}
-              </span>
+              <div className="flex items-center gap-2 mb-1">
+                <motion.span 
+                  className="text-2xl"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+                >
+                  {badge.emoji}
+                </motion.span>
+                <span className="text-sm font-semibold text-foreground leading-tight">
+                  {badge.name}
+                </span>
+              </div>
+              {showDescriptions && (
+                <p className="text-xs text-muted-foreground leading-snug mt-1">
+                  {badge.description}
+                </p>
+              )}
+              {badge.earnedDate && (
+                <p className="text-[10px] text-muted-foreground/70 mt-2">
+                  Ottenuto il {new Date(badge.earnedDate).toLocaleDateString('it-IT')}
+                </p>
+              )}
             </motion.div>
           ))}
         </div>
