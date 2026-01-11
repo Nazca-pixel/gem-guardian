@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Home, PieChart, Trophy, User, BookOpen } from "lucide-react";
+import { Home, PieChart, Trophy, User, BookOpen, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface NavItemProps {
@@ -43,8 +43,8 @@ export const BottomNav = ({ activeTab = "home" }: BottomNavProps) => {
   const navItems = [
     { id: "home", icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
     { id: "bestiary", icon: <BookOpen className="w-5 h-5" />, label: "Bestiario", path: "/bestiary" },
+    { id: "badges", icon: <Award className="w-5 h-5" />, label: "Trofei", path: "/badges" },
     { id: "stats", icon: <PieChart className="w-5 h-5" />, label: "Report", path: "/reports" },
-    { id: "ranks", icon: <Trophy className="w-5 h-5" />, label: "Classifica", path: "/leaderboard" },
     { id: "profile", icon: <User className="w-5 h-5" />, label: "Profilo", path: "/profile" },
   ];
 
