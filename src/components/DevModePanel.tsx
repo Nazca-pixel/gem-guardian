@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Settings, 
@@ -47,10 +47,20 @@ export const DevModePanel = ({ onStreakMilestone }: DevModePanelProps) => {
   const { data: savingsGoals } = useSavingsGoals();
   const createSavingsGoal = useCreateSavingsGoal();
 
-  const [tempLevel, setTempLevel] = useState(companion?.level || 1);
-  const [tempBxp, setTempBxp] = useState(companion?.bxp || 0);
-  const [tempFxp, setTempFxp] = useState(companion?.fxp || 0);
-  const [tempStreak, setTempStreak] = useState(companion?.current_streak || 0);
+  const [tempLevel, setTempLevel] = useState(1);
+  const [tempBxp, setTempBxp] = useState(0);
+  const [tempFxp, setTempFxp] = useState(0);
+  const [tempStreak, setTempStreak] = useState(0);
+
+  // Sync temp values with companion data when it changes
+  useEffect(() => {
+    if (companion) {
+      setTempLevel(companion.level || 1);
+      setTempBxp(companion.bxp || 0);
+      setTempFxp(companion.fxp || 0);
+      setTempStreak(companion.current_streak || 0);
+    }
+  }, [companion]);
 
   if (!isDevMode) {
     return (
