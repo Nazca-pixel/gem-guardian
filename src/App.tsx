@@ -12,6 +12,7 @@ import Reports from "./pages/Reports";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bestiary from "./pages/Bestiary";
+import Badges from "./pages/Badges";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Bestiary />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/badges"
+              element={
+                <ProtectedRoute>
+                  <Badges />
                 </ProtectedRoute>
               }
             />
