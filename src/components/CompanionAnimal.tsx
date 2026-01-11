@@ -3,6 +3,11 @@ import { motion } from "framer-motion";
 import { Heart, Sparkles, Star } from "lucide-react";
 import { monsters, Monster } from "@/lib/monsters";
 
+interface EquippedAccessory {
+  emoji: string;
+  name: string;
+}
+
 interface CompanionAnimalProps {
   level: number;
   mood: "happy" | "sad" | "excited";
@@ -10,6 +15,7 @@ interface CompanionAnimalProps {
   maxFxp: number;
   name: string;
   selectedMonsterId?: string;
+  equippedAccessory?: EquippedAccessory | null;
   onPet?: () => void;
 }
 
@@ -31,6 +37,7 @@ export const CompanionAnimal = ({
   maxFxp,
   name,
   selectedMonsterId = "phoenix",
+  equippedAccessory,
   onPet,
 }: CompanionAnimalProps) => {
   const [isPetting, setIsPetting] = useState(false);
@@ -108,6 +115,23 @@ export const CompanionAnimal = ({
         >
           {stage.emoji}
         </motion.span>
+
+        {/* Equipped accessory */}
+        {equippedAccessory && (
+          <motion.div
+            initial={{ scale: 0, rotate: -20 }}
+            animate={{ scale: 1, rotate: 0 }}
+            className="absolute -top-2 -right-2 z-20"
+          >
+            <motion.span
+              animate={{ y: [0, -2, 0], rotate: [-5, 5, -5] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="text-3xl drop-shadow-lg"
+            >
+              {equippedAccessory.emoji}
+            </motion.span>
+          </motion.div>
+        )}
 
         {/* Hearts on pet */}
         {isPetting && (

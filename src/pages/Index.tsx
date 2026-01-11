@@ -67,15 +67,26 @@ const Index = () => {
     return acc + (t.is_income ? Number(t.amount) : -Number(t.amount));
   }, 0) || 0;
 
-  // Map accessories with unlock status
-  const mappedAccessories = accessories?.map(acc => ({
-    id: acc.id,
-    emoji: acc.emoji,
-    name: acc.name,
-    bxpRequired: acc.bxp_required,
-    isUnlocked: userAccessories?.some(ua => ua.accessory_id === acc.id) || 
-                (companion?.bxp || 0) >= acc.bxp_required,
-  })) || [];
+  // Map accessories with unlock status and equipped state
+  const mappedAccessories = accessories?.map(acc => {
+    const userAcc = userAccessories?.find(ua => ua.accessory_id === acc.id);
+    return {
+      id: acc.id,
+      emoji: acc.emoji,
+      name: acc.name,
+      description: acc.description,
+      bxpRequired: acc.bxp_required,
+      isUnlocked: !!userAcc || (companion?.bxp || 0) >= acc.bxp_required,
+      isEquipped: userAcc?.is_equipped || false,
+    };
+  }) || [];
+
+  // Get equipped accessory for companion display
+  const equippedAccessory = mappedAccessories.find(a => a.isEquipped);
+  const equippedForCompanion = equippedAccessory ? {
+    emoji: equippedAccessory.emoji,
+    name: equippedAccessory.name,
+  } : null;
 
   // Map badges with earned status
   const mappedBadges = badges?.map(badge => {
@@ -170,6 +181,7 @@ const Index = () => {
             maxFxp={getMaxFxpForLevel(companion?.level || 1)}
             name={companion?.name || "Pippo"}
             selectedMonsterId={companion?.selected_monster_id || "phoenix"}
+            equippedAccessory={equippedForCompanion}
           />
         </motion.section>
 
