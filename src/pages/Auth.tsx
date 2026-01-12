@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { Loader2, Mail, Lock, User, ArrowRight, ArrowLeft } from "lucide-react";
+import { Loader2, Mail, Lock, User, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 
 const loginSchema = z.object({
@@ -43,6 +44,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isRecoverySession, setIsRecoverySession] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   
   const { signIn, signUp, resetPassword, updatePassword } = useAuth();
   const navigate = useNavigate();
@@ -396,9 +398,23 @@ const Auth = () => {
               </div>
             )}
 
-            {/* Forgot password link - only for login */}
+            {/* Remember me and forgot password - only for login */}
             {mode === "login" && (
-              <div className="text-right">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <label
+                    htmlFor="rememberMe"
+                    className="text-sm text-muted-foreground cursor-pointer select-none"
+                  >
+                    Rimani collegato
+                  </label>
+                </div>
                 <button
                   type="button"
                   onClick={() => setMode("forgot")}
