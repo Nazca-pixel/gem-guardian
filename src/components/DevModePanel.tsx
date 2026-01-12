@@ -177,13 +177,20 @@ export const DevModePanel = ({ onStreakMilestone }: DevModePanelProps) => {
   };
 
   const applyXPChanges = async () => {
-    await updateCompanion.mutateAsync({
-      level: tempLevel,
-      bxp: tempBxp,
-      fxp: tempFxp,
-      current_streak: tempStreak,
-    });
-    toast({ title: "✨ Stats aggiornate!" });
+    try {
+      await updateCompanion.mutateAsync({
+        level: tempLevel,
+        bxp: tempBxp,
+        fxp: tempFxp,
+        current_streak: tempStreak,
+      });
+      // Force refetch of companion data
+      await queryClient.refetchQueries({ queryKey: ["companion"] });
+      toast({ title: "✨ Stats aggiornate!" });
+    } catch (error) {
+      console.error("Error updating companion:", error);
+      toast({ title: "❌ Errore nell'aggiornamento", variant: "destructive" });
+    }
   };
 
   const triggerMilestone = (days: number) => {
