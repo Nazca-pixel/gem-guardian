@@ -58,8 +58,15 @@ export const useUpdateCompanion = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companion", user?.id] });
+    onSuccess: (data) => {
+      // Use the returned data's user_id to ensure we invalidate the right query
+      if (data?.user_id) {
+        queryClient.invalidateQueries({ queryKey: ["companion", data.user_id] });
+      } else if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: ["companion", user.id] });
+      }
+      // Also invalidate without user_id to catch any cached queries
+      queryClient.invalidateQueries({ queryKey: ["companion"] });
     },
   });
 };
