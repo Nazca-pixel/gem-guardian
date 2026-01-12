@@ -366,7 +366,7 @@ export const DevModePanel = ({ onStreakMilestone }: DevModePanelProps) => {
                       value={[tempLevel]}
                       onValueChange={([v]) => setTempLevel(v)}
                       min={1}
-                      max={25}
+                      max={100}
                       step={1}
                       className="mt-2"
                     />
