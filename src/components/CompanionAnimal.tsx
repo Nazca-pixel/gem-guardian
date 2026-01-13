@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Heart, Sparkles, Star } from "lucide-react";
 import { monsters, Monster } from "@/lib/monsters";
+import { EvolutionAnimation } from "./EvolutionAnimation";
 
 interface EquippedAccessory {
   emoji: string;
@@ -41,11 +42,39 @@ export const CompanionAnimal = ({
   onPet,
 }: CompanionAnimalProps) => {
   const [isPetting, setIsPetting] = useState(false);
+  const [showEvolution, setShowEvolution] = useState(false);
+  const [evolutionData, setEvolutionData] = useState<{
+    oldEmoji: string;
+    newEmoji: string;
+    newStageName: string;
+  } | null>(null);
+  
+  const prevStageRef = useRef<string | null>(null);
   
   // Find the selected monster or default to phoenix
   const selectedMonster = monsters.find(m => m.id === selectedMonsterId) || monsters[0];
   const stage = getEvolutionStage(selectedMonster, level);
   const progress = (fxp / maxFxp) * 100;
+
+  // Check for evolution when stage changes
+  useEffect(() => {
+    if (prevStageRef.current && prevStageRef.current !== stage.emoji) {
+      // Find the previous stage
+      const prevStageIndex = selectedMonster.evolutions.findIndex(e => e.emoji === prevStageRef.current);
+      const currentStageIndex = selectedMonster.evolutions.findIndex(e => e.emoji === stage.emoji);
+      
+      // Only show animation if we evolved forward (not backward)
+      if (currentStageIndex > prevStageIndex) {
+        setEvolutionData({
+          oldEmoji: prevStageRef.current,
+          newEmoji: stage.emoji,
+          newStageName: stage.name,
+        });
+        setShowEvolution(true);
+      }
+    }
+    prevStageRef.current = stage.emoji;
+  }, [stage.emoji, stage.name, selectedMonster.evolutions]);
 
   const handlePet = () => {
     setIsPetting(true);
@@ -196,6 +225,21 @@ export const CompanionAnimal = ({
       >
         {moodMessages[mood]}
       </motion.p>
+
+      {/* Evolution Animation */}
+      {evolutionData && (
+        <EvolutionAnimation
+          isOpen={showEvolution}
+          onClose={() => {
+            setShowEvolution(false);
+            setEvolutionData(null);
+          }}
+          oldEmoji={evolutionData.oldEmoji}
+          newEmoji={evolutionData.newEmoji}
+          newStageName={evolutionData.newStageName}
+          monsterName={name}
+        />
+      )}
     </motion.div>
   );
 };
