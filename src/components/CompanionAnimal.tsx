@@ -70,13 +70,13 @@ export const CompanionAnimal = ({
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, type: "spring" }}
-      className="relative flex flex-col items-center"
+      className="relative flex flex-col items-center justify-center w-full"
     >
       {/* Floating decorations */}
       <motion.div
         animate={{ y: [-5, 5, -5], rotate: [0, 10, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-2 -right-4 text-reward"
+        className="absolute -top-2 right-1/4 text-reward"
       >
         <Star className="w-5 h-5 fill-current" />
       </motion.div>
@@ -84,7 +84,7 @@ export const CompanionAnimal = ({
       <motion.div
         animate={{ y: [5, -5, 5], rotate: [0, -10, 0] }}
         transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        className="absolute -top-4 left-0 text-accent"
+        className="absolute -top-4 left-1/4 text-accent"
       >
         <Sparkles className="w-4 h-4" />
       </motion.div>
@@ -95,23 +95,28 @@ export const CompanionAnimal = ({
         whileTap={{ scale: 0.95 }}
         onClick={handlePet}
         className={`
-          relative cursor-pointer
-          w-40 h-40 rounded-full
-          bg-gradient-to-br from-card to-muted
-          shadow-float
+          relative cursor-pointer mx-auto
+          w-44 h-44 rounded-full
+          bg-gradient-to-br from-primary/20 via-card to-accent/20
+          shadow-[0_0_40px_rgba(var(--primary),0.2),0_10px_30px_-10px_rgba(0,0,0,0.3)]
           flex items-center justify-center
-          border-4 border-primary/20
+          border-4 border-primary/30
           ${moodStyles[mood]}
           ${isPetting ? "animate-wiggle" : "animate-float"}
+          before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-t before:from-transparent before:to-white/10
         `}
       >
-        {/* Glow effect */}
-        <div className="absolute inset-0 rounded-full bg-primary/10 animate-pulse-glow" />
+        {/* Glow effect ring */}
+        <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-primary/40 via-accent/40 to-secondary/40 opacity-60 blur-md animate-pulse-glow" />
+        
+        {/* Inner glow */}
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/5 to-transparent" />
         
         {/* Animal emoji */}
         <motion.span
           animate={isPetting ? { scale: [1, 1.2, 1] } : {}}
-          className="text-7xl select-none relative z-10"
+          className="text-7xl select-none relative z-10 drop-shadow-lg"
+          style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))" }}
         >
           {stage.emoji}
         </motion.span>
@@ -121,12 +126,13 @@ export const CompanionAnimal = ({
           <motion.div
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
-            className="absolute -top-2 -right-2 z-20"
+            className="absolute -top-3 -right-3 z-20"
           >
             <motion.span
               animate={{ y: [0, -2, 0], rotate: [-5, 5, -5] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="text-3xl drop-shadow-lg"
+              style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}
             >
               {equippedAccessory.emoji}
             </motion.span>
@@ -150,11 +156,11 @@ export const CompanionAnimal = ({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mt-4 text-center"
+        className="mt-5 text-center"
       >
         <h3 className="text-xl font-bold text-foreground">{name}</h3>
-        <p className="text-sm text-muted-foreground">
-          {stage.name} • Livello {level}
+        <p className="text-sm text-muted-foreground mt-1">
+          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-semibold">{stage.name}</span> • Livello {level}
         </p>
       </motion.div>
 
@@ -163,19 +169,21 @@ export const CompanionAnimal = ({
         initial={{ opacity: 0, width: 0 }}
         animate={{ opacity: 1, width: "100%" }}
         transition={{ delay: 0.3 }}
-        className="mt-3 w-full max-w-[200px]"
+        className="mt-4 w-full max-w-[220px] mx-auto"
       >
-        <div className="flex justify-between text-xs text-muted-foreground mb-1">
-          <span>FXP</span>
-          <span>{fxp}/{maxFxp}</span>
+        <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
+          <span className="font-medium">FXP</span>
+          <span className="font-semibold text-foreground">{fxp}/{maxFxp}</span>
         </div>
-        <div className="h-3 bg-muted rounded-full overflow-hidden">
+        <div className="h-3.5 bg-muted/50 rounded-full overflow-hidden shadow-inner border border-border/50">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-fxp to-accent rounded-full"
-          />
+            className="h-full bg-gradient-to-r from-fxp via-accent to-primary rounded-full relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full" />
+          </motion.div>
         </div>
       </motion.div>
 
@@ -184,7 +192,7 @@ export const CompanionAnimal = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="mt-3 text-sm text-center text-muted-foreground italic"
+        className="mt-4 text-sm text-center text-muted-foreground italic"
       >
         {moodMessages[mood]}
       </motion.p>
