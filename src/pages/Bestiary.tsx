@@ -105,7 +105,7 @@ export default function Bestiary() {
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border"
+        className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"
       >
         <div className="px-4 py-4">
           <div className="flex items-center gap-3">

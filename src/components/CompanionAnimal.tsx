@@ -124,7 +124,7 @@ export const CompanionAnimal = ({
         whileTap={{ scale: 0.97 }}
         onClick={handlePet}
         className={`
-          relative cursor-pointer
+          relative cursor-pointer mx-auto
           w-40 h-40 sm:w-44 sm:h-44 rounded-full
           bg-gradient-to-br from-primary/20 via-card to-accent/20
           shadow-lg
