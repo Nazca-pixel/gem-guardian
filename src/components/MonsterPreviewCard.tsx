@@ -25,7 +25,7 @@ export const MonsterPreviewCard = ({ monster, index, onClick }: MonsterPreviewCa
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
       className={`
-        relative p-4 rounded-3xl cursor-pointer transition-all duration-300 overflow-hidden
+        relative z-0 p-4 rounded-3xl cursor-pointer transition-all duration-300 overflow-hidden
         ${monster.isUnlocked 
           ? monster.isSelected
             ? "bg-gradient-to-br from-primary/20 via-card to-accent/10 border-2 border-primary shadow-lg ring-2 ring-primary/20"
@@ -36,17 +36,15 @@ export const MonsterPreviewCard = ({ monster, index, onClick }: MonsterPreviewCa
     >
       {/* Background decoration */}
       {monster.isUnlocked && (
-        <div className="absolute inset-0 rounded-3xl overflow-hidden">
+        <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
           <motion.div
-            animate={{ 
-              rotate: 360,
-              scale: [1, 1.1, 1],
+            aria-hidden="true"
+            animate={{ rotate: 360, scale: [1, 1.05, 1] }}
+            transition={{
+              rotate: { duration: 24, repeat: Infinity, ease: "linear" },
+              scale: { duration: 3, repeat: Infinity },
             }}
-            transition={{ 
-              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-              scale: { duration: 3, repeat: Infinity }
-            }}
-            className={`absolute -top-10 -right-10 w-24 h-24 rounded-full bg-gradient-to-r ${rarityColors[monster.rarity]} opacity-20 blur-xl`}
+            className={`absolute -top-6 -right-6 w-20 h-20 rounded-full bg-gradient-to-r ${rarityColors[monster.rarity]} opacity-15`}
           />
         </div>
       )}

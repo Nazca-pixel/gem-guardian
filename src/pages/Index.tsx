@@ -166,7 +166,7 @@ const Index = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-card rounded-3xl p-6 shadow-card border border-border relative overflow-hidden"
+          className="bg-card rounded-3xl p-6 shadow-card border border-border relative overflow-hidden flex flex-col items-center"
         >
           {/* Decorative background elements */}
           <div className="absolute top-4 left-4 w-16 h-16 bg-primary/5 rounded-full" />

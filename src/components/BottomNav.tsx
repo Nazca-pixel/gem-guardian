@@ -52,7 +52,7 @@ export const BottomNav = ({ activeTab = "home" }: BottomNavProps) => {
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border px-4 pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border px-4 pb-safe"
     >
       <div className="flex justify-around items-center py-2 max-w-lg mx-auto">
         {navItems.map((item) => (
