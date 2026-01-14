@@ -183,7 +183,7 @@ export default function Bestiary() {
       <div className="px-4 py-6">
         <motion.div 
           layout
-          className="grid grid-cols-2 gap-4"
+          className="grid grid-cols-2 gap-3"
         >
           <AnimatePresence mode="popLayout">
             {categorizedMonsters.map((monster, index) => (

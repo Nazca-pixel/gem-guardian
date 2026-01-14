@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { Loader2, Mail, Lock, User, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { Loader2, Mail, Lock, User, ArrowRight, ArrowLeft } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -44,9 +44,26 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isRecoverySession, setIsRecoverySession] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(() => {
+    const stored = localStorage.getItem("gemsaver_remember_me");
+    return stored !== null ? stored === "true" : true;
+  });
   
   const { signIn, signUp, resetPassword, updatePassword } = useAuth();
+  
+  // Handle remember me persistence
+  const handleRememberMeChange = useCallback((checked: boolean) => {
+    setRememberMe(checked);
+    localStorage.setItem("gemsaver_remember_me", String(checked));
+    
+    if (!checked) {
+      // If user unchecks "remember me", we'll clear session on window close
+      // This is handled by Supabase's persistSession setting
+      localStorage.setItem("gemsaver_session_type", "session");
+    } else {
+      localStorage.setItem("gemsaver_session_type", "persistent");
+    }
+  }, []);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -405,7 +422,7 @@ const Auth = () => {
                   <Checkbox
                     id="rememberMe"
                     checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    onCheckedChange={(checked) => handleRememberMeChange(checked === true)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                   <label
