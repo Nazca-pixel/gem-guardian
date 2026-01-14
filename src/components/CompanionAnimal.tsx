@@ -99,7 +99,7 @@ export const CompanionAnimal = ({
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, type: "spring" }}
-      className="relative flex flex-col items-center justify-center w-full px-4"
+      className="relative mx-auto flex flex-col items-center justify-center"
     >
       {/* Floating decorations */}
       <motion.div
@@ -124,7 +124,7 @@ export const CompanionAnimal = ({
         whileTap={{ scale: 0.97 }}
         onClick={handlePet}
         className={`
-          relative cursor-pointer mx-auto
+          relative cursor-pointer
           w-40 h-40 sm:w-44 sm:h-44 rounded-full
           bg-gradient-to-br from-primary/20 via-card to-accent/20
           shadow-lg
