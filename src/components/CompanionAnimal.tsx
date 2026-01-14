@@ -99,7 +99,7 @@ export const CompanionAnimal = ({
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, type: "spring" }}
-      className="relative flex flex-col items-center justify-center w-full"
+      className="relative flex flex-col items-center justify-center w-full px-4"
     >
       {/* Floating decorations */}
       <motion.div
@@ -120,19 +120,18 @@ export const CompanionAnimal = ({
 
       {/* Main companion container */}
       <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
         onClick={handlePet}
         className={`
-          relative cursor-pointer mx-auto
-          w-44 h-44 rounded-full
+          relative cursor-pointer
+          w-40 h-40 sm:w-44 sm:h-44 rounded-full
           bg-gradient-to-br from-primary/20 via-card to-accent/20
-          shadow-[0_0_40px_rgba(var(--primary),0.2),0_10px_30px_-10px_rgba(0,0,0,0.3)]
+          shadow-lg
           flex items-center justify-center
           border-4 border-primary/30
           ${moodStyles[mood]}
           ${isPetting ? "animate-wiggle" : "animate-float"}
-          before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-t before:from-transparent before:to-white/10
         `}
       >
         {/* Glow effect ring */}

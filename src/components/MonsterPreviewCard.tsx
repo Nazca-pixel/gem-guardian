@@ -25,11 +25,11 @@ export const MonsterPreviewCard = ({ monster, index, onClick }: MonsterPreviewCa
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
       className={`
-        relative p-4 rounded-3xl cursor-pointer transition-all duration-300
+        relative p-4 rounded-3xl cursor-pointer transition-all duration-300 overflow-hidden
         ${monster.isUnlocked 
           ? monster.isSelected
-            ? "bg-gradient-to-br from-primary/20 via-card to-accent/10 border-2 border-primary shadow-[0_0_20px_rgba(var(--primary),0.3)] ring-4 ring-primary/20"
-            : "bg-gradient-to-br from-card via-card to-muted/30 border border-border hover:border-primary/50 hover:shadow-xl" 
+            ? "bg-gradient-to-br from-primary/20 via-card to-accent/10 border-2 border-primary shadow-lg ring-2 ring-primary/20"
+            : "bg-gradient-to-br from-card via-card to-muted/30 border border-border hover:border-primary/50 hover:shadow-lg" 
           : "bg-gradient-to-br from-muted/30 to-muted/50 border border-border/30"
         }
       `}
