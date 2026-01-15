@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Euro } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ interface AddTransactionModalProps {
   onClose: () => void;
   onAccessoryUnlocked?: (accessory: { name: string; emoji: string }) => void;
   onStreakMilestone?: (data: StreakMilestone) => void;
+  defaultCategory?: typeof categories[number]["value"];
 }
 
 const categories = [
@@ -37,10 +38,10 @@ const categories = [
 
 const STREAK_MILESTONES = [7, 30, 100];
 
-export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onStreakMilestone }: AddTransactionModalProps) => {
+export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onStreakMilestone, defaultCategory = "other" }: AddTransactionModalProps) => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<typeof categories[number]["value"]>("other");
+  const [category, setCategory] = useState<typeof categories[number]["value"]>(defaultCategory);
   const [isNecessary, setIsNecessary] = useState(true);
   
   const createTransaction = useCreateTransaction();
@@ -49,6 +50,13 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const { user } = useAuth();
   const { toast } = useToast();
   const { processBxpUpdate } = useLevelUp();
+
+  // Reset category when modal opens with a different default
+  React.useEffect(() => {
+    if (isOpen) {
+      setCategory(defaultCategory);
+    }
+  }, [isOpen, defaultCategory]);
 
   const selectedCategory = categories.find(c => c.value === category);
   const isIncome = category === "income";

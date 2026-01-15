@@ -40,8 +40,8 @@ const Profile = () => {
   ];
 
   const menuItems = [
-    { icon: <Settings className="w-5 h-5" />, label: "Impostazioni", action: () => {} },
-    { icon: <Award className="w-5 h-5" />, label: "I tuoi Badge", action: () => navigate("/") },
+    { icon: <Settings className="w-5 h-5" />, label: "Impostazioni", action: () => navigate("/settings") },
+    { icon: <Award className="w-5 h-5" />, label: "I tuoi Badge", action: () => navigate("/badges") },
     { icon: <Target className="w-5 h-5" />, label: "Obiettivi di Risparmio", action: () => navigate("/") },
   ];
 

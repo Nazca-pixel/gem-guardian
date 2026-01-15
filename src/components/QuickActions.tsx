@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Wallet, PiggyBank, TrendingUp } from "lucide-react";
+import { Plus, Wallet, PiggyBank, TrendingUp, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AddTransactionModal } from "./AddTransactionModal";
 import { AddGoalModal } from "./AddGoalModal";
+import { BalanceModal } from "./BalanceModal";
 
 interface QuickActionProps {
   icon: React.ReactNode;
@@ -41,8 +42,10 @@ interface QuickActionsProps {
 
 export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
   const navigate = useNavigate();
-  const [transactionModalOpen, setTransactionModalOpen] = useState(false);
+  const [expenseModalOpen, setExpenseModalOpen] = useState(false);
+  const [incomeModalOpen, setIncomeModalOpen] = useState(false);
   const [goalModalOpen, setGoalModalOpen] = useState(false);
+  const [balanceModalOpen, setBalanceModalOpen] = useState(false);
 
   return (
     <>
@@ -50,7 +53,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="grid grid-cols-4 gap-3"
+        className="grid grid-cols-5 gap-2"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -58,10 +61,22 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.1 }}
         >
           <QuickAction
-            icon={<Plus className="w-5 h-5 text-primary-foreground" />}
+            icon={<ArrowDownLeft className="w-5 h-5 text-primary-foreground" />}
             label="Spesa"
             color="gradient-hero"
-            onClick={() => setTransactionModalOpen(true)}
+            onClick={() => setExpenseModalOpen(true)}
+          />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.15 }}
+        >
+          <QuickAction
+            icon={<ArrowUpRight className="w-5 h-5 text-white" />}
+            label="Entrata"
+            color="bg-primary"
+            onClick={() => setIncomeModalOpen(true)}
           />
         </motion.div>
         <motion.div
@@ -73,12 +88,13 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
             icon={<Wallet className="w-5 h-5 text-secondary-foreground" />}
             label="Saldo"
             color="bg-secondary"
+            onClick={() => setBalanceModalOpen(true)}
           />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.25 }}
         >
           <QuickAction
             icon={<PiggyBank className="w-5 h-5 text-reward-foreground" />}
@@ -90,7 +106,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.3 }}
         >
           <QuickAction
             icon={<TrendingUp className="w-5 h-5 text-info-foreground" />}
@@ -101,14 +117,30 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
         </motion.div>
       </motion.div>
 
+      {/* Expense Modal */}
       <AddTransactionModal
-        isOpen={transactionModalOpen}
-        onClose={() => setTransactionModalOpen(false)}
+        isOpen={expenseModalOpen}
+        onClose={() => setExpenseModalOpen(false)}
         onStreakMilestone={onStreakMilestone}
+        defaultCategory="other"
       />
+
+      {/* Income Modal */}
+      <AddTransactionModal
+        isOpen={incomeModalOpen}
+        onClose={() => setIncomeModalOpen(false)}
+        onStreakMilestone={onStreakMilestone}
+        defaultCategory="income"
+      />
+
       <AddGoalModal
         isOpen={goalModalOpen}
         onClose={() => setGoalModalOpen(false)}
+      />
+
+      <BalanceModal
+        isOpen={balanceModalOpen}
+        onClose={() => setBalanceModalOpen(false)}
       />
     </>
   );
