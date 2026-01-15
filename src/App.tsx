@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Reports from "./pages/Reports";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import Bestiary from "./pages/Bestiary";
 import Badges from "./pages/Badges";
 import NotFound from "./pages/NotFound";
@@ -56,6 +57,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
                 </ProtectedRoute>
               }
             />
