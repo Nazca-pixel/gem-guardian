@@ -52,6 +52,9 @@ export const DevModePanel = ({ onStreakMilestone }: DevModePanelProps) => {
   const [tempFxp, setTempFxp] = useState(0);
   const [tempStreak, setTempStreak] = useState(0);
 
+  // Only show DevMode in development builds
+  const isDevelopment = import.meta.env.DEV;
+
   // Sync temp values with companion data when it changes
   useEffect(() => {
     if (companion) {
@@ -61,6 +64,11 @@ export const DevModePanel = ({ onStreakMilestone }: DevModePanelProps) => {
       setTempStreak(companion.current_streak || 0);
     }
   }, [companion]);
+
+  // Don't render anything in production builds
+  if (!isDevelopment) {
+    return null;
+  }
 
   if (!isDevMode) {
     return (
