@@ -12,6 +12,8 @@ import Reports from "./pages/Reports";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import Privacy from "./pages/Privacy";
+import Help from "./pages/Help";
 import Bestiary from "./pages/Bestiary";
 import Badges from "./pages/Badges";
 import NotFound from "./pages/NotFound";
@@ -81,6 +83,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Badges />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/privacy"
+              element={
+                <ProtectedRoute>
+                  <Privacy />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/help"
+              element={
+                <ProtectedRoute>
+                  <Help />
                 </ProtectedRoute>
               }
             />

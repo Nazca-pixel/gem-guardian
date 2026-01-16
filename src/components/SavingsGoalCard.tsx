@@ -58,10 +58,12 @@ export const SavingsGoalCard = ({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-primary text-sm font-medium">
-            <TrendingUp className="w-4 h-4" />
-            <span>{progress.toFixed(0)}%</span>
-          </div>
+          {!isCompleted && (
+            <div className="flex items-center gap-1 text-primary text-sm font-medium">
+              <TrendingUp className="w-4 h-4" />
+              <span>{progress.toFixed(0)}%</span>
+            </div>
+          )}
         </div>
 
         {/* Progress bar */}
