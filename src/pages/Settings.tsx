@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { useProfile, useCompanion } from "@/hooks/useUserData";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, User, Bell, Moon, Shield, HelpCircle, ChevronRight, Save, Check } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
+import { ArrowLeft, User, Bell, Moon, Shield, HelpCircle, ChevronRight, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,18 +21,51 @@ const Settings = () => {
   const { data: companion } = useCompanion();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { isDark, setDarkMode } = useTheme();
 
-  const [displayName, setDisplayName] = useState(profile?.display_name || "");
-  const [companionName, setCompanionName] = useState(companion?.name || "Pippo");
-  const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [companionName, setCompanionName] = useState("");
+  const [notifications, setNotifications] = useState(() => {
+    const stored = localStorage.getItem("notifications");
+    return stored !== null ? stored === "true" : true;
+  });
   const [saving, setSaving] = useState(false);
 
   // Update state when data loads
-  useState(() => {
+  useEffect(() => {
     if (profile?.display_name) setDisplayName(profile.display_name);
     if (companion?.name) setCompanionName(companion.name);
-  });
+  }, [profile, companion]);
+
+  // Persist notifications preference
+  const handleNotificationsChange = (enabled: boolean) => {
+    setNotifications(enabled);
+    localStorage.setItem("notifications", String(enabled));
+    
+    if (enabled && "Notification" in window) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          toast({
+            title: "Notifiche attivate! 🔔",
+            description: "Riceverai promemoria per le tue attività",
+          });
+        } else if (permission === "denied") {
+          setNotifications(false);
+          localStorage.setItem("notifications", "false");
+          toast({
+            title: "Permesso negato",
+            description: "Abilita le notifiche nelle impostazioni del browser",
+            variant: "destructive",
+          });
+        }
+      });
+    } else if (!enabled) {
+      toast({
+        title: "Notifiche disattivate",
+        description: "Non riceverai più promemoria",
+      });
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -71,54 +105,6 @@ const Settings = () => {
       setSaving(false);
     }
   };
-
-  const settingsSections = [
-    {
-      title: "Account",
-      items: [
-        {
-          icon: <User className="w-5 h-5" />,
-          label: "Email",
-          value: user?.email || "",
-          type: "info" as const,
-        },
-      ],
-    },
-    {
-      title: "Preferenze",
-      items: [
-        {
-          icon: <Bell className="w-5 h-5" />,
-          label: "Notifiche",
-          value: notifications,
-          type: "switch" as const,
-          onChange: setNotifications,
-        },
-        {
-          icon: <Moon className="w-5 h-5" />,
-          label: "Tema scuro",
-          value: darkMode,
-          type: "switch" as const,
-          onChange: setDarkMode,
-        },
-      ],
-    },
-    {
-      title: "Informazioni",
-      items: [
-        {
-          icon: <Shield className="w-5 h-5" />,
-          label: "Privacy e sicurezza",
-          type: "link" as const,
-        },
-        {
-          icon: <HelpCircle className="w-5 h-5" />,
-          label: "Aiuto e supporto",
-          type: "link" as const,
-        },
-      ],
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -185,55 +171,98 @@ const Settings = () => {
           </Button>
         </motion.div>
 
-        {/* Settings Sections */}
-        {settingsSections.map((section, sIndex) => (
-          <motion.div
-            key={section.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + sIndex * 0.05 }}
-            className="bg-card rounded-2xl border border-border overflow-hidden"
-          >
-            <div className="px-4 py-3 border-b border-border">
-              <h3 className="font-semibold text-foreground">{section.title}</h3>
+        {/* Account Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="bg-card rounded-2xl border border-border overflow-hidden"
+        >
+          <div className="px-4 py-3 border-b border-border">
+            <h3 className="font-semibold text-foreground">Account</h3>
+          </div>
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <div className="text-muted-foreground"><User className="w-5 h-5" /></div>
+              <span className="font-medium text-foreground">Email</span>
             </div>
-            
-            {section.items.map((item, index) => (
-              <div
-                key={item.label}
-                className={`flex items-center justify-between p-4 ${
-                  index < section.items.length - 1 ? "border-b border-border" : ""
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-muted-foreground">{item.icon}</div>
-                  <span className="font-medium text-foreground">{item.label}</span>
-                </div>
-                
-                {item.type === "switch" && (
-                  <Switch
-                    checked={item.value as boolean}
-                    onCheckedChange={item.onChange}
-                  />
-                )}
-                
-                {item.type === "info" && (
-                  <span className="text-sm text-muted-foreground">{item.value as string}</span>
-                )}
-                
-                {item.type === "link" && (
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                )}
-              </div>
-            ))}
-          </motion.div>
-        ))}
+            <span className="text-sm text-muted-foreground">{user?.email || ""}</span>
+          </div>
+        </motion.div>
+
+        {/* Preferences Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-card rounded-2xl border border-border overflow-hidden"
+        >
+          <div className="px-4 py-3 border-b border-border">
+            <h3 className="font-semibold text-foreground">Preferenze</h3>
+          </div>
+          
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="text-muted-foreground"><Bell className="w-5 h-5" /></div>
+              <span className="font-medium text-foreground">Notifiche</span>
+            </div>
+            <Switch
+              checked={notifications}
+              onCheckedChange={handleNotificationsChange}
+            />
+          </div>
+          
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <div className="text-muted-foreground"><Moon className="w-5 h-5" /></div>
+              <span className="font-medium text-foreground">Tema scuro</span>
+            </div>
+            <Switch
+              checked={isDark}
+              onCheckedChange={setDarkMode}
+            />
+          </div>
+        </motion.div>
+
+        {/* Information Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="bg-card rounded-2xl border border-border overflow-hidden"
+        >
+          <div className="px-4 py-3 border-b border-border">
+            <h3 className="font-semibold text-foreground">Informazioni</h3>
+          </div>
+          
+          <button
+            onClick={() => navigate("/privacy")}
+            className="flex items-center justify-between p-4 border-b border-border w-full text-left hover:bg-muted/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-muted-foreground"><Shield className="w-5 h-5" /></div>
+              <span className="font-medium text-foreground">Privacy e sicurezza</span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
+          
+          <button
+            onClick={() => navigate("/help")}
+            className="flex items-center justify-between p-4 w-full text-left hover:bg-muted/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-muted-foreground"><HelpCircle className="w-5 h-5" /></div>
+              <span className="font-medium text-foreground">Aiuto e supporto</span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
+        </motion.div>
 
         {/* App Version */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.2 }}
           className="text-center text-xs text-muted-foreground"
         >
           GemSaver v1.0.0

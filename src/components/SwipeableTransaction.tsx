@@ -1,6 +1,6 @@
-import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
+import { motion, useMotionValue, useTransform, PanInfo, useAnimation } from "framer-motion";
 import { Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Transaction {
   id: string;
@@ -18,6 +18,7 @@ interface SwipeableTransactionProps {
   onEdit: () => void;
   onDelete: () => void;
   children: React.ReactNode;
+  resetKey?: number;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -41,9 +42,17 @@ export const SwipeableTransaction = ({
   onEdit,
   onDelete,
   children,
+  resetKey,
 }: SwipeableTransactionProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const x = useMotionValue(0);
+  const controls = useAnimation();
+  
+  // Reset position when resetKey changes (after edit/close)
+  useEffect(() => {
+    controls.start({ x: 0 });
+    x.set(0);
+  }, [resetKey, controls, x]);
   
   // Transform for action buttons opacity/scale
   const editOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0.3, 1]);
@@ -51,9 +60,12 @@ export const SwipeableTransaction = ({
   const deleteOpacity = useTransform(x, [-SWIPE_THRESHOLD, 0], [1, 0.3]);
   const deleteScale = useTransform(x, [-SWIPE_THRESHOLD, 0], [1, 0.8]);
 
-  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = async (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false);
     const offset = info.offset.x;
+    
+    // Always animate back to center first
+    await controls.start({ x: 0, transition: { duration: 0.2 } });
     
     if (offset > SWIPE_THRESHOLD) {
       // Swipe right → Edit
@@ -100,6 +112,7 @@ export const SwipeableTransaction = ({
         onDragStart={() => setIsDragging(true)}
         onDragEnd={handleDragEnd}
         style={{ x }}
+        animate={controls}
         className="relative bg-card touch-pan-y"
         whileTap={{ cursor: "grabbing" }}
       >

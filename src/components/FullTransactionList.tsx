@@ -64,6 +64,7 @@ export const FullTransactionList = ({
   const [isExpanded, setIsExpanded] = useState(!collapsible);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransaction, setDeletingTransaction] = useState<Transaction | null>(null);
+  const [swipeResetKey, setSwipeResetKey] = useState(0);
 
   const { toast } = useToast();
   const deleteTransaction = useDeleteTransaction();
@@ -323,6 +324,7 @@ export const FullTransactionList = ({
                                 transaction={transaction}
                                 onEdit={() => setEditingTransaction(transaction)}
                                 onDelete={() => setDeletingTransaction(transaction)}
+                                resetKey={swipeResetKey}
                               >
                                 {transactionContent}
                               </SwipeableTransaction>

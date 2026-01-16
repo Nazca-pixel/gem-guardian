@@ -92,14 +92,14 @@ export const EditTransactionModal = ({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-md rounded-2xl">
+      <DialogContent className="sm:max-w-md rounded-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-foreground">
             ✏️ Modifica Transazione
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type Toggle */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-xl">
             <button
@@ -158,20 +158,20 @@ export const EditTransactionModal = ({
           {/* Category */}
           <div>
             <Label className="text-foreground mb-2 block">Categoria</Label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-5 gap-1.5">
               {categories.map((cat) => (
                 <button
                   key={cat.value}
                   type="button"
                   onClick={() => setCategory(cat.value)}
-                  className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
+                  className={`p-2 rounded-xl border-2 transition-all flex flex-col items-center gap-0.5 ${
                     category === cat.value
                       ? "border-primary bg-primary/10"
                       : "border-border bg-muted/50 hover:border-primary/50"
                   }`}
                 >
-                  <span className="text-xl">{cat.emoji}</span>
-                  <span className="text-xs font-medium text-foreground">
+                  <span className="text-lg">{cat.emoji}</span>
+                  <span className="text-[10px] font-medium text-foreground leading-tight">
                     {cat.label}
                   </span>
                 </button>
@@ -187,28 +187,28 @@ export const EditTransactionModal = ({
                 <button
                   type="button"
                   onClick={() => setIsNecessary(true)}
-                  className={`p-3 rounded-xl border-2 transition-all ${
+                  className={`p-2.5 rounded-xl border-2 transition-all ${
                     isNecessary
                       ? "border-primary bg-primary/10"
                       : "border-border bg-muted/50 hover:border-primary/50"
                   }`}
                 >
-                  <span className="text-lg">✅</span>
-                  <span className="text-xs font-medium text-foreground block mt-1">
+                  <span className="text-base">✅</span>
+                  <span className="text-xs font-medium text-foreground block mt-0.5">
                     Necessaria
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsNecessary(false)}
-                  className={`p-3 rounded-xl border-2 transition-all ${
+                  className={`p-2.5 rounded-xl border-2 transition-all ${
                     !isNecessary
                       ? "border-secondary bg-secondary/10"
                       : "border-border bg-muted/50 hover:border-secondary/50"
                   }`}
                 >
-                  <span className="text-lg">🎯</span>
-                  <span className="text-xs font-medium text-foreground block mt-1">
+                  <span className="text-base">🎯</span>
+                  <span className="text-xs font-medium text-foreground block mt-0.5">
                     Extra
                   </span>
                 </button>
