@@ -357,7 +357,10 @@ export const FullTransactionList = ({
       {/* Edit Modal */}
       <EditTransactionModal
         open={!!editingTransaction}
-        onClose={() => setEditingTransaction(null)}
+        onClose={() => {
+          setEditingTransaction(null);
+          setSwipeResetKey((prev) => prev + 1);
+        }}
         transaction={editingTransaction}
       />
 
