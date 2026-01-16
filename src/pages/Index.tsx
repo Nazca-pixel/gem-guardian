@@ -166,7 +166,7 @@ const Index = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-card rounded-3xl p-6 shadow-card border border-border relative overflow-hidden flex flex-col items-center"
+          className="bg-card rounded-3xl p-6 shadow-card border border-border relative overflow-hidden"
         >
           {/* Decorative background elements */}
           <div className="absolute top-4 left-4 w-16 h-16 bg-primary/5 rounded-full" />
@@ -174,15 +174,17 @@ const Index = () => {
           <div className="absolute top-1/2 right-8 w-3 h-3 bg-reward rounded-full animate-sparkle" />
           <div className="absolute top-8 right-16 w-2 h-2 bg-secondary rounded-full animate-sparkle" style={{ animationDelay: "0.5s" }} />
           
-          <CompanionAnimal
-            level={companion?.level || 1}
-            mood={(companion?.mood as "happy" | "sad" | "excited") || "happy"}
-            fxp={companion?.fxp || 0}
-            maxFxp={getMaxFxpForLevel(companion?.level || 1)}
-            name={companion?.name || "Pippo"}
-            selectedMonsterId={companion?.selected_monster_id || "phoenix"}
-            equippedAccessory={equippedForCompanion}
-          />
+          <div className="flex justify-center">
+            <CompanionAnimal
+              level={companion?.level || 1}
+              mood={(companion?.mood as "happy" | "sad" | "excited") || "happy"}
+              fxp={companion?.fxp || 0}
+              maxFxp={getMaxFxpForLevel(companion?.level || 1)}
+              name={companion?.name || "Pippo"}
+              selectedMonsterId={companion?.selected_monster_id || "phoenix"}
+              equippedAccessory={equippedForCompanion}
+            />
+          </div>
         </motion.section>
 
         {/* Streak Reminder (at-risk warning) */}
