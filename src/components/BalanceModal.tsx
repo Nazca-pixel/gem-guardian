@@ -1,13 +1,39 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useTransactions } from "@/hooks/useUserData";
-import { format, startOfMonth, startOfWeek, isWithinInterval, subMonths } from "date-fns";
-import { it } from "date-fns/locale";
+import { startOfMonth, startOfWeek, isWithinInterval, subMonths } from "date-fns";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 interface BalanceModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const categoryLabels: Record<string, string> = {
+  food: "Cibo",
+  transport: "Trasporti",
+  entertainment: "Svago",
+  shopping: "Shopping",
+  bills: "Bollette",
+  health: "Salute",
+  education: "Istruzione",
+  savings: "Risparmi",
+  income: "Entrate",
+  other: "Altro",
+};
+
+const categoryColors: Record<string, string> = {
+  food: "hsl(24, 95%, 53%)",
+  transport: "hsl(217, 91%, 60%)",
+  entertainment: "hsl(280, 87%, 65%)",
+  shopping: "hsl(340, 82%, 52%)",
+  bills: "hsl(142, 71%, 45%)",
+  health: "hsl(0, 84%, 60%)",
+  education: "hsl(47, 100%, 50%)",
+  savings: "hsl(173, 80%, 40%)",
+  income: "hsl(142, 76%, 36%)",
+  other: "hsl(220, 9%, 46%)",
+};
 
 export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
   const { data: transactions } = useTransactions();
@@ -50,6 +76,24 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
     ? ((monthlyExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(0)
     : 0;
 
+  // Calculate expenses by category for pie chart
+  const expensesByCategory = transactions
+    ?.filter(t => !t.is_income)
+    .reduce((acc, t) => {
+      const category = t.category || "other";
+      acc[category] = (acc[category] || 0) + Number(t.amount);
+      return acc;
+    }, {} as Record<string, number>) || {};
+
+  const pieData = Object.entries(expensesByCategory)
+    .map(([category, amount]) => ({
+      name: categoryLabels[category] || category,
+      value: amount,
+      color: categoryColors[category] || categoryColors.other,
+    }))
+    .filter(item => item.value > 0)
+    .sort((a, b) => b.value - a.value);
+
   const stats = [
     {
       label: "Questa settimana",
@@ -70,6 +114,21 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
       balance: balance,
     },
   ];
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-card border border-border rounded-lg p-2 shadow-lg">
+          <p className="font-medium text-foreground">{data.name}</p>
+          <p className="text-sm text-muted-foreground">
+            €{data.value.toLocaleString("it-IT", { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <AnimatePresence>
@@ -137,6 +196,46 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
                 )}
               </motion.div>
 
+              {/* Pie Chart - Expenses by Category */}
+              {pieData.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="bg-muted/50 rounded-xl p-4 border border-border mb-6"
+                >
+                  <h3 className="font-medium text-foreground mb-3 text-center">Spese per Categoria</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={50}
+                          outerRadius={80}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend
+                          layout="horizontal"
+                          verticalAlign="bottom"
+                          align="center"
+                          formatter={(value) => (
+                            <span className="text-xs text-foreground">{value}</span>
+                          )}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Stats Cards */}
               <div className="space-y-3">
                 {stats.map((stat, index) => (
@@ -144,7 +243,7 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
                     key={stat.label}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + index * 0.05 }}
+                    transition={{ delay: 0.2 + index * 0.05 }}
                     className="bg-muted/50 rounded-xl p-4 border border-border"
                   >
                     <div className="flex items-center justify-between mb-3">
