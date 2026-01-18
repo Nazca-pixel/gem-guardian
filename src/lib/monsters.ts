@@ -18,7 +18,7 @@ export interface Evolution {
 }
 
 export interface UnlockCondition {
-  type: "level" | "bxp" | "fxp" | "savings" | "streak" | "badges" | "transactions" | "special";
+  type: "level" | "bxp" | "fxp" | "savings" | "streak" | "badges" | "transactions" | "special" | "premium";
   value: number;
   description: string;
 }
@@ -40,7 +40,7 @@ export const rarityLabels: Record<Monster["rarity"], string> = {
 };
 
 export const monsters: Monster[] = [
-  // COMMON - Easy to unlock
+  // ============= COMMON - Easy to unlock (3 monsters) =============
   {
     id: "phoenix",
     name: "Fenice",
@@ -53,12 +53,14 @@ export const monsters: Monster[] = [
       description: "Disponibile all'inizio",
     },
     evolutions: [
-      { stage: 1, name: "Uovo", emoji: "🥚", minLevel: 1 },
-      { stage: 2, name: "Pulcino", emoji: "🐣", minLevel: 2 },
-      { stage: 3, name: "Uccellino", emoji: "🐥", minLevel: 4 },
-      { stage: 4, name: "Giovane", emoji: "🐤", minLevel: 6 },
-      { stage: 5, name: "Adulto", emoji: "🐔", minLevel: 8 },
-      { stage: 6, name: "Fenice", emoji: "🦅", minLevel: 10 },
+      { stage: 1, name: "Uovo di Fuoco", emoji: "🥚", minLevel: 1 },
+      { stage: 2, name: "Scintilla", emoji: "✨", minLevel: 2 },
+      { stage: 3, name: "Pulcino Ardente", emoji: "🐣", minLevel: 3 },
+      { stage: 4, name: "Fiammella", emoji: "🔥", minLevel: 5 },
+      { stage: 5, name: "Uccello di Fuoco", emoji: "🐥", minLevel: 7 },
+      { stage: 6, name: "Fenice Giovane", emoji: "🦅", minLevel: 10 },
+      { stage: 7, name: "Fenice Radiante", emoji: "🐦‍🔥", minLevel: 15 },
+      { stage: 8, name: "Fenice Immortale", emoji: "👑🐦‍🔥", minLevel: 20 },
     ],
   },
   {
@@ -74,15 +76,39 @@ export const monsters: Monster[] = [
     },
     evolutions: [
       { stage: 1, name: "Monetina", emoji: "🪙", minLevel: 1 },
-      { stage: 2, name: "Piccolo", emoji: "🐽", minLevel: 2 },
-      { stage: 3, name: "Porcellino", emoji: "🐷", minLevel: 4 },
-      { stage: 4, name: "Maialino", emoji: "🐖", minLevel: 6 },
-      { stage: 5, name: "Cinghiale", emoji: "🐗", minLevel: 8 },
-      { stage: 6, name: "Re Maiale", emoji: "👑🐷", minLevel: 10 },
+      { stage: 2, name: "Monete", emoji: "💰", minLevel: 2 },
+      { stage: 3, name: "Porcellino Baby", emoji: "🐽", minLevel: 3 },
+      { stage: 4, name: "Porcellino Rosa", emoji: "🐷", minLevel: 5 },
+      { stage: 5, name: "Maialino Ricco", emoji: "🐖", minLevel: 7 },
+      { stage: 6, name: "Cinghiale d'Oro", emoji: "🐗", minLevel: 10 },
+      { stage: 7, name: "Re Porcello", emoji: "👑🐷", minLevel: 15 },
+      { stage: 8, name: "Imperatore del Risparmio", emoji: "💎🐷", minLevel: 20 },
+    ],
+  },
+  {
+    id: "bunny",
+    name: "Coniglietto",
+    emoji: "🐰",
+    description: "Veloce e attento, moltiplica i tuoi risparmi come conigli!",
+    rarity: "common",
+    unlockCondition: {
+      type: "transactions",
+      value: 10,
+      description: "Registra 10 transazioni",
+    },
+    evolutions: [
+      { stage: 1, name: "Uovo Pasquale", emoji: "🥚", minLevel: 1 },
+      { stage: 2, name: "Coniglietto Nano", emoji: "🐇", minLevel: 2 },
+      { stage: 3, name: "Coniglio Bianco", emoji: "🐰", minLevel: 3 },
+      { stage: 4, name: "Coniglio Agile", emoji: "🐰", minLevel: 5 },
+      { stage: 5, name: "Lepre Veloce", emoji: "🐇", minLevel: 7 },
+      { stage: 6, name: "Coniglio Lunare", emoji: "🌙🐰", minLevel: 10 },
+      { stage: 7, name: "Lepre delle Stelle", emoji: "⭐🐰", minLevel: 15 },
+      { stage: 8, name: "Coniglio Celestiale", emoji: "✨🐰", minLevel: 20 },
     ],
   },
 
-  // UNCOMMON - Medium difficulty
+  // ============= UNCOMMON - Medium difficulty (4 monsters) =============
   {
     id: "dragon",
     name: "Drago",
@@ -95,12 +121,14 @@ export const monsters: Monster[] = [
       description: "Accumula 500 BXP totali",
     },
     evolutions: [
-      { stage: 1, name: "Uovo Drago", emoji: "🥚", minLevel: 1 },
+      { stage: 1, name: "Uovo di Drago", emoji: "🥚", minLevel: 1 },
       { stage: 2, name: "Draghetto", emoji: "🦎", minLevel: 2 },
-      { stage: 3, name: "Piccolo Drago", emoji: "🐲", minLevel: 4 },
-      { stage: 4, name: "Drago", emoji: "🐉", minLevel: 6 },
-      { stage: 5, name: "Drago Anziano", emoji: "🔥🐉", minLevel: 8 },
-      { stage: 6, name: "Drago Divino", emoji: "✨🐉", minLevel: 10 },
+      { stage: 3, name: "Lucertola di Fuoco", emoji: "🔥", minLevel: 3 },
+      { stage: 4, name: "Piccolo Drago", emoji: "🐲", minLevel: 5 },
+      { stage: 5, name: "Drago Giovane", emoji: "🐉", minLevel: 7 },
+      { stage: 6, name: "Drago Adulto", emoji: "🔥🐉", minLevel: 10 },
+      { stage: 7, name: "Drago Anziano", emoji: "⚡🐉", minLevel: 15 },
+      { stage: 8, name: "Drago Divino", emoji: "👑🐉", minLevel: 20 },
     ],
   },
   {
@@ -116,11 +144,13 @@ export const monsters: Monster[] = [
     },
     evolutions: [
       { stage: 1, name: "Gattino", emoji: "🐱", minLevel: 1 },
-      { stage: 2, name: "Micio", emoji: "😺", minLevel: 2 },
-      { stage: 3, name: "Gatto", emoji: "😸", minLevel: 4 },
-      { stage: 4, name: "Gatto Saggio", emoji: "😼", minLevel: 6 },
-      { stage: 5, name: "Maneki", emoji: "🎎", minLevel: 8 },
-      { stage: 6, name: "Neko Divino", emoji: "✨🐱", minLevel: 10 },
+      { stage: 2, name: "Micio Curioso", emoji: "😺", minLevel: 2 },
+      { stage: 3, name: "Gatto Felice", emoji: "😸", minLevel: 3 },
+      { stage: 4, name: "Gatto Furbo", emoji: "😼", minLevel: 5 },
+      { stage: 5, name: "Gatto d'Oro", emoji: "🐱💰", minLevel: 7 },
+      { stage: 6, name: "Maneki-neko", emoji: "🎎", minLevel: 10 },
+      { stage: 7, name: "Neko Reale", emoji: "👑🐱", minLevel: 15 },
+      { stage: 8, name: "Neko Divino", emoji: "✨🐱", minLevel: 20 },
     ],
   },
   {
@@ -135,16 +165,40 @@ export const monsters: Monster[] = [
       description: "Accumula 300 FXP totali",
     },
     evolutions: [
-      { stage: 1, name: "Uovo", emoji: "🥚", minLevel: 1 },
+      { stage: 1, name: "Uovo Misterioso", emoji: "🥚", minLevel: 1 },
       { stage: 2, name: "Gufetto", emoji: "🐤", minLevel: 2 },
-      { stage: 3, name: "Civetta", emoji: "🦉", minLevel: 4 },
-      { stage: 4, name: "Gufo", emoji: "🦉", minLevel: 6 },
-      { stage: 5, name: "Gufo Antico", emoji: "📚🦉", minLevel: 8 },
-      { stage: 6, name: "Arcigufo", emoji: "✨🦉", minLevel: 10 },
+      { stage: 3, name: "Civetta", emoji: "🦉", minLevel: 3 },
+      { stage: 4, name: "Gufo Attento", emoji: "🦉", minLevel: 5 },
+      { stage: 5, name: "Gufo Bibliotecario", emoji: "📚🦉", minLevel: 7 },
+      { stage: 6, name: "Gufo Antico", emoji: "📿🦉", minLevel: 10 },
+      { stage: 7, name: "Arcigufo", emoji: "🔮🦉", minLevel: 15 },
+      { stage: 8, name: "Gufo Onnisciente", emoji: "👁️🦉", minLevel: 20 },
+    ],
+  },
+  {
+    id: "wolf",
+    name: "Lupo Alpha",
+    emoji: "🐺",
+    description: "Leader del branco, guida le tue finanze con determinazione",
+    rarity: "uncommon",
+    unlockCondition: {
+      type: "streak",
+      value: 14,
+      description: "Raggiungi una streak di 14 giorni",
+    },
+    evolutions: [
+      { stage: 1, name: "Cucciolo", emoji: "🐕", minLevel: 1 },
+      { stage: 2, name: "Lupacchiotto", emoji: "🐺", minLevel: 2 },
+      { stage: 3, name: "Lupo Giovane", emoji: "🐺", minLevel: 3 },
+      { stage: 4, name: "Lupo Grigio", emoji: "🐺", minLevel: 5 },
+      { stage: 5, name: "Lupo Alpha", emoji: "🐺💪", minLevel: 7 },
+      { stage: 6, name: "Lupo della Luna", emoji: "🌙🐺", minLevel: 10 },
+      { stage: 7, name: "Lupo Ancestrale", emoji: "⚡🐺", minLevel: 15 },
+      { stage: 8, name: "Fenrir", emoji: "👑🐺", minLevel: 20 },
     ],
   },
 
-  // RARE - Hard to unlock
+  // ============= RARE - Hard to unlock (4 monsters) =============
   {
     id: "unicorn",
     name: "Unicorno",
@@ -157,12 +211,14 @@ export const monsters: Monster[] = [
       description: "Risparmia €1.000 nei tuoi obiettivi",
     },
     evolutions: [
-      { stage: 1, name: "Polvere", emoji: "✨", minLevel: 1 },
-      { stage: 2, name: "Pony", emoji: "🐴", minLevel: 2 },
-      { stage: 3, name: "Cavallino", emoji: "🐎", minLevel: 4 },
-      { stage: 4, name: "Unicorno", emoji: "🦄", minLevel: 6 },
-      { stage: 5, name: "Alicorno", emoji: "🌈🦄", minLevel: 8 },
-      { stage: 6, name: "Unicorno Celeste", emoji: "✨🦄", minLevel: 10 },
+      { stage: 1, name: "Polvere Magica", emoji: "✨", minLevel: 1 },
+      { stage: 2, name: "Scintillio", emoji: "💫", minLevel: 2 },
+      { stage: 3, name: "Pony", emoji: "🐴", minLevel: 3 },
+      { stage: 4, name: "Cavallo Bianco", emoji: "🐎", minLevel: 5 },
+      { stage: 5, name: "Unicorno Baby", emoji: "🦄", minLevel: 7 },
+      { stage: 6, name: "Unicorno Radioso", emoji: "🌈🦄", minLevel: 10 },
+      { stage: 7, name: "Alicorno", emoji: "👼🦄", minLevel: 15 },
+      { stage: 8, name: "Unicorno Celestiale", emoji: "👑🦄", minLevel: 20 },
     ],
   },
   {
@@ -177,12 +233,14 @@ export const monsters: Monster[] = [
       description: "Raggiungi il livello 8",
     },
     evolutions: [
-      { stage: 1, name: "Uovo", emoji: "🥚", minLevel: 1 },
+      { stage: 1, name: "Uovo di Mare", emoji: "🥚", minLevel: 1 },
       { stage: 2, name: "Tartarughina", emoji: "🐢", minLevel: 2 },
-      { stage: 3, name: "Tartaruga", emoji: "🐢", minLevel: 4 },
-      { stage: 4, name: "Tartaruga Marina", emoji: "🌊🐢", minLevel: 6 },
-      { stage: 5, name: "Tartaruga Saggia", emoji: "📿🐢", minLevel: 8 },
-      { stage: 6, name: "Tartaruga Cosmica", emoji: "🌌🐢", minLevel: 10 },
+      { stage: 3, name: "Tartaruga Verde", emoji: "🐢", minLevel: 3 },
+      { stage: 4, name: "Tartaruga Marina", emoji: "🌊🐢", minLevel: 5 },
+      { stage: 5, name: "Tartaruga Saggia", emoji: "📿🐢", minLevel: 7 },
+      { stage: 6, name: "Tartaruga Millenaria", emoji: "🏛️🐢", minLevel: 10 },
+      { stage: 7, name: "Tartaruga Cosmica", emoji: "🌌🐢", minLevel: 15 },
+      { stage: 8, name: "Genbu", emoji: "👑🐢", minLevel: 20 },
     ],
   },
   {
@@ -197,16 +255,40 @@ export const monsters: Monster[] = [
       description: "Sblocca 5 badge",
     },
     evolutions: [
-      { stage: 1, name: "Cucciolo", emoji: "🦊", minLevel: 1 },
+      { stage: 1, name: "Cucciolo di Volpe", emoji: "🦊", minLevel: 1 },
       { stage: 2, name: "Volpina", emoji: "🦊", minLevel: 2 },
-      { stage: 3, name: "Volpe", emoji: "🦊", minLevel: 4 },
-      { stage: 4, name: "Volpe Rossa", emoji: "🔥🦊", minLevel: 6 },
-      { stage: 5, name: "Kitsune", emoji: "🎭🦊", minLevel: 8 },
-      { stage: 6, name: "Volpe Celestiale", emoji: "✨🦊", minLevel: 10 },
+      { stage: 3, name: "Volpe Rossa", emoji: "🦊", minLevel: 3 },
+      { stage: 4, name: "Volpe Arguta", emoji: "🧠🦊", minLevel: 5 },
+      { stage: 5, name: "Kitsune", emoji: "🔥🦊", minLevel: 7 },
+      { stage: 6, name: "Kitsune a Due Code", emoji: "🎭🦊", minLevel: 10 },
+      { stage: 7, name: "Kitsune Anziano", emoji: "✨🦊", minLevel: 15 },
+      { stage: 8, name: "Kyubi", emoji: "👑🦊", minLevel: 20 },
+    ],
+  },
+  {
+    id: "bear",
+    name: "Orso del Mercato",
+    emoji: "🐻",
+    description: "Potente e saggio, naviga sia i mercati bull che bear",
+    rarity: "rare",
+    unlockCondition: {
+      type: "fxp",
+      value: 1000,
+      description: "Accumula 1.000 FXP totali",
+    },
+    evolutions: [
+      { stage: 1, name: "Orsetto Peluche", emoji: "🧸", minLevel: 1 },
+      { stage: 2, name: "Cucciolo d'Orso", emoji: "🐻", minLevel: 2 },
+      { stage: 3, name: "Orso Bruno", emoji: "🐻", minLevel: 3 },
+      { stage: 4, name: "Orso Grizzly", emoji: "🐻💪", minLevel: 5 },
+      { stage: 5, name: "Orso Polare", emoji: "🐻‍❄️", minLevel: 7 },
+      { stage: 6, name: "Orso delle Borse", emoji: "📈🐻", minLevel: 10 },
+      { stage: 7, name: "Orso Leggendario", emoji: "⚡🐻", minLevel: 15 },
+      { stage: 8, name: "Re degli Orsi", emoji: "👑🐻", minLevel: 20 },
     ],
   },
 
-  // EPIC - Very hard to unlock
+  // ============= EPIC - Very hard to unlock (3 monsters) =============
   {
     id: "kraken",
     name: "Kraken",
@@ -219,12 +301,14 @@ export const monsters: Monster[] = [
       description: "Accumula 2.000 BXP totali",
     },
     evolutions: [
-      { stage: 1, name: "Larva", emoji: "🦐", minLevel: 1 },
-      { stage: 2, name: "Polpo", emoji: "🐙", minLevel: 2 },
-      { stage: 3, name: "Calamaro", emoji: "🦑", minLevel: 4 },
-      { stage: 4, name: "Kraken", emoji: "🦑", minLevel: 6 },
-      { stage: 5, name: "Kraken Antico", emoji: "🌊🦑", minLevel: 8 },
-      { stage: 6, name: "Leviatano", emoji: "⚡🦑", minLevel: 10 },
+      { stage: 1, name: "Larva Marina", emoji: "🦐", minLevel: 1 },
+      { stage: 2, name: "Piccolo Polpo", emoji: "🐙", minLevel: 2 },
+      { stage: 3, name: "Polpo Blu", emoji: "🐙", minLevel: 3 },
+      { stage: 4, name: "Calamaro Gigante", emoji: "🦑", minLevel: 5 },
+      { stage: 5, name: "Kraken Giovane", emoji: "🦑", minLevel: 7 },
+      { stage: 6, name: "Kraken degli Abissi", emoji: "🌊🦑", minLevel: 10 },
+      { stage: 7, name: "Kraken Antico", emoji: "⚡🦑", minLevel: 15 },
+      { stage: 8, name: "Leviatano", emoji: "👑🦑", minLevel: 20 },
     ],
   },
   {
@@ -239,16 +323,40 @@ export const monsters: Monster[] = [
       description: "Risparmia €5.000 nei tuoi obiettivi",
     },
     evolutions: [
-      { stage: 1, name: "Scintilla", emoji: "✨", minLevel: 1 },
-      { stage: 2, name: "Fiamma", emoji: "🔥", minLevel: 2 },
-      { stage: 3, name: "Fenice", emoji: "🐦‍🔥", minLevel: 4 },
-      { stage: 4, name: "Fenice Dorata", emoji: "💛🐦‍🔥", minLevel: 6 },
-      { stage: 5, name: "Fenice Solare", emoji: "☀️🐦‍🔥", minLevel: 8 },
-      { stage: 6, name: "Fenice Eterna", emoji: "👑🐦‍🔥", minLevel: 10 },
+      { stage: 1, name: "Scintilla Dorata", emoji: "✨", minLevel: 1 },
+      { stage: 2, name: "Fiamma Aurea", emoji: "🔥", minLevel: 2 },
+      { stage: 3, name: "Uccello d'Oro", emoji: "🐤", minLevel: 3 },
+      { stage: 4, name: "Fenice Dorata", emoji: "🐦‍🔥", minLevel: 5 },
+      { stage: 5, name: "Fenice Imperiale", emoji: "💛🐦‍🔥", minLevel: 7 },
+      { stage: 6, name: "Fenice Solare", emoji: "☀️🐦‍🔥", minLevel: 10 },
+      { stage: 7, name: "Fenice Astrale", emoji: "🌟🐦‍🔥", minLevel: 15 },
+      { stage: 8, name: "Fenice Eterna", emoji: "👑🐦‍🔥", minLevel: 20 },
+    ],
+  },
+  {
+    id: "tiger",
+    name: "Tigre Imperiale",
+    emoji: "🐯",
+    description: "Feroce e regale, domina le finanze con potenza assoluta",
+    rarity: "epic",
+    unlockCondition: {
+      type: "streak",
+      value: 60,
+      description: "Raggiungi una streak di 60 giorni",
+    },
+    evolutions: [
+      { stage: 1, name: "Tigrotto", emoji: "🐱", minLevel: 1 },
+      { stage: 2, name: "Tigre Cucciolo", emoji: "🐯", minLevel: 2 },
+      { stage: 3, name: "Tigre Giovane", emoji: "🐯", minLevel: 3 },
+      { stage: 4, name: "Tigre del Bengala", emoji: "🐯", minLevel: 5 },
+      { stage: 5, name: "Tigre Bianca", emoji: "🐯❄️", minLevel: 7 },
+      { stage: 6, name: "Tigre Imperiale", emoji: "👑🐯", minLevel: 10 },
+      { stage: 7, name: "Byakko", emoji: "⚡🐯", minLevel: 15 },
+      { stage: 8, name: "Tigre Celestiale", emoji: "🌟🐯", minLevel: 20 },
     ],
   },
 
-  // LEGENDARY - Extremely hard to unlock
+  // ============= LEGENDARY - Extremely hard to unlock (3 monsters) =============
   {
     id: "money_god",
     name: "Dio della Fortuna",
@@ -261,12 +369,14 @@ export const monsters: Monster[] = [
       description: "Raggiungi il livello 15",
     },
     evolutions: [
-      { stage: 1, name: "Moneta", emoji: "🪙", minLevel: 1 },
-      { stage: 2, name: "Sacco", emoji: "💰", minLevel: 2 },
-      { stage: 3, name: "Forziere", emoji: "📦", minLevel: 4 },
-      { stage: 4, name: "Tesoro", emoji: "💎", minLevel: 6 },
-      { stage: 5, name: "Corona", emoji: "👑", minLevel: 8 },
-      { stage: 6, name: "Dio della Fortuna", emoji: "🏆💰", minLevel: 10 },
+      { stage: 1, name: "Moneta Antica", emoji: "🪙", minLevel: 1 },
+      { stage: 2, name: "Sacco d'Oro", emoji: "💰", minLevel: 2 },
+      { stage: 3, name: "Forziere", emoji: "📦", minLevel: 3 },
+      { stage: 4, name: "Tesoro", emoji: "💎", minLevel: 5 },
+      { stage: 5, name: "Montagna d'Oro", emoji: "🏔️💰", minLevel: 7 },
+      { stage: 6, name: "Spirito della Fortuna", emoji: "✨💰", minLevel: 10 },
+      { stage: 7, name: "Avatar della Ricchezza", emoji: "👑💰", minLevel: 15 },
+      { stage: 8, name: "Dio della Fortuna", emoji: "🏆💰", minLevel: 20 },
     ],
   },
   {
@@ -283,10 +393,34 @@ export const monsters: Monster[] = [
     evolutions: [
       { stage: 1, name: "Polvere Stellare", emoji: "✨", minLevel: 1 },
       { stage: 2, name: "Nebulosa", emoji: "🌌", minLevel: 2 },
-      { stage: 3, name: "Stella", emoji: "⭐", minLevel: 4 },
-      { stage: 4, name: "Costellazione", emoji: "🌟", minLevel: 6 },
-      { stage: 5, name: "Galassia", emoji: "🌀", minLevel: 8 },
-      { stage: 6, name: "Drago Celestiale", emoji: "🐉🌌", minLevel: 10 },
+      { stage: 3, name: "Stella Nascente", emoji: "⭐", minLevel: 3 },
+      { stage: 4, name: "Costellazione", emoji: "🌟", minLevel: 5 },
+      { stage: 5, name: "Galassia", emoji: "🌀", minLevel: 7 },
+      { stage: 6, name: "Drago Stellare", emoji: "🐉✨", minLevel: 10 },
+      { stage: 7, name: "Drago Galattico", emoji: "🐉🌌", minLevel: 15 },
+      { stage: 8, name: "Shenlong", emoji: "👑🐉🌌", minLevel: 20 },
+    ],
+  },
+  {
+    id: "diamond_golem",
+    name: "Golem di Diamante",
+    emoji: "💎",
+    description: "Creatura indistruttibile fatta di ricchezze pure, il guardiano definitivo",
+    rarity: "legendary",
+    unlockCondition: {
+      type: "savings",
+      value: 10000,
+      description: "Risparmia €10.000 nei tuoi obiettivi",
+    },
+    evolutions: [
+      { stage: 1, name: "Pietra Grezza", emoji: "🪨", minLevel: 1 },
+      { stage: 2, name: "Cristallo", emoji: "💎", minLevel: 2 },
+      { stage: 3, name: "Golem di Pietra", emoji: "🗿", minLevel: 3 },
+      { stage: 4, name: "Golem di Ferro", emoji: "⚙️", minLevel: 5 },
+      { stage: 5, name: "Golem d'Argento", emoji: "🪙", minLevel: 7 },
+      { stage: 6, name: "Golem d'Oro", emoji: "💰", minLevel: 10 },
+      { stage: 7, name: "Golem di Platino", emoji: "⚡💎", minLevel: 15 },
+      { stage: 8, name: "Golem di Diamante", emoji: "👑💎", minLevel: 20 },
     ],
   },
 ];
@@ -302,6 +436,8 @@ export const isMonsterUnlocked = (
     transactionCount: number;
     badgeCount: number;
     completedGoals: number;
+    currentStreak: number;
+    isPremium?: boolean;
   }
 ): boolean => {
   const { unlockCondition } = monster;
@@ -319,9 +455,13 @@ export const isMonsterUnlocked = (
       return stats.transactionCount >= unlockCondition.value;
     case "badges":
       return stats.badgeCount >= unlockCondition.value;
+    case "streak":
+      return stats.currentStreak >= unlockCondition.value;
     case "special":
       // Special conditions - e.g., complete all goals AND reach level 20
       return stats.completedGoals >= 3 && stats.level >= 20;
+    case "premium":
+      return stats.isPremium === true;
     default:
       return false;
   }
@@ -338,6 +478,8 @@ export const getUnlockProgress = (
     transactionCount: number;
     badgeCount: number;
     completedGoals: number;
+    currentStreak: number;
+    isPremium?: boolean;
   }
 ): number => {
   const { unlockCondition } = monster;
@@ -362,11 +504,16 @@ export const getUnlockProgress = (
     case "badges":
       current = stats.badgeCount;
       break;
+    case "streak":
+      current = stats.currentStreak;
+      break;
     case "special":
       // For special, use a combined metric
       const goalProgress = Math.min(stats.completedGoals / 3, 1) * 50;
       const levelProgress = Math.min(stats.level / 20, 1) * 50;
       return goalProgress + levelProgress;
+    case "premium":
+      return stats.isPremium ? 100 : 0;
     default:
       return 0;
   }

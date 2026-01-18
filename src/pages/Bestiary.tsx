@@ -62,6 +62,7 @@ export default function Bestiary() {
       transactionCount: transactions?.length || 0,
       badgeCount: userBadges?.length || 0,
       completedGoals,
+      currentStreak: companion?.current_streak || 0,
     };
   }, [companion, transactions, savingsGoals, userBadges]);
 
