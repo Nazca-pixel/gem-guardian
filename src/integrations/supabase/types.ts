@@ -285,6 +285,51 @@ export type Database = {
           },
         ]
       }
+      user_challenges: {
+        Row: {
+          bxp_reward: number
+          challenge_id: string
+          completed_at: string | null
+          created_at: string
+          fxp_reward: number
+          id: string
+          is_completed: boolean
+          progress: number
+          target: number
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          bxp_reward?: number
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string
+          fxp_reward?: number
+          id?: string
+          is_completed?: boolean
+          progress?: number
+          target: number
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          bxp_reward?: number
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string
+          fxp_reward?: number
+          id?: string
+          is_completed?: boolean
+          progress?: number
+          target?: number
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

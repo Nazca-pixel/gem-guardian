@@ -14,6 +14,7 @@ import { AccessoryUnlockedToast } from "@/components/AccessoryUnlockedToast";
 import { StreakDisplay } from "@/components/StreakDisplay";
 import { StreakReminder } from "@/components/StreakReminder";
 import { StreakMilestoneModal } from "@/components/StreakMilestoneModal";
+import { WeeklyChallenges } from "@/components/WeeklyChallenges";
 import { DevModePanel } from "@/components/DevModePanel";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -211,6 +212,9 @@ const Index = () => {
 
         {/* Quick Actions */}
         <QuickActions onStreakMilestone={setStreakMilestone} />
+
+        {/* Weekly Challenges */}
+        <WeeklyChallenges />
 
         {/* Savings Goals */}
         {savingsGoals && savingsGoals.length > 0 && (
