@@ -1,7 +1,9 @@
 import { useCallback } from "react";
-import { useWeeklyChallenges, useUpdateChallengeProgress } from "./useWeeklyChallenges";
-import { useCompanion } from "./useUserData";
+import { useUpdateChallengeProgress, UserChallenge } from "./useWeeklyChallenges";
 import { useToast } from "./use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { WEEKLY_CHALLENGES } from "@/lib/xpSystem";
 
 export type ChallengeActionType = 
   | "transaction" 
@@ -19,11 +21,46 @@ interface ChallengeUpdate {
   bxpReward: number;
 }
 
+// Get the start of the current week (Monday)
+const getWeekStart = (): string => {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(now.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  return monday.toISOString().split('T')[0];
+};
+
 export const useChallengeProgress = () => {
-  const { data: challenges } = useWeeklyChallenges();
-  const { data: companion } = useCompanion();
+  const { user } = useAuth();
   const updateProgress = useUpdateChallengeProgress();
   const { toast } = useToast();
+
+  // Fetch challenges directly from DB to ensure we have latest data
+  const fetchCurrentChallenges = useCallback(async (): Promise<UserChallenge[]> => {
+    if (!user) return [];
+    
+    const weekStart = getWeekStart();
+    
+    const { data: userChallenges, error } = await supabase
+      .from("user_challenges")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("week_start", weekStart);
+
+    if (error) {
+      console.error("Error fetching challenges:", error);
+      return [];
+    }
+
+    return (userChallenges || []).map(uc => {
+      const challengeDef = WEEKLY_CHALLENGES.find(c => c.id === uc.challenge_id);
+      return {
+        ...uc,
+        challenge: challengeDef || WEEKLY_CHALLENGES[0],
+      };
+    });
+  }, [user]);
 
   const updateChallengesForAction = useCallback(async (
     actionType: ChallengeActionType,
@@ -33,7 +70,13 @@ export const useChallengeProgress = () => {
       currentStreak?: number;
     }
   ): Promise<ChallengeUpdate[]> => {
-    if (!challenges || challenges.length === 0) return [];
+    // Fetch challenges directly to ensure we have the latest data
+    const challenges = await fetchCurrentChallenges();
+    
+    if (!challenges || challenges.length === 0) {
+      console.log("No challenges found for current week");
+      return [];
+    }
 
     const updates: ChallengeUpdate[] = [];
 
@@ -46,22 +89,13 @@ export const useChallengeProgress = () => {
 
       switch (challenge.challenge.type) {
         case "no_unnecessary":
-          // Track days without unnecessary expenses
-          // This gets incremented when user logs a transaction that IS necessary
-          // or when they have no transactions for the day (handled separately)
-          if (actionType === "transaction_necessary" && actionData?.isNecessary) {
-            // Just tracking - actual daily check should be done differently
-            // For now, we'll count necessary transactions as positive behavior
-            progressIncrement = 0; // Don't increment for individual transactions
-          } else if (actionType === "transaction" && actionData?.isNecessary === false) {
-            // User made an unnecessary expense - reset progress
+          if (actionType === "transaction" && actionData?.isNecessary === false) {
             newProgress = 0;
             shouldUpdate = true;
           }
           break;
 
         case "savings_target":
-          // Track total savings this week
           if (actionType === "savings" && actionData?.savingsAmount) {
             progressIncrement = actionData.savingsAmount;
             shouldUpdate = true;
@@ -69,7 +103,6 @@ export const useChallengeProgress = () => {
           break;
 
         case "streak":
-          // Track current streak
           if (actionType === "streak_update" && actionData?.currentStreak !== undefined) {
             newProgress = actionData.currentStreak;
             shouldUpdate = true;
@@ -77,8 +110,6 @@ export const useChallengeProgress = () => {
           break;
 
         case "budget":
-          // Budget tracking would need weekly budget data
-          // For now, we'll skip this as it requires more complex calculation
           break;
       }
 
@@ -118,22 +149,18 @@ export const useChallengeProgress = () => {
     }
 
     return updates;
-  }, [challenges, updateProgress, toast]);
+  }, [fetchCurrentChallenges, updateProgress, toast]);
 
-  // Helper to update streak challenge specifically
   const updateStreakChallenge = useCallback(async (currentStreak: number) => {
     return updateChallengesForAction("streak_update", { currentStreak });
   }, [updateChallengesForAction]);
 
-  // Helper to update savings challenge
   const updateSavingsChallenge = useCallback(async (savingsAmount: number) => {
     return updateChallengesForAction("savings", { savingsAmount });
   }, [updateChallengesForAction]);
 
-  // Helper to track transaction for "no unnecessary" challenge
   const trackTransaction = useCallback(async (isNecessary: boolean) => {
     if (!isNecessary) {
-      // Made an unnecessary expense - reset the "no unnecessary" challenge
       return updateChallengesForAction("transaction", { isNecessary: false });
     }
     return [];
