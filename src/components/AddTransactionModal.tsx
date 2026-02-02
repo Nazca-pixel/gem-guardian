@@ -10,6 +10,7 @@ import { getStreakBonus } from "@/components/StreakDisplay";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
+import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 
 interface StreakMilestone {
   milestone: number;
@@ -50,6 +51,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const { user } = useAuth();
   const { toast } = useToast();
   const { processBxpUpdate } = useLevelUp();
+  const { trackTransaction, updateStreakChallenge } = useChallengeProgress();
 
   // Reset category when modal opens with a different default
   React.useEffect(() => {
@@ -111,8 +113,17 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
             });
           }
         }
+        // Update streak challenge progress
+        await updateStreakChallenge(newStreak);
       } catch {
         // Continue even if streak update fails
+      }
+
+      // Track transaction for "no unnecessary expenses" challenge
+      try {
+        await trackTransaction(isNecessary);
+      } catch {
+        // Continue even if challenge update fails
       }
 
       const baseBxpReward = (() => {

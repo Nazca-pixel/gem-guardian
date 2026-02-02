@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLevelUp, LevelUpResult } from "@/hooks/useLevelUp";
+import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 
 interface AddFundsModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export const AddFundsModal = ({ isOpen, onClose, goal, onLevelUp }: AddFundsModa
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { updateSavingsChallenge } = useChallengeProgress();
   const { processLevelUp } = useLevelUp();
 
   const remaining = goal.target_amount - goal.current_amount;
@@ -61,6 +63,13 @@ export const AddFundsModal = ({ isOpen, onClose, goal, onLevelUp }: AddFundsModa
         .eq("id", goal.id);
 
       if (error) throw error;
+
+      // Update savings challenge progress
+      try {
+        await updateSavingsChallenge(parseFloat(amount));
+      } catch {
+        // Continue even if challenge update fails
+      }
 
       // If goal completed, award FXP using the level-up system
       if (isCompleted && user) {
