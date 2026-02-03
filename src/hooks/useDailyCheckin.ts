@@ -3,7 +3,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCompanion } from "./useUserData";
 
-const CHECKIN_BXP_REWARD = 5;
+const BASE_BXP_REWARD = 5;
+const MAX_STREAK_BONUS = 5;
+
+// Calculate BXP reward based on streak: base 5 + min(streak, 5) bonus
+const calculateBxpReward = (currentStreak: number): number => {
+  const bonus = Math.min(currentStreak, MAX_STREAK_BONUS);
+  return BASE_BXP_REWARD + bonus;
+};
+
+// Check if the last check-in was yesterday (for streak continuation)
+const wasYesterday = (dateStr: string | null): boolean => {
+  if (!dateStr) return false;
+  
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split("T")[0];
+  
+  return dateStr === yesterdayStr;
+};
 
 export const useDailyCheckin = () => {
   const { user } = useAuth();
@@ -21,6 +39,23 @@ export const useDailyCheckin = () => {
     return lastCheckin === today;
   };
 
+  // Get current check-in streak
+  const getCheckinStreak = (): number => {
+    return (companion as any)?.checkin_streak || 0;
+  };
+
+  // Calculate today's potential reward
+  const getTodayReward = (): number => {
+    if (hasCheckedInToday()) {
+      return calculateBxpReward(getCheckinStreak());
+    }
+    // If not checked in yet, show what they'll get
+    const lastCheckin = (companion as any)?.last_checkin_date;
+    const continuesStreak = wasYesterday(lastCheckin);
+    const projectedStreak = continuesStreak ? getCheckinStreak() + 1 : 1;
+    return calculateBxpReward(projectedStreak);
+  };
+
   const checkinMutation = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("User not authenticated");
@@ -33,14 +68,22 @@ export const useDailyCheckin = () => {
         throw new Error("Already checked in today");
       }
       
-      // Update companion with new BXP and last_checkin_date
-      const newBxp = (companion.bxp || 0) + CHECKIN_BXP_REWARD;
+      // Calculate new streak
+      const lastCheckin = (companion as any).last_checkin_date;
+      const continuesStreak = wasYesterday(lastCheckin);
+      const currentStreak = (companion as any).checkin_streak || 0;
+      const newStreak = continuesStreak ? currentStreak + 1 : 1;
+      
+      // Calculate BXP reward based on new streak
+      const bxpReward = calculateBxpReward(newStreak);
+      const newBxp = (companion.bxp || 0) + bxpReward;
       
       const { data, error } = await supabase
         .from("companion_animals")
         .update({
           bxp: newBxp,
           last_checkin_date: today,
+          checkin_streak: newStreak,
         })
         .eq("user_id", user.id)
         .select()
@@ -49,8 +92,10 @@ export const useDailyCheckin = () => {
       if (error) throw error;
       
       return {
-        bxpEarned: CHECKIN_BXP_REWARD,
+        bxpEarned: bxpReward,
         newBxp,
+        newStreak,
+        streakContinued: continuesStreak,
         companion: data,
       };
     },
@@ -64,6 +109,9 @@ export const useDailyCheckin = () => {
     checkin: checkinMutation.mutateAsync,
     isLoading: checkinMutation.isPending,
     hasCheckedInToday,
-    bxpReward: CHECKIN_BXP_REWARD,
+    getCheckinStreak,
+    getTodayReward,
+    baseBxpReward: BASE_BXP_REWARD,
+    maxStreakBonus: MAX_STREAK_BONUS,
   };
 };

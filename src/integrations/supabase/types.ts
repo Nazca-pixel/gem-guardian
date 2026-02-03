@@ -71,6 +71,7 @@ export type Database = {
       companion_animals: {
         Row: {
           bxp: number
+          checkin_streak: number
           consecutive_failed_months: number
           created_at: string
           current_streak: number | null
@@ -88,6 +89,7 @@ export type Database = {
         }
         Insert: {
           bxp?: number
+          checkin_streak?: number
           consecutive_failed_months?: number
           created_at?: string
           current_streak?: number | null
@@ -105,6 +107,7 @@ export type Database = {
         }
         Update: {
           bxp?: number
+          checkin_streak?: number
           consecutive_failed_months?: number
           created_at?: string
           current_streak?: number | null

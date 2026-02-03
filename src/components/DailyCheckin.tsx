@@ -4,16 +4,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDailyCheckin } from "@/hooks/useDailyCheckin";
 import { useToast } from "@/hooks/use-toast";
-import { Check, Sparkles, Gift } from "lucide-react";
+import { Check, Sparkles, Gift, Flame } from "lucide-react";
 import confetti from "canvas-confetti";
 
 export const DailyCheckin = () => {
-  const { checkin, isLoading, hasCheckedInToday, bxpReward } = useDailyCheckin();
+  const { 
+    checkin, 
+    isLoading, 
+    hasCheckedInToday, 
+    getCheckinStreak,
+    getTodayReward,
+    baseBxpReward,
+    maxStreakBonus,
+  } = useDailyCheckin();
   const { toast } = useToast();
   const [showCelebration, setShowCelebration] = useState(false);
   const [earnedBxp, setEarnedBxp] = useState(0);
+  const [newStreak, setNewStreak] = useState(0);
 
   const alreadyCheckedIn = hasCheckedInToday();
+  const currentStreak = getCheckinStreak();
+  const todayReward = getTodayReward();
 
   const triggerCelebration = () => {
     // Confetti burst
@@ -47,12 +58,17 @@ export const DailyCheckin = () => {
     try {
       const result = await checkin();
       setEarnedBxp(result.bxpEarned);
+      setNewStreak(result.newStreak);
       setShowCelebration(true);
       triggerCelebration();
 
+      const streakMessage = result.newStreak > 1 
+        ? ` 🔥 Streak: ${result.newStreak} giorni!`
+        : "";
+
       toast({
         title: "🎉 Check-in completato!",
-        description: `Hai guadagnato +${result.bxpEarned} BXP!`,
+        description: `Hai guadagnato +${result.bxpEarned} BXP!${streakMessage}`,
       });
 
       // Hide celebration after animation
@@ -75,6 +91,10 @@ export const DailyCheckin = () => {
       }
     }
   };
+
+  // Calculate bonus for display
+  const currentBonus = Math.min(currentStreak, maxStreakBonus);
+  const hasMaxBonus = currentBonus >= maxStreakBonus;
 
   return (
     <motion.div
@@ -107,11 +127,34 @@ export const DailyCheckin = () => {
               </motion.div>
 
               <div>
-                <h3 className="font-bold text-foreground">Check-in Giornaliero</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-foreground">Check-in Giornaliero</h3>
+                  {currentStreak > 0 && (
+                    <motion.div 
+                      className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                    >
+                      <Flame className="w-3 h-3 text-orange-500" />
+                      <span className="text-xs font-bold text-orange-500">{currentStreak}</span>
+                    </motion.div>
+                  )}
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  {alreadyCheckedIn
-                    ? "Torna domani per +5 BXP!"
-                    : `Guadagna +${bxpReward} BXP oggi!`}
+                  {alreadyCheckedIn ? (
+                    <>Torna domani per continuare la streak!</>
+                  ) : (
+                    <>
+                      Guadagna +{baseBxpReward}
+                      {todayReward > baseBxpReward && (
+                        <span className="text-success font-semibold"> +{todayReward - baseBxpReward} bonus</span>
+                      )}
+                      {" "}BXP
+                      {!hasMaxBonus && currentStreak > 0 && (
+                        <span className="text-muted-foreground/70"> (max bonus a {maxStreakBonus} giorni)</span>
+                      )}
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -179,6 +222,19 @@ export const DailyCheckin = () => {
                   >
                     +{earnedBxp} BXP!
                   </motion.p>
+                  {newStreak > 1 && (
+                    <motion.div
+                      className="flex items-center justify-center gap-1 mt-1"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Flame className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm font-semibold text-orange-500">
+                        {newStreak} giorni di fila!
+                      </span>
+                    </motion.div>
+                  )}
                 </motion.div>
               </motion.div>
             )}
