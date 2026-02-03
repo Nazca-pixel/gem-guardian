@@ -77,6 +77,7 @@ export type Database = {
           fxp: number
           id: string
           last_activity_date: string | null
+          last_checkin_date: string | null
           level: number
           longest_streak: number | null
           mood: string
@@ -93,6 +94,7 @@ export type Database = {
           fxp?: number
           id?: string
           last_activity_date?: string | null
+          last_checkin_date?: string | null
           level?: number
           longest_streak?: number | null
           mood?: string
@@ -109,6 +111,7 @@ export type Database = {
           fxp?: number
           id?: string
           last_activity_date?: string | null
+          last_checkin_date?: string | null
           level?: number
           longest_streak?: number | null
           mood?: string

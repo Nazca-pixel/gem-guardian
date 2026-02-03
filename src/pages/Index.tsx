@@ -15,6 +15,7 @@ import { StreakDisplay } from "@/components/StreakDisplay";
 import { StreakReminder } from "@/components/StreakReminder";
 import { StreakMilestoneModal } from "@/components/StreakMilestoneModal";
 import { WeeklyChallenges } from "@/components/WeeklyChallenges";
+import { DailyCheckin } from "@/components/DailyCheckin";
 import { DevModePanel } from "@/components/DevModePanel";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -199,6 +200,9 @@ const Index = () => {
           currentStreak={companion?.current_streak || 0}
           longestStreak={companion?.longest_streak || 0}
         />
+
+        {/* Daily Check-in */}
+        <DailyCheckin />
 
         {/* XP Display */}
         <XPDisplay fxp={companion?.fxp || 0} bxp={companion?.bxp || 0} />

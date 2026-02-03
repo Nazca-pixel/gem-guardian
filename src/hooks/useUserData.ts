@@ -15,6 +15,7 @@ export interface CompanionAnimal {
   current_streak: number;
   longest_streak: number;
   last_activity_date: string | null;
+  last_checkin_date: string | null;
   created_at: string;
   updated_at: string;
 }
