@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useDailyCheckin } from "@/hooks/useDailyCheckin";
 import { useToast } from "@/hooks/use-toast";
 import { Check, Sparkles, Gift, Flame } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import confetti from "canvas-confetti";
 
 export const DailyCheckin = () => {
@@ -95,6 +96,8 @@ export const DailyCheckin = () => {
   // Calculate bonus for display
   const currentBonus = Math.min(currentStreak, maxStreakBonus);
   const hasMaxBonus = currentBonus >= maxStreakBonus;
+  const streakProgress = (currentBonus / maxStreakBonus) * 100;
+  const daysToMaxBonus = maxStreakBonus - currentBonus;
 
   return (
     <motion.div
@@ -150,12 +153,27 @@ export const DailyCheckin = () => {
                         <span className="text-success font-semibold"> +{todayReward - baseBxpReward} bonus</span>
                       )}
                       {" "}BXP
-                      {!hasMaxBonus && currentStreak > 0 && (
-                        <span className="text-muted-foreground/70"> (max bonus a {maxStreakBonus} giorni)</span>
-                      )}
                     </>
                   )}
                 </p>
+                
+                {/* Streak bonus progress bar */}
+                <div className="mt-2 space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Bonus streak</span>
+                    <span className={hasMaxBonus ? "text-success font-semibold" : "text-muted-foreground"}>
+                      {hasMaxBonus ? "MAX!" : `+${daysToMaxBonus} giorni al max`}
+                    </span>
+                  </div>
+                  <Progress 
+                    value={streakProgress} 
+                    className="h-1.5 bg-muted"
+                  />
+                  <div className="flex justify-between text-[10px] text-muted-foreground/70">
+                    <span>+0</span>
+                    <span>+{maxStreakBonus} bonus</span>
+                  </div>
+                </div>
               </div>
             </div>
 
