@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCompanion } from "./useUserData";
+import { useStreakBadges, STREAK_MILESTONES } from "./useStreakBadges";
 
 const BASE_BXP_REWARD = 5;
 const MAX_STREAK_BONUS = 5;
@@ -23,9 +24,18 @@ const wasYesterday = (dateStr: string | null): boolean => {
   return dateStr === yesterdayStr;
 };
 
+export interface CheckinResult {
+  bxpEarned: number;
+  newBxp: number;
+  newStreak: number;
+  streakContinued: boolean;
+  milestoneAchieved: { milestone: number; badgeName: string } | null;
+}
+
 export const useDailyCheckin = () => {
   const { user } = useAuth();
   const { data: companion } = useCompanion();
+  const { awardMilestoneBadges } = useStreakBadges();
   const queryClient = useQueryClient();
 
   // Check if the user has already checked in today
@@ -57,7 +67,7 @@ export const useDailyCheckin = () => {
   };
 
   const checkinMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (): Promise<CheckinResult> => {
       if (!user) throw new Error("User not authenticated");
       if (!companion) throw new Error("Companion not found");
       
@@ -78,30 +88,32 @@ export const useDailyCheckin = () => {
       const bxpReward = calculateBxpReward(newStreak);
       const newBxp = (companion.bxp || 0) + bxpReward;
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("companion_animals")
         .update({
           bxp: newBxp,
           last_checkin_date: today,
           checkin_streak: newStreak,
         })
-        .eq("user_id", user.id)
-        .select()
-        .single();
+        .eq("user_id", user.id);
       
       if (error) throw error;
+      
+      // Check and award milestone badges
+      const milestoneAchieved = await awardMilestoneBadges(newStreak);
       
       return {
         bxpEarned: bxpReward,
         newBxp,
         newStreak,
         streakContinued: continuesStreak,
-        companion: data,
+        milestoneAchieved,
       };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companion", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["companion"] });
+      queryClient.invalidateQueries({ queryKey: ["user_badges", user?.id] });
     },
   });
 
@@ -113,5 +125,6 @@ export const useDailyCheckin = () => {
     getTodayReward,
     baseBxpReward: BASE_BXP_REWARD,
     maxStreakBonus: MAX_STREAK_BONUS,
+    STREAK_MILESTONES,
   };
 };
