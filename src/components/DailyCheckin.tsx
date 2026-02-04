@@ -2,10 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useDailyCheckin } from "@/hooks/useDailyCheckin";
+import { useDailyCheckin, CheckinResult } from "@/hooks/useDailyCheckin";
 import { useToast } from "@/hooks/use-toast";
 import { Check, Sparkles, Gift, Flame } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { StreakMilestoneModal } from "./StreakMilestoneModal";
 import confetti from "canvas-confetti";
 
 export const DailyCheckin = () => {
@@ -22,6 +23,11 @@ export const DailyCheckin = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [earnedBxp, setEarnedBxp] = useState(0);
   const [newStreak, setNewStreak] = useState(0);
+  const [milestoneModal, setMilestoneModal] = useState<{ isOpen: boolean; milestone: number; badgeName: string }>({
+    isOpen: false,
+    milestone: 0,
+    badgeName: "",
+  });
 
   const alreadyCheckedIn = hasCheckedInToday();
   const currentStreak = getCheckinStreak();
@@ -57,7 +63,7 @@ export const DailyCheckin = () => {
 
   const handleCheckin = async () => {
     try {
-      const result = await checkin();
+      const result: CheckinResult = await checkin();
       setEarnedBxp(result.bxpEarned);
       setNewStreak(result.newStreak);
       setShowCelebration(true);
@@ -75,7 +81,16 @@ export const DailyCheckin = () => {
       // Hide celebration after animation
       setTimeout(() => {
         setShowCelebration(false);
-      }, 3000);
+        
+        // Show milestone modal if a badge was earned
+        if (result.milestoneAchieved) {
+          setMilestoneModal({
+            isOpen: true,
+            milestone: result.milestoneAchieved.milestone,
+            badgeName: result.milestoneAchieved.badgeName,
+          });
+        }
+      }, 2500);
     } catch (error) {
       if ((error as Error).message === "Already checked in today") {
         toast({
@@ -91,6 +106,10 @@ export const DailyCheckin = () => {
         });
       }
     }
+  };
+
+  const handleCloseMilestoneModal = () => {
+    setMilestoneModal(prev => ({ ...prev, isOpen: false }));
   };
 
   // Calculate bonus for display
@@ -259,6 +278,14 @@ export const DailyCheckin = () => {
           </AnimatePresence>
         </CardContent>
       </Card>
+
+      {/* Milestone Badge Modal */}
+      <StreakMilestoneModal
+        isOpen={milestoneModal.isOpen}
+        onClose={handleCloseMilestoneModal}
+        milestone={milestoneModal.milestone}
+        badgeName={milestoneModal.badgeName}
+      />
     </motion.div>
   );
 };
