@@ -9,7 +9,8 @@ export type ChallengeActionType =
   | "transaction" 
   | "transaction_necessary" 
   | "savings" 
-  | "streak_update";
+  | "streak_update"
+  | "daily_frugal_check";
 
 interface ChallengeUpdate {
   challengeId: string;
@@ -29,6 +30,11 @@ const getWeekStart = (): string => {
   const monday = new Date(now.setDate(diff));
   monday.setHours(0, 0, 0, 0);
   return monday.toISOString().split('T')[0];
+};
+
+// Get today's date string
+const getTodayStr = (): string => {
+  return new Date().toISOString().split('T')[0];
 };
 
 export const useChallengeProgress = () => {
@@ -62,6 +68,29 @@ export const useChallengeProgress = () => {
     });
   }, [user]);
 
+  // Check if user has made any unnecessary expenses today
+  const hasUnnecessaryExpensesToday = useCallback(async (): Promise<boolean> => {
+    if (!user) return false;
+    
+    const today = getTodayStr();
+    
+    const { data, error } = await supabase
+      .from("transactions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("transaction_date", today)
+      .eq("is_income", false)
+      .eq("is_necessary", false)
+      .limit(1);
+
+    if (error) {
+      console.error("Error checking today's transactions:", error);
+      return false;
+    }
+
+    return (data?.length ?? 0) > 0;
+  }, [user]);
+
   const updateChallengesForAction = useCallback(async (
     actionType: ChallengeActionType,
     actionData?: {
@@ -90,7 +119,12 @@ export const useChallengeProgress = () => {
       switch (challenge.challenge.type) {
         case "no_unnecessary":
           if (actionType === "transaction" && actionData?.isNecessary === false) {
+            // Reset progress when unnecessary expense is made
             newProgress = 0;
+            shouldUpdate = true;
+          } else if (actionType === "daily_frugal_check") {
+            // Increment progress for a frugal day (called during daily check-in)
+            progressIncrement = 1;
             shouldUpdate = true;
           }
           break;
@@ -166,10 +200,24 @@ export const useChallengeProgress = () => {
     return [];
   }, [updateChallengesForAction]);
 
+  // Called during daily check-in to track frugal days
+  const trackFrugalDay = useCallback(async (): Promise<ChallengeUpdate[]> => {
+    // Only count as a frugal day if no unnecessary expenses were made today
+    const hasUnnecessary = await hasUnnecessaryExpensesToday();
+    
+    if (!hasUnnecessary) {
+      return updateChallengesForAction("daily_frugal_check");
+    }
+    
+    return [];
+  }, [hasUnnecessaryExpensesToday, updateChallengesForAction]);
+
   return {
     updateChallengesForAction,
     updateStreakChallenge,
     updateSavingsChallenge,
     trackTransaction,
+    trackFrugalDay,
+    hasUnnecessaryExpensesToday,
   };
 };
