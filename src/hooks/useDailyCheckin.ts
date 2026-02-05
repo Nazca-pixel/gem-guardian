@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCompanion } from "./useUserData";
 import { useStreakBadges, STREAK_MILESTONES } from "./useStreakBadges";
+import { useChallengeProgress } from "./useChallengeProgress";
 
 const BASE_BXP_REWARD = 5;
 const MAX_STREAK_BONUS = 5;
@@ -30,12 +31,14 @@ export interface CheckinResult {
   newStreak: number;
   streakContinued: boolean;
   milestoneAchieved: { milestone: number; badgeName: string } | null;
+  frugalDayTracked: boolean;
 }
 
 export const useDailyCheckin = () => {
   const { user } = useAuth();
   const { data: companion } = useCompanion();
   const { awardMilestoneBadges } = useStreakBadges();
+  const { trackFrugalDay } = useChallengeProgress();
   const queryClient = useQueryClient();
 
   // Check if the user has already checked in today
@@ -102,18 +105,25 @@ export const useDailyCheckin = () => {
       // Check and award milestone badges
       const milestoneAchieved = await awardMilestoneBadges(newStreak);
       
+      // Track frugal day for "Settimana Frugale" challenge
+      // This counts today as a frugal day if no unnecessary expenses were made
+      const frugalUpdates = await trackFrugalDay();
+      const frugalDayTracked = frugalUpdates.length > 0;
+      
       return {
         bxpEarned: bxpReward,
         newBxp,
         newStreak,
         streakContinued: continuesStreak,
         milestoneAchieved,
+        frugalDayTracked,
       };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companion", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["companion"] });
       queryClient.invalidateQueries({ queryKey: ["user_badges", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["weekly-challenges"] });
     },
   });
 
