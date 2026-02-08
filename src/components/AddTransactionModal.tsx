@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Euro } from "lucide-react";
+import { X, Plus, Euro, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCreateTransaction, useCompanion } from "@/hooks/useUserData";
 import { useUpdateStreak } from "@/hooks/useStreak";
 import { getStreakBonus } from "@/components/StreakDisplay";
@@ -11,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
 import { useChallengeProgress } from "@/hooks/useChallengeProgress";
+import { useWeeklyChallenges } from "@/hooks/useWeeklyChallenges";
 
 interface StreakMilestone {
   milestone: number;
@@ -52,6 +63,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const { toast } = useToast();
   const { processBxpUpdate } = useLevelUp();
   const { trackTransaction, updateStreakChallenge } = useChallengeProgress();
+  const { data: challenges } = useWeeklyChallenges();
+  const [showResetWarning, setShowResetWarning] = useState(false);
 
   // Reset category when modal opens with a different default
   React.useEffect(() => {
@@ -63,7 +76,12 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const selectedCategory = categories.find(c => c.value === category);
   const isIncome = category === "income";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Check if there's an active "no_unnecessary" challenge with progress > 0
+  const activeFrugalChallenge = challenges?.find(
+    (c) => c.challenge.type === "no_unnecessary" && !c.is_completed && c.progress > 0
+  );
+
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!description.trim() || !amount) {
@@ -75,6 +93,19 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
       return;
     }
 
+    // If adding an unnecessary expense and there's an active frugal challenge with progress
+    if (!isIncome && !isNecessary && activeFrugalChallenge) {
+      setShowResetWarning(true);
+      return;
+    }
+
+    // Otherwise proceed directly
+    submitTransaction();
+  };
+
+  const submitTransaction = async () => {
+    setShowResetWarning(false);
+    
     try {
       await createTransaction.mutateAsync({
         description: description.trim(),
@@ -207,7 +238,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleFormSubmit} className="space-y-5">
                 {/* Amount */}
                 <div>
                   <Label className="text-foreground">Importo</Label>
@@ -315,6 +346,36 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
           </motion.div>
         </>
       )}
+
+      {/* Warning dialog for resetting challenge progress */}
+      <AlertDialog open={showResetWarning} onOpenChange={setShowResetWarning}>
+        <AlertDialogContent className="max-w-sm mx-4">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-foreground">
+              <AlertTriangle className="w-5 h-5 text-primary" />
+              Attenzione!
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-left">
+              {activeFrugalChallenge && (
+                <>
+                  Hai già <strong>{activeFrugalChallenge.progress} giorni</strong> di progresso nella sfida "{activeFrugalChallenge.challenge.name}".
+                  <br /><br />
+                  Aggiungere questa spesa non necessaria <strong>resetterà il tuo progresso a 0</strong>.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row gap-2">
+            <AlertDialogCancel className="flex-1 mt-0">Annulla</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={submitTransaction}
+              className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+            >
+              Conferma
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AnimatePresence>
   );
 };
