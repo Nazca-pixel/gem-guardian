@@ -358,7 +358,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
             <AlertDialogDescription className="text-left">
               {activeFrugalChallenge && (
                 <>
-                  Hai già <strong>{activeFrugalChallenge.progress} giorni</strong> di progresso nella sfida "{activeFrugalChallenge.challenge.name}".
+                  Hai già <strong>{activeFrugalChallenge.progress} {activeFrugalChallenge.progress === 1 ? "giorno" : "giorni"}</strong> di progresso nella sfida "{activeFrugalChallenge.challenge.name}".
                   <br /><br />
                   Aggiungere questa spesa non necessaria <strong>resetterà il tuo progresso a 0</strong>.
                 </>
