@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Target, Plus, Trophy, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { Target, Plus, Trophy, Sparkles, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useWeeklyChallenges, useAssignWeeklyChallenge, UserChallenge } from "@/hooks/useWeeklyChallenges";
 import { WEEKLY_CHALLENGES } from "@/lib/xpSystem";
 import { toast } from "sonner";
+import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 
-const ChallengeCard = ({ userChallenge }: { userChallenge: UserChallenge }) => {
+const ChallengeCard = ({ 
+  userChallenge, 
+  hasUnnecessaryToday 
+}: { 
+  userChallenge: UserChallenge;
+  hasUnnecessaryToday?: boolean;
+}) => {
   const { challenge, progress, target, is_completed, fxp_reward, bxp_reward } = userChallenge;
   const progressPercent = Math.min((progress / target) * 100, 100);
+  const isFrugalChallenge = challenge.type === "no_unnecessary";
 
   return (
     <motion.div
@@ -30,6 +38,20 @@ const ChallengeCard = ({ userChallenge }: { userChallenge: UserChallenge }) => {
           <div className="flex items-center gap-1 bg-reward/20 text-reward px-2 py-1 rounded-full text-xs font-semibold">
             <Trophy className="w-3 h-3" />
             Completata!
+          </div>
+        </motion.div>
+      )}
+
+      {/* Warning indicator for frugal challenge when unnecessary expense made today */}
+      {isFrugalChallenge && hasUnnecessaryToday && !is_completed && (
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="absolute top-2 right-2"
+        >
+          <div className="flex items-center gap-1 bg-secondary/20 text-secondary px-2 py-1 rounded-full text-xs font-semibold">
+            <AlertCircle className="w-3 h-3" />
+            A rischio
           </div>
         </motion.div>
       )}
@@ -64,6 +86,18 @@ const ChallengeCard = ({ userChallenge }: { userChallenge: UserChallenge }) => {
               className={`h-2 ${is_completed ? "[&>div]:bg-reward" : ""}`}
             />
           </div>
+
+          {/* Warning message for frugal challenge */}
+          {isFrugalChallenge && hasUnnecessaryToday && !is_completed && (
+            <motion.p 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="text-xs text-secondary mt-2 flex items-center gap-1"
+            >
+              <AlertCircle className="w-3 h-3 flex-shrink-0" />
+              Oggi non conterà per la sfida
+            </motion.p>
+          )}
           
           <div className="flex items-center gap-3 mt-3">
             <div className="flex items-center gap-1 text-xs">
@@ -125,8 +159,19 @@ const AvailableChallengeCard = ({
 export const WeeklyChallenges = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAvailable, setShowAvailable] = useState(false);
+  const [hasUnnecessaryToday, setHasUnnecessaryToday] = useState(false);
   const { data: userChallenges, isLoading } = useWeeklyChallenges();
   const assignChallenge = useAssignWeeklyChallenge();
+  const { hasUnnecessaryExpensesToday } = useChallengeProgress();
+
+  // Check if user has made unnecessary expenses today
+  useEffect(() => {
+    const checkUnnecessaryExpenses = async () => {
+      const hasUnnecessary = await hasUnnecessaryExpensesToday();
+      setHasUnnecessaryToday(hasUnnecessary);
+    };
+    checkUnnecessaryExpenses();
+  }, [hasUnnecessaryExpensesToday, userChallenges]);
 
   const assignedIds = userChallenges?.map(uc => uc.challenge_id) || [];
   const completedCount = userChallenges?.filter(uc => uc.is_completed).length || 0;
@@ -214,7 +259,11 @@ export const WeeklyChallenges = () => {
               {/* Active Challenges */}
               {userChallenges && userChallenges.length > 0 ? (
                 userChallenges.map((uc) => (
-                  <ChallengeCard key={uc.id} userChallenge={uc} />
+                  <ChallengeCard 
+                    key={uc.id} 
+                    userChallenge={uc} 
+                    hasUnnecessaryToday={hasUnnecessaryToday}
+                  />
                 ))
               ) : (
                 <div className="text-center py-6">
