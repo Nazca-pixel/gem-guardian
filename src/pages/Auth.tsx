@@ -43,6 +43,8 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [rememberMe, setRememberMe] = useState(() => {
     const stored = localStorage.getItem("gemsaver_remember_me");
