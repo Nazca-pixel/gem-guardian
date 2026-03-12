@@ -66,6 +66,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const { trackTransaction, updateStreakChallenge } = useChallengeProgress();
   const { data: challenges } = useWeeklyChallenges();
   const [showResetWarning, setShowResetWarning] = useState(false);
+  const { getStatus, recordSubmit, loading: rateLimitLoading } = useTransactionRateLimit();
+  const rateLimitStatus = getStatus();
 
   // Reset category when modal opens with a different default
   React.useEffect(() => {
