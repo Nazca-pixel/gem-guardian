@@ -96,6 +96,16 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
       return;
     }
 
+    // Rate limit check
+    if (!rateLimitStatus.canSubmit) {
+      toast({
+        title: "⏳ Limite raggiunto",
+        description: rateLimitStatus.reason || "",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // If adding an unnecessary expense and there's an active frugal challenge with progress
     if (!isIncome && !isNecessary && activeFrugalChallenge) {
       setShowResetWarning(true);
