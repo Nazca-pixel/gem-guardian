@@ -342,14 +342,28 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   </div>
                 )}
 
+                {/* Rate limit info */}
+                {!rateLimitLoading && (
+                  <div className={`flex items-center justify-between text-xs px-1 ${
+                    !rateLimitStatus.canSubmit ? "text-destructive" : "text-muted-foreground"
+                  }`}>
+                    <span>{rateLimitStatus.remainingToday}/{10} transazioni rimaste oggi</span>
+                    {rateLimitStatus.cooldownSecondsLeft > 0 && (
+                      <span className="font-medium">⏳ {rateLimitStatus.cooldownSecondsLeft}s</span>
+                    )}
+                  </div>
+                )}
+
                 {/* Submit */}
                 <Button
                   type="submit"
-                  disabled={createTransaction.isPending}
+                  disabled={createTransaction.isPending || !rateLimitStatus.canSubmit}
                   className="w-full h-12 rounded-xl gradient-hero text-primary-foreground font-semibold"
                 >
                   {createTransaction.isPending ? (
                     "Salvataggio..."
+                  ) : !rateLimitStatus.canSubmit ? (
+                    rateLimitStatus.cooldownSecondsLeft > 0 ? `Attendi ${rateLimitStatus.cooldownSecondsLeft}s...` : "Limite giornaliero raggiunto"
                   ) : (
                     <>
                       <Plus className="w-4 h-4 mr-2" />
