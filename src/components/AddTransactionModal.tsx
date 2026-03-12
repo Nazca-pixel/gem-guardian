@@ -198,6 +198,9 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
         }
       }
 
+      // Record rate limit
+      recordSubmit();
+
       toast({
         title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
         description: `${description} - €${amount}${awardedBxp ? ` (+${bxpReward} BXP${streakBonus > 1 ? " 🔥" : ""})` : ""}`,
