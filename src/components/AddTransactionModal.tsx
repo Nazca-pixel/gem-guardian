@@ -22,6 +22,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
 import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 import { useWeeklyChallenges } from "@/hooks/useWeeklyChallenges";
+import { useTransactionRateLimit } from "@/hooks/useTransactionRateLimit";
 
 interface StreakMilestone {
   milestone: number;
