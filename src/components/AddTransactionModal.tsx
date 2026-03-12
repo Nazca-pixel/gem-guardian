@@ -22,6 +22,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
 import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 import { useWeeklyChallenges } from "@/hooks/useWeeklyChallenges";
+import { useTransactionRateLimit } from "@/hooks/useTransactionRateLimit";
 
 interface StreakMilestone {
   milestone: number;
@@ -65,6 +66,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const { trackTransaction, updateStreakChallenge } = useChallengeProgress();
   const { data: challenges } = useWeeklyChallenges();
   const [showResetWarning, setShowResetWarning] = useState(false);
+  const { getStatus, recordSubmit, loading: rateLimitLoading } = useTransactionRateLimit();
+  const rateLimitStatus = getStatus();
 
   // Reset category when modal opens with a different default
   React.useEffect(() => {
@@ -88,6 +91,16 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
       toast({
         title: "Campi mancanti",
         description: "Inserisci descrizione e importo",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Rate limit check
+    if (!rateLimitStatus.canSubmit) {
+      toast({
+        title: "⏳ Limite raggiunto",
+        description: rateLimitStatus.reason || "",
         variant: "destructive",
       });
       return;
@@ -184,6 +197,9 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
           // Continue even if BXP update fails
         }
       }
+
+      // Record rate limit
+      recordSubmit();
 
       toast({
         title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
@@ -326,14 +342,28 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   </div>
                 )}
 
+                {/* Rate limit info */}
+                {!rateLimitLoading && (
+                  <div className={`flex items-center justify-between text-xs px-1 ${
+                    !rateLimitStatus.canSubmit ? "text-destructive" : "text-muted-foreground"
+                  }`}>
+                    <span>{rateLimitStatus.remainingToday}/{10} transazioni rimaste oggi</span>
+                    {rateLimitStatus.cooldownSecondsLeft > 0 && (
+                      <span className="font-medium">⏳ {rateLimitStatus.cooldownSecondsLeft}s</span>
+                    )}
+                  </div>
+                )}
+
                 {/* Submit */}
                 <Button
                   type="submit"
-                  disabled={createTransaction.isPending}
+                  disabled={createTransaction.isPending || !rateLimitStatus.canSubmit}
                   className="w-full h-12 rounded-xl gradient-hero text-primary-foreground font-semibold"
                 >
                   {createTransaction.isPending ? (
                     "Salvataggio..."
+                  ) : !rateLimitStatus.canSubmit ? (
+                    rateLimitStatus.cooldownSecondsLeft > 0 ? `Attendi ${rateLimitStatus.cooldownSecondsLeft}s...` : "Limite giornaliero raggiunto"
                   ) : (
                     <>
                       <Plus className="w-4 h-4 mr-2" />
