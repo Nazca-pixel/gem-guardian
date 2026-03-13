@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { useProfile, useCompanion, useTransactions, useSavingsGoals, useUserBadges } from "@/hooks/useUserData";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, LogOut, Settings, Award, Target, Wallet, Calendar, ChevronRight } from "lucide-react";
+import { ArrowLeft, LogOut, Settings, Award, Target, Wallet, Calendar, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
