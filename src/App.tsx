@@ -88,6 +88,14 @@ const App = () => (
               }
             />
             <Route
+              path="/premium"
+              element={
+                <ProtectedRoute>
+                  <Premium />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/privacy"
               element={
                 <ProtectedRoute>
