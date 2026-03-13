@@ -16,6 +16,7 @@ import Privacy from "./pages/Privacy";
 import Help from "./pages/Help";
 import Bestiary from "./pages/Bestiary";
 import Badges from "./pages/Badges";
+import Premium from "./pages/Premium";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Badges />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/premium"
+              element={
+                <ProtectedRoute>
+                  <Premium />
                 </ProtectedRoute>
               }
             />

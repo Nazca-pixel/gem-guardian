@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { useProfile, useCompanion, useTransactions, useSavingsGoals, useUserBadges } from "@/hooks/useUserData";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, LogOut, Settings, Award, Target, Wallet, Calendar, ChevronRight } from "lucide-react";
+import { ArrowLeft, LogOut, Settings, Award, Target, Wallet, Calendar, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -40,6 +40,7 @@ const Profile = () => {
   ];
 
   const menuItems = [
+    { icon: <Crown className="w-5 h-5" />, label: "Piani Premium", action: () => navigate("/premium"), highlight: true },
     { icon: <Settings className="w-5 h-5" />, label: "Impostazioni", action: () => navigate("/settings") },
     { icon: <Award className="w-5 h-5" />, label: "I tuoi Badge", action: () => navigate("/badges") },
     { icon: <Target className="w-5 h-5" />, label: "Obiettivi di Risparmio", action: () => navigate("/") },
