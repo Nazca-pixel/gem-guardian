@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Target, Euro, Calendar } from "lucide-react";
+import { X, Target, Euro, Calendar, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCreateSavingsGoal } from "@/hooks/useUserData";
+import { useCreateSavingsGoal, useSavingsGoals } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
+import { useTierLimits } from "@/hooks/useTierLimits";
+import { useNavigate } from "react-router-dom";
 
 interface AddGoalModalProps {
   isOpen: boolean;
@@ -21,7 +23,13 @@ export const AddGoalModal = ({ isOpen, onClose }: AddGoalModalProps) => {
   const [emoji, setEmoji] = useState("🎯");
   
   const createGoal = useCreateSavingsGoal();
+  const { data: existingGoals } = useSavingsGoals();
   const { toast } = useToast();
+  const { maxGoals, tier } = useTierLimits();
+  const navigate = useNavigate();
+
+  const goalCount = existingGoals?.length || 0;
+  const atLimit = goalCount >= maxGoals;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,10 +170,38 @@ export const AddGoalModal = ({ isOpen, onClose }: AddGoalModalProps) => {
                   </div>
                 </div>
 
+                {/* Goal limit warning */}
+                {atLimit && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-primary/10 border border-primary/20"
+                  >
+                    <Crown className="w-5 h-5 text-primary shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-foreground">
+                        Limite raggiunto ({goalCount}/{maxGoals === Infinity ? "∞" : maxGoals})
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Passa a un piano superiore per più obiettivi
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => { onClose(); navigate("/premium"); }}
+                      className="shrink-0"
+                    >
+                      Upgrade
+                    </Button>
+                  </motion.div>
+                )}
+
                 {/* Submit */}
                 <Button
                   type="submit"
-                  disabled={createGoal.isPending}
+                  disabled={createGoal.isPending || atLimit}
                   className="w-full h-12 rounded-xl gradient-reward text-reward-foreground font-semibold"
                 >
                   {createGoal.isPending ? (

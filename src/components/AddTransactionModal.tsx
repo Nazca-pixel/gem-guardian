@@ -23,6 +23,7 @@ import { useLevelUp, BxpUpdateResult } from "@/hooks/useLevelUp";
 import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 import { useWeeklyChallenges } from "@/hooks/useWeeklyChallenges";
 import { useTransactionRateLimit } from "@/hooks/useTransactionRateLimit";
+import { useTierLimits } from "@/hooks/useTierLimits";
 
 interface StreakMilestone {
   milestone: number;
@@ -67,6 +68,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const { data: challenges } = useWeeklyChallenges();
   const [showResetWarning, setShowResetWarning] = useState(false);
   const { getStatus, recordSubmit, loading: rateLimitLoading } = useTransactionRateLimit();
+  const { bxpMultiplier } = useTierLimits();
   const rateLimitStatus = getStatus();
 
   // Reset category when modal opens with a different default
@@ -180,8 +182,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
         return reward;
       })();
 
-      // Apply streak bonus
-      const bxpReward = Math.round(baseBxpReward * streakBonus);
+      // Apply streak bonus and tier multiplier
+      const bxpReward = Math.round(baseBxpReward * streakBonus * bxpMultiplier);
 
       let awardedBxp = false;
 

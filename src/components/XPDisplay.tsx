@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Coins, Target } from "lucide-react";
+import { useTierLimits } from "@/hooks/useTierLimits";
 
 interface XPDisplayProps {
   fxp: number;
@@ -7,6 +8,7 @@ interface XPDisplayProps {
 }
 
 export const XPDisplay = ({ fxp, bxp }: XPDisplayProps) => {
+  const { bxpMultiplier } = useTierLimits();
   const blendedScore = Math.round(fxp * 0.7 + bxp * 0.3);
 
   return (
@@ -42,7 +44,10 @@ export const XPDisplay = ({ fxp, bxp }: XPDisplayProps) => {
           <span className="text-xs font-medium text-muted-foreground">BXP</span>
         </div>
         <p className="text-2xl font-bold text-bxp">{bxp.toLocaleString()}</p>
-        <p className="text-xs text-muted-foreground mt-1">Abitudini</p>
+        {bxpMultiplier > 1 && (
+          <span className="text-[10px] font-bold text-primary">x{bxpMultiplier} bonus</span>
+        )}
+        {bxpMultiplier <= 1 && <p className="text-xs text-muted-foreground mt-1">Abitudini</p>}
       </motion.div>
 
       {/* Blended Score */}
