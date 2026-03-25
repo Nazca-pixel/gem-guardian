@@ -28,6 +28,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useTierLimits } from "@/hooks/useTierLimits";
 
 const rarityOrder = ["common", "uncommon", "rare", "epic", "legendary"] as const;
 
@@ -36,7 +37,7 @@ export default function Bestiary() {
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
   const [filterRarity, setFilterRarity] = useState<Monster["rarity"] | "all">("all");
   const { toast } = useToast();
-
+  const { canAccessMonsterRarity, tier } = useTierLimits();
   const { data: companion } = useCompanion();
   const updateCompanion = useUpdateCompanion();
   const { data: transactions } = useTransactions();
@@ -74,11 +75,12 @@ export default function Bestiary() {
 
     return filtered.map(monster => ({
       ...monster,
-      isUnlocked: isMonsterUnlocked(monster, userStats),
-      progress: getUnlockProgress(monster, userStats),
+      isUnlocked: isMonsterUnlocked(monster, userStats) && canAccessMonsterRarity(monster.rarity),
+      progress: canAccessMonsterRarity(monster.rarity) ? getUnlockProgress(monster, userStats) : 0,
       isSelected: monster.id === currentMonsterId,
+      tierLocked: !canAccessMonsterRarity(monster.rarity),
     }));
-  }, [userStats, filterRarity, currentMonsterId]);
+  }, [userStats, filterRarity, currentMonsterId, canAccessMonsterRarity]);
 
   const unlockedCount = categorizedMonsters.filter(m => m.isUnlocked).length;
 
