@@ -18,6 +18,7 @@ import { WeeklyChallenges } from "@/components/WeeklyChallenges";
 import { DailyCheckin } from "@/components/DailyCheckin";
 import { DevModePanel } from "@/components/DevModePanel";
 import { PremiumBanner } from "@/components/PremiumBanner";
+import { TierBadge } from "@/components/TierBadge";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
@@ -140,7 +141,10 @@ const Index = () => {
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div>
             <h1 className="text-xl font-bold text-foreground">Ciao, {displayName}! 👋</h1>
-            <p className="text-xs text-muted-foreground capitalize">{currentMonth}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground capitalize">{currentMonth}</p>
+              <TierBadge size="sm" />
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <motion.button
