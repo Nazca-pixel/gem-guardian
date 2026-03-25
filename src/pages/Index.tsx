@@ -17,6 +17,7 @@ import { StreakMilestoneModal } from "@/components/StreakMilestoneModal";
 import { WeeklyChallenges } from "@/components/WeeklyChallenges";
 import { DailyCheckin } from "@/components/DailyCheckin";
 import { DevModePanel } from "@/components/DevModePanel";
+import { PremiumBanner } from "@/components/PremiumBanner";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
