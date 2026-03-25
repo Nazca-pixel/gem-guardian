@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
+import { TierBadge } from "@/components/TierBadge";
 import { useProfile, useCompanion, useTransactions, useSavingsGoals, useUserBadges } from "@/hooks/useUserData";
 import { useAuth } from "@/contexts/AuthContext";
+import { useActiveTier, TIER_CONFIG } from "@/hooks/useSubscription";
+import { useTierLimits } from "@/hooks/useTierLimits";
 import { ArrowLeft, LogOut, Settings, Award, Target, Wallet, Calendar, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -87,6 +90,7 @@ const Profile = () => {
             <span className="px-3 py-1 rounded-full bg-accent/10 text-accent text-sm font-medium">
               {companion?.name || "Pippo"}
             </span>
+            <TierBadge size="md" />
           </div>
 
           <p className="text-xs text-muted-foreground mt-4 flex items-center justify-center gap-1">
