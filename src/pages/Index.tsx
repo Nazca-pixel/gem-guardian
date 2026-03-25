@@ -208,6 +208,9 @@ const Index = () => {
         {/* XP Display */}
         <XPDisplay fxp={companion?.fxp || 0} bxp={companion?.bxp || 0} />
 
+        {/* Premium Upgrade Banner */}
+        <PremiumBanner />
+
         {/* Balance Card */}
         <BalanceCard
           balance={totalBalance}
