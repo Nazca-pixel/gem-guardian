@@ -380,7 +380,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_leaderboard: {
+        Args: never
+        Returns: {
+          bxp: number
+          display_name: string
+          fxp: number
+          level: number
+          selected_monster_id: string
+          subscription_tier: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       subscription_tier: "free" | "starter" | "pro" | "elite"
