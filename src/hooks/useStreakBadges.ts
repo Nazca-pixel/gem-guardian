@@ -59,12 +59,8 @@ export const useStreakBadges = () => {
       if (!user) throw new Error("User not authenticated");
 
       const { error } = await supabase.rpc("award_badge", { _badge_id: badgeId });
-
       if (error) throw error;
       return { user_id: user.id, badge_id: badgeId };
-
-      if (error) throw error;
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user_badges", user?.id] });
