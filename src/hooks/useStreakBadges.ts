@@ -58,14 +58,10 @@ export const useStreakBadges = () => {
     mutationFn: async (badgeId: string) => {
       if (!user) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase
-        .from("user_badges")
-        .upsert(
-          { user_id: user.id, badge_id: badgeId },
-          { onConflict: "user_id,badge_id" }
-        )
-        .select()
-        .single();
+      const { error } = await supabase.rpc("award_badge", { _badge_id: badgeId });
+
+      if (error) throw error;
+      return { user_id: user.id, badge_id: badgeId };
 
       if (error) throw error;
       return data;
