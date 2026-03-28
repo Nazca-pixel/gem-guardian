@@ -135,7 +135,7 @@ export const useUpdateStreak = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companion", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["user-badges"] });
+      queryClient.invalidateQueries({ queryKey: ["user_badges", user?.id] });
     },
   });
 };
