@@ -40,11 +40,8 @@ const checkAndAwardStreakBadges = async (userId: string, newStreak: number): Pro
         .single();
 
       if (badge) {
-        // Award the badge
-        await supabase.from("user_badges").insert({
-          user_id: userId,
-          badge_id: badge.id,
-        });
+        // Award the badge via secure RPC
+        await supabase.rpc("award_badge", { _badge_id: badge.id });
         newBadges.push(badge.name);
       }
     }

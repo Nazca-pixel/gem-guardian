@@ -380,6 +380,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_badge: { Args: { _badge_id: string }; Returns: undefined }
+      checkout_subscription: {
+        Args: {
+          _is_annual: boolean
+          _tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Returns: Json
+      }
       get_leaderboard: {
         Args: never
         Returns: {
@@ -392,6 +400,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      unlock_accessory: { Args: { _accessory_id: string }; Returns: undefined }
     }
     Enums: {
       subscription_tier: "free" | "starter" | "pro" | "elite"

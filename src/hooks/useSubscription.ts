@@ -120,31 +120,14 @@ export function useCheckout() {
     }) => {
       if (!user) throw new Error("Not authenticated");
 
-      const expiresAt = new Date();
-      if (isAnnual) {
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-      } else {
-        expiresAt.setMonth(expiresAt.getMonth() + 1);
-      }
 
-      // Deactivate existing subscriptions
-      await supabase
-        .from("subscriptions")
-        .update({ is_active: false } as any)
-        .eq("user_id", user.id)
-        .eq("is_active", true);
 
-      // Create new subscription
-      const { data, error } = await supabase
-        .from("subscriptions")
-        .insert({
-          user_id: user.id,
-          tier,
-          is_annual: isAnnual,
-          expires_at: expiresAt.toISOString(),
-        } as any)
-        .select()
-        .single();
+
+      // Use secure server-side function
+      const { data, error } = await supabase.rpc("checkout_subscription", {
+        _tier: tier,
+        _is_annual: isAnnual,
+      });
 
       if (error) throw error;
       return data;
