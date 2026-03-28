@@ -380,6 +380,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      checkout_subscription: {
+        Args: {
+          _is_annual: boolean
+          _tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Returns: Json
+      }
       get_leaderboard: {
         Args: never
         Returns: {
