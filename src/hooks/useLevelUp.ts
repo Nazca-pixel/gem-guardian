@@ -76,11 +76,8 @@ export const useLevelUp = () => {
           .maybeSingle();
 
         if (!existingBadge) {
-          // Award the badge
-          await supabase.from("user_badges").insert({
-            user_id: user.id,
-            badge_id: badgeId,
-          });
+          // Award the badge via secure RPC
+          await supabase.rpc("award_badge", { _badge_id: badgeId });
 
           // Fetch badge info for display
           const { data: badge } = await supabase
@@ -142,11 +139,8 @@ export const useLevelUp = () => {
           .maybeSingle();
 
         if (!existing) {
-          // Unlock the accessory
-          await supabase.from("user_accessories").insert({
-            user_id: user.id,
-            accessory_id: threshold.accessoryId,
-          });
+          // Unlock the accessory via secure RPC
+          await supabase.rpc("unlock_accessory", { _accessory_id: threshold.accessoryId });
 
           // Fetch accessory info for display
           const { data: accessory } = await supabase
