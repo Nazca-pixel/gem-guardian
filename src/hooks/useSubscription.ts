@@ -120,12 +120,8 @@ export function useCheckout() {
     }) => {
       if (!user) throw new Error("Not authenticated");
 
-      const expiresAt = new Date();
-      if (isAnnual) {
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-      } else {
-        expiresAt.setMonth(expiresAt.getMonth() + 1);
-      }
+
+
 
       // Use secure server-side function
       const { data, error } = await supabase.rpc("checkout_subscription", {
