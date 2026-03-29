@@ -216,7 +216,7 @@ const Index = () => {
         </motion.div>
 
         {/* XP Display */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <XPDisplay fxp={companion?.fxp || 0} bxp={companion?.bxp || 0} />
         </motion.div>
 
@@ -235,7 +235,7 @@ const Index = () => {
         </motion.div>
 
         {/* Quick Actions */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <QuickActions onStreakMilestone={setStreakMilestone} />
         </motion.div>
 
