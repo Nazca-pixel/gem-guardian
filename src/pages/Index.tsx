@@ -195,38 +195,38 @@ const Index = () => {
         </motion.section>
 
         {/* Streak Reminder (at-risk warning) */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.45 }}>
-          <StreakReminder 
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
+          <StreakReminder
             currentStreak={companion?.current_streak || 0}
             lastActivityDate={companion?.last_activity_date || null}
           />
         </motion.div>
 
         {/* Streak Display */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.45 }}>
-          <StreakDisplay 
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
+          <StreakDisplay
             currentStreak={companion?.current_streak || 0}
             longestStreak={companion?.longest_streak || 0}
           />
         </motion.div>
 
         {/* Daily Check-in */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <DailyCheckin />
         </motion.div>
 
         {/* XP Display */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <XPDisplay fxp={companion?.fxp || 0} bxp={companion?.bxp || 0} />
         </motion.div>
 
         {/* Premium Upgrade Banner */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <PremiumBanner />
         </motion.div>
 
         {/* Balance Card */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <BalanceCard
             balance={totalBalance}
             monthlyChange={monthlyChange}
@@ -235,12 +235,12 @@ const Index = () => {
         </motion.div>
 
         {/* Quick Actions */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <QuickActions onStreakMilestone={setStreakMilestone} />
         </motion.div>
 
         {/* Weekly Challenges */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.45 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <WeeklyChallenges />
         </motion.div>
 
