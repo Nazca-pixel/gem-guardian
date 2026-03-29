@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Euro, AlertTriangle } from "lucide-react";
+import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -204,9 +205,26 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
       recordSubmit();
 
       toast({
-        title: isIncome ? "Entrata registrata! 💰" : "Spesa registrata! ✅",
+        title: isIncome ? "Ottimo lavoro! Il tuo Guardian è felice 🎉" : "Spesa registrata! ✅",
         description: `${description} - €${amount}${awardedBxp ? ` (+${bxpReward} BXP${streakBonus > 1 ? " 🔥" : ""})` : ""}`,
       });
+
+      // Confetti burst on income
+      if (isIncome) {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.3 },
+          colors: ["#4ade80", "#facc15", "#60a5fa", "#f472b6"],
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 40,
+            spread: 100,
+            origin: { y: 0.35, x: 0.6 },
+          });
+        }, 200);
+      }
 
       setDescription("");
       setAmount("");

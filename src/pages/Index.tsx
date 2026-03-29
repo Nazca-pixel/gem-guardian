@@ -136,7 +136,7 @@ const Index = () => {
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3"
+        className="sticky top-0 z-50 bg-card/40 backdrop-blur-2xl border-b border-border/30 px-4 py-3 shadow-soft"
       >
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div>
@@ -170,10 +170,10 @@ const Index = () => {
       <main className="px-4 py-6 max-w-lg mx-auto space-y-6">
         {/* Companion Animal - Hero Section */}
         <motion.section
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="bg-card rounded-3xl p-6 shadow-card border border-border relative overflow-hidden"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="bg-card/60 backdrop-blur-xl rounded-3xl p-6 shadow-card border border-border/50 relative overflow-hidden"
         >
           {/* Decorative background elements */}
           <div className="absolute top-4 left-4 w-16 h-16 bg-primary/5 rounded-full" />
@@ -195,42 +195,58 @@ const Index = () => {
         </motion.section>
 
         {/* Streak Reminder (at-risk warning) */}
-        <StreakReminder 
-          currentStreak={companion?.current_streak || 0}
-          lastActivityDate={companion?.last_activity_date || null}
-        />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.45 }}>
+          <StreakReminder 
+            currentStreak={companion?.current_streak || 0}
+            lastActivityDate={companion?.last_activity_date || null}
+          />
+        </motion.div>
 
         {/* Streak Display */}
-        <StreakDisplay 
-          currentStreak={companion?.current_streak || 0}
-          longestStreak={companion?.longest_streak || 0}
-        />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.45 }}>
+          <StreakDisplay 
+            currentStreak={companion?.current_streak || 0}
+            longestStreak={companion?.longest_streak || 0}
+          />
+        </motion.div>
 
         {/* Daily Check-in */}
-        <DailyCheckin />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.45 }}>
+          <DailyCheckin />
+        </motion.div>
 
         {/* XP Display */}
-        <XPDisplay fxp={companion?.fxp || 0} bxp={companion?.bxp || 0} />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.45 }}>
+          <XPDisplay fxp={companion?.fxp || 0} bxp={companion?.bxp || 0} />
+        </motion.div>
 
         {/* Premium Upgrade Banner */}
-        <PremiumBanner />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.45 }}>
+          <PremiumBanner />
+        </motion.div>
 
         {/* Balance Card */}
-        <BalanceCard
-          balance={totalBalance}
-          monthlyChange={monthlyChange}
-          lastSync={format(new Date(), "'Oggi,' HH:mm", { locale: it })}
-        />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.45 }}>
+          <BalanceCard
+            balance={totalBalance}
+            monthlyChange={monthlyChange}
+            lastSync={format(new Date(), "'Oggi,' HH:mm", { locale: it })}
+          />
+        </motion.div>
 
         {/* Quick Actions */}
-        <QuickActions onStreakMilestone={setStreakMilestone} />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.45 }}>
+          <QuickActions onStreakMilestone={setStreakMilestone} />
+        </motion.div>
 
         {/* Weekly Challenges */}
-        <WeeklyChallenges />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.45 }}>
+          <WeeklyChallenges />
+        </motion.div>
 
         {/* Savings Goals */}
         {savingsGoals && savingsGoals.length > 0 && (
-          <section className="space-y-3">
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.45 }} className="space-y-3">
             {savingsGoals.map((goal) => (
               <SavingsGoalCard
                 key={goal.id}
@@ -246,30 +262,37 @@ const Index = () => {
                 emoji={goal.emoji || "🎯"}
               />
             ))}
-          </section>
+          </motion.section>
         )}
         {/* Accessories */}
         {mappedAccessories.length > 0 && (
-          <AccessoriesBar accessories={mappedAccessories} currentBxp={companion?.bxp || 0} />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.45 }}>
+            <AccessoriesBar accessories={mappedAccessories} currentBxp={companion?.bxp || 0} />
+          </motion.div>
         )}
 
         {/* Badges */}
         {mappedBadges.length > 0 && (
-          <BadgesGrid badges={mappedBadges} />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65, duration: 0.45 }}>
+            <BadgesGrid badges={mappedBadges} />
+          </motion.div>
         )}
 
         {/* Recent Transactions with Filters */}
         {fullTransactions.length > 0 ? (
-          <FullTransactionList
-            transactions={fullTransactions}
-            showFilters={true}
-            title="Transazioni"
-            collapsible={true}
-          />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.45 }}>
+            <FullTransactionList
+              transactions={fullTransactions}
+              showFilters={true}
+              title="Transazioni"
+              collapsible={true}
+            />
+          </motion.div>
         ) : (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.45 }}
             className="bg-card rounded-2xl p-6 shadow-card border border-border text-center"
           >
             <span className="text-4xl">📝</span>
