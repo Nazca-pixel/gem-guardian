@@ -222,6 +222,18 @@ export const CompanionAnimal = ({
           {stage.emoji}
         </motion.span>
 
+        {/* Alert icon for negative balance */}
+        {isNegative && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="absolute -top-2 -left-2 z-20 bg-destructive rounded-full p-1.5 shadow-lg"
+          >
+            <AlertTriangle className="w-4 h-4 text-destructive-foreground" />
+          </motion.div>
+        )}
+
         {/* Equipped accessory */}
         {equippedAccessory && (
           <motion.div
