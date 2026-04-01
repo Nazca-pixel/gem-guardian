@@ -64,10 +64,28 @@ export const CompanionAnimal = ({
   name,
   selectedMonsterId = "phoenix",
   equippedAccessory,
+  monthlyBalance = 0,
   onPet,
 }: CompanionAnimalProps) => {
   const [isPetting, setIsPetting] = useState(false);
   const [showEvolution, setShowEvolution] = useState(false);
+  const [speechBubble, setSpeechBubble] = useState("");
+
+  const isPositive = monthlyBalance > 0;
+  const isNegative = monthlyBalance < 0;
+
+  // Random speech bubble that changes every 8 seconds
+  const phrases = useMemo(() => {
+    if (monthlyBalance === 0) return NEUTRAL_PHRASES;
+    return isPositive ? POSITIVE_PHRASES : NEGATIVE_PHRASES;
+  }, [monthlyBalance, isPositive]);
+
+  useEffect(() => {
+    const pick = () => setSpeechBubble(phrases[Math.floor(Math.random() * phrases.length)]);
+    pick();
+    const interval = setInterval(pick, 8000);
+    return () => clearInterval(interval);
+  }, [phrases]);
   const [evolutionData, setEvolutionData] = useState<{
     oldEmoji: string;
     newEmoji: string;
