@@ -144,6 +144,22 @@ export const CompanionAnimal = ({
       transition={{ duration: 0.5, type: "spring" }}
       className="relative mx-auto flex flex-col items-center justify-center"
     >
+      {/* Speech Bubble */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={speechBubble}
+          initial={{ opacity: 0, y: 10, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.8 }}
+          transition={{ duration: 0.4 }}
+          className="relative mb-3 max-w-[220px] px-3 py-2 rounded-2xl bg-card border border-border/60 shadow-md"
+        >
+          <p className="text-xs text-center text-foreground leading-snug">{speechBubble}</p>
+          {/* Bubble tail */}
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-card border-r border-b border-border/60 rotate-45" />
+        </motion.div>
+      </AnimatePresence>
+
       {/* Floating decorations */}
       <motion.div
         animate={{ y: [-5, 5, -5], rotate: [0, 10, 0] }}
@@ -170,15 +186,29 @@ export const CompanionAnimal = ({
           relative cursor-pointer
           w-40 h-40 sm:w-44 sm:h-44 rounded-full
           bg-gradient-to-br from-primary/20 via-card to-accent/20
-          shadow-lg
           flex items-center justify-center
-          border-4 border-primary/30
+          border-4
+          ${isPositive ? "border-green-400/60" : isNegative ? "border-destructive/40" : "border-primary/30"}
           ${moodStyles[mood]}
           ${isPetting ? "animate-wiggle" : "animate-float"}
         `}
+        style={{
+          boxShadow: isPositive
+            ? "0 0 25px 8px rgba(34,197,94,0.3), 0 0 60px 20px rgba(34,197,94,0.1)"
+            : isNegative
+            ? "0 0 20px 6px rgba(239,68,68,0.2)"
+            : undefined,
+          filter: isNegative ? "saturate(0.5)" : undefined,
+        }}
       >
         {/* Glow effect ring */}
-        <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-primary/40 via-accent/40 to-secondary/40 opacity-60 blur-md animate-pulse-glow" />
+        <div className={`absolute inset-[-4px] rounded-full opacity-60 blur-md animate-pulse-glow ${
+          isPositive
+            ? "bg-gradient-to-r from-green-400/50 via-green-300/40 to-green-500/50"
+            : isNegative
+            ? "bg-gradient-to-r from-destructive/30 via-muted/20 to-destructive/30"
+            : "bg-gradient-to-r from-primary/40 via-accent/40 to-secondary/40"
+        }`} />
         
         {/* Inner glow */}
         <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/5 to-transparent" />
