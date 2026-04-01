@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Heart, Sparkles, Star } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Sparkles, Star, AlertTriangle } from "lucide-react";
 import { monsters, Monster } from "@/lib/monsters";
 import { EvolutionAnimation } from "./EvolutionAnimation";
 
