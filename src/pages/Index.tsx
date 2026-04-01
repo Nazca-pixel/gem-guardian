@@ -190,6 +190,7 @@ const Index = () => {
               name={companion?.name || "Pippo"}
               selectedMonsterId={companion?.selected_monster_id || "phoenix"}
               equippedAccessory={equippedForCompanion}
+              monthlyBalance={monthlyChange}
             />
           </div>
         </motion.section>
