@@ -17,8 +17,33 @@ interface CompanionAnimalProps {
   name: string;
   selectedMonsterId?: string;
   equippedAccessory?: EquippedAccessory | null;
+  monthlyBalance?: number;
   onPet?: () => void;
 }
+
+const POSITIVE_PHRASES = [
+  "Ottimo mese! Stai risparmiando bene! 💰",
+  "Continua così, i tuoi risparmi crescono! 📈",
+  "Il tuo portafoglio è in salute! 🌟",
+  "Bravo! Stai gestendo bene le finanze! 🎯",
+  "I tuoi sforzi stanno pagando! ✨",
+  "Sei sulla strada giusta, campione! 🏆",
+];
+
+const NEGATIVE_PHRASES = [
+  "Attenzione alle spese questo mese... 😟",
+  "Proviamo a risparmiare un po' di più! 💪",
+  "Non mollare, il prossimo mese andrà meglio! 🌈",
+  "Rivedi le spese non necessarie! 🔍",
+  "Piccoli tagli fanno grandi risparmi! ✂️",
+  "Ogni centesimo conta, ripartiamo! 🚀",
+];
+
+const NEUTRAL_PHRASES = [
+  "Registra le tue spese per aiutarmi! 📝",
+  "Insieme possiamo raggiungere i tuoi obiettivi! 🎯",
+  "Inizia a tracciare le tue finanze! 📊",
+];
 
 // Get the current evolution stage for a monster based on level
 const getEvolutionStage = (monster: Monster, level: number) => {
