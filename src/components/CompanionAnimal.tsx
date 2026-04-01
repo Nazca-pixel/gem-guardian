@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Heart, Sparkles, Star } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Sparkles, Star, AlertTriangle } from "lucide-react";
 import { monsters, Monster } from "@/lib/monsters";
 import { EvolutionAnimation } from "./EvolutionAnimation";
 
@@ -17,8 +17,33 @@ interface CompanionAnimalProps {
   name: string;
   selectedMonsterId?: string;
   equippedAccessory?: EquippedAccessory | null;
+  monthlyBalance?: number;
   onPet?: () => void;
 }
+
+const POSITIVE_PHRASES = [
+  "Ottimo mese! Stai risparmiando bene! 💰",
+  "Continua così, i tuoi risparmi crescono! 📈",
+  "Il tuo portafoglio è in salute! 🌟",
+  "Bravo! Stai gestendo bene le finanze! 🎯",
+  "I tuoi sforzi stanno pagando! ✨",
+  "Sei sulla strada giusta, campione! 🏆",
+];
+
+const NEGATIVE_PHRASES = [
+  "Attenzione alle spese questo mese... 😟",
+  "Proviamo a risparmiare un po' di più! 💪",
+  "Non mollare, il prossimo mese andrà meglio! 🌈",
+  "Rivedi le spese non necessarie! 🔍",
+  "Piccoli tagli fanno grandi risparmi! ✂️",
+  "Ogni centesimo conta, ripartiamo! 🚀",
+];
+
+const NEUTRAL_PHRASES = [
+  "Registra le tue spese per aiutarmi! 📝",
+  "Insieme possiamo raggiungere i tuoi obiettivi! 🎯",
+  "Inizia a tracciare le tue finanze! 📊",
+];
 
 // Get the current evolution stage for a monster based on level
 const getEvolutionStage = (monster: Monster, level: number) => {
@@ -39,10 +64,28 @@ export const CompanionAnimal = ({
   name,
   selectedMonsterId = "phoenix",
   equippedAccessory,
+  monthlyBalance = 0,
   onPet,
 }: CompanionAnimalProps) => {
   const [isPetting, setIsPetting] = useState(false);
   const [showEvolution, setShowEvolution] = useState(false);
+  const [speechBubble, setSpeechBubble] = useState("");
+
+  const isPositive = monthlyBalance > 0;
+  const isNegative = monthlyBalance < 0;
+
+  // Random speech bubble that changes every 8 seconds
+  const phrases = useMemo(() => {
+    if (monthlyBalance === 0) return NEUTRAL_PHRASES;
+    return isPositive ? POSITIVE_PHRASES : NEGATIVE_PHRASES;
+  }, [monthlyBalance, isPositive]);
+
+  useEffect(() => {
+    const pick = () => setSpeechBubble(phrases[Math.floor(Math.random() * phrases.length)]);
+    pick();
+    const interval = setInterval(pick, 8000);
+    return () => clearInterval(interval);
+  }, [phrases]);
   const [evolutionData, setEvolutionData] = useState<{
     oldEmoji: string;
     newEmoji: string;
@@ -101,6 +144,22 @@ export const CompanionAnimal = ({
       transition={{ duration: 0.5, type: "spring" }}
       className="relative mx-auto flex flex-col items-center justify-center"
     >
+      {/* Speech Bubble */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={speechBubble}
+          initial={{ opacity: 0, y: 10, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.8 }}
+          transition={{ duration: 0.4 }}
+          className="relative mb-3 max-w-[220px] px-3 py-2 rounded-2xl bg-card border border-border/60 shadow-md"
+        >
+          <p className="text-xs text-center text-foreground leading-snug">{speechBubble}</p>
+          {/* Bubble tail */}
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-card border-r border-b border-border/60 rotate-45" />
+        </motion.div>
+      </AnimatePresence>
+
       {/* Floating decorations */}
       <motion.div
         animate={{ y: [-5, 5, -5], rotate: [0, 10, 0] }}
@@ -127,15 +186,29 @@ export const CompanionAnimal = ({
           relative cursor-pointer
           w-40 h-40 sm:w-44 sm:h-44 rounded-full
           bg-gradient-to-br from-primary/20 via-card to-accent/20
-          shadow-lg
           flex items-center justify-center
-          border-4 border-primary/30
+          border-4
+          ${isPositive ? "border-green-400/60" : isNegative ? "border-destructive/40" : "border-primary/30"}
           ${moodStyles[mood]}
           ${isPetting ? "animate-wiggle" : "animate-float"}
         `}
+        style={{
+          boxShadow: isPositive
+            ? "0 0 25px 8px rgba(34,197,94,0.3), 0 0 60px 20px rgba(34,197,94,0.1)"
+            : isNegative
+            ? "0 0 20px 6px rgba(239,68,68,0.2)"
+            : undefined,
+          filter: isNegative ? "saturate(0.5)" : undefined,
+        }}
       >
         {/* Glow effect ring */}
-        <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-primary/40 via-accent/40 to-secondary/40 opacity-60 blur-md animate-pulse-glow" />
+        <div className={`absolute inset-[-4px] rounded-full opacity-60 blur-md animate-pulse-glow ${
+          isPositive
+            ? "bg-gradient-to-r from-green-400/50 via-green-300/40 to-green-500/50"
+            : isNegative
+            ? "bg-gradient-to-r from-destructive/30 via-muted/20 to-destructive/30"
+            : "bg-gradient-to-r from-primary/40 via-accent/40 to-secondary/40"
+        }`} />
         
         {/* Inner glow */}
         <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/5 to-transparent" />
@@ -148,6 +221,18 @@ export const CompanionAnimal = ({
         >
           {stage.emoji}
         </motion.span>
+
+        {/* Alert icon for negative balance */}
+        {isNegative && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="absolute -top-2 -left-2 z-20 bg-destructive rounded-full p-1.5 shadow-lg"
+          >
+            <AlertTriangle className="w-4 h-4 text-destructive-foreground" />
+          </motion.div>
+        )}
 
         {/* Equipped accessory */}
         {equippedAccessory && (
