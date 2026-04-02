@@ -129,11 +129,15 @@ const Index = () => {
 
   if (companionLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto">
-        <Skeleton className="h-12 w-full mb-6 rounded-xl" />
-        <Skeleton className="h-64 w-full mb-6 rounded-3xl" />
-        <Skeleton className="h-24 w-full mb-4 rounded-2xl" />
-        <Skeleton className="h-32 w-full rounded-2xl" />
+      <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto space-y-4">
+        <HeroSkeleton />
+        <StreakSkeleton />
+        <StreakSkeleton />
+        <XPSkeleton />
+        <BalanceCardSkeleton />
+        <QuickActionsSkeleton />
+        <ChallengesSkeleton />
+        <TransactionsSkeleton />
       </div>
     );
   }
