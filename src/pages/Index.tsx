@@ -23,7 +23,15 @@ import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
 import { LevelUpResult } from "@/hooks/useLevelUp";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  HeroSkeleton,
+  StreakSkeleton,
+  XPSkeleton,
+  BalanceCardSkeleton,
+  QuickActionsSkeleton,
+  ChallengesSkeleton,
+  TransactionsSkeleton,
+} from "@/components/DashboardSkeletons";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 
