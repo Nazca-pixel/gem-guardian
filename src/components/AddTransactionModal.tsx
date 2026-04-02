@@ -308,11 +308,14 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                       step="0.01"
                       min="0"
                       value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
+                      onChange={(e) => { setAmount(e.target.value); setFieldErrors((p) => ({ ...p, amount: undefined })); }}
                       placeholder="0.00"
-                      className="pl-10 text-2xl font-bold h-14 rounded-xl"
+                      className={`pl-10 text-2xl font-bold h-14 rounded-xl ${fieldErrors.amount ? "border-destructive ring-destructive/30 ring-2" : ""}`}
                     />
                   </div>
+                  {fieldErrors.amount && (
+                    <p className="text-xs text-destructive mt-1 ml-1">{fieldErrors.amount}</p>
+                  )}
                 </div>
 
                 {/* Description */}
@@ -320,11 +323,14 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   <Label className="text-foreground">Descrizione</Label>
                   <Input
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => { setDescription(e.target.value); setFieldErrors((p) => ({ ...p, description: undefined })); }}
                     placeholder="Es. Pranzo al ristorante"
-                    className="mt-1 rounded-xl"
+                    className={`mt-1 rounded-xl ${fieldErrors.description ? "border-destructive ring-destructive/30 ring-2" : ""}`}
                     maxLength={100}
                   />
+                  {fieldErrors.description && (
+                    <p className="text-xs text-destructive mt-1 ml-1">{fieldErrors.description}</p>
+                  )}
                 </div>
 
                 {/* Category */}
