@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Euro, AlertTriangle } from "lucide-react";
 import confetti from "canvas-confetti";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,22 @@ import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 import { useWeeklyChallenges } from "@/hooks/useWeeklyChallenges";
 import { useTransactionRateLimit } from "@/hooks/useTransactionRateLimit";
 import { useTierLimits } from "@/hooks/useTierLimits";
+
+const transactionSchema = z.object({
+  description: z
+    .string()
+    .trim()
+    .min(1, { message: "La descrizione è obbligatoria" })
+    .max(100, { message: "Massimo 100 caratteri" }),
+  amount: z
+    .string()
+    .min(1, { message: "L'importo è obbligatorio" })
+    .refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, {
+      message: "L'importo deve essere maggiore di zero",
+    }),
+});
+
+type FieldErrors = Partial<Record<"description" | "amount", string>>;
 
 interface StreakMilestone {
   milestone: number;
@@ -58,6 +75,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<typeof categories[number]["value"]>(defaultCategory);
   const [isNecessary, setIsNecessary] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   
   const createTransaction = useCreateTransaction();
   const { data: companion } = useCompanion();
@@ -72,32 +90,37 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   const { bxpMultiplier } = useTierLimits();
   const rateLimitStatus = getStatus();
 
-  // Reset category when modal opens with a different default
+  // Reset category and errors when modal opens
   React.useEffect(() => {
     if (isOpen) {
       setCategory(defaultCategory);
+      setFieldErrors({});
     }
   }, [isOpen, defaultCategory]);
 
   const selectedCategory = categories.find(c => c.value === category);
   const isIncome = category === "income";
 
-  // Check if there's an active "no_unnecessary" challenge with progress > 0
   const activeFrugalChallenge = challenges?.find(
     (c) => c.challenge.type === "no_unnecessary" && !c.is_completed && c.progress > 0
   );
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!description.trim() || !amount) {
-      toast({
-        title: "Campi mancanti",
-        description: "Inserisci descrizione e importo",
-        variant: "destructive",
+
+    // Validate with Zod
+    const result = transactionSchema.safeParse({ description, amount });
+    if (!result.success) {
+      const errors: FieldErrors = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof FieldErrors;
+        if (!errors[field]) errors[field] = err.message;
       });
+      setFieldErrors(errors);
       return;
     }
+
+    setFieldErrors({});
 
     // Rate limit check
     if (!rateLimitStatus.canSubmit) {
