@@ -154,6 +154,42 @@ const Reports = () => {
   const dailyChartWidth = Math.max(dailyData.length * 32, 400);
   const monthlyChartWidth = Math.max(monthlyData.length * 64, 360);
 
+  // Dynamic tick interval for mobile readability
+  const dailyTickInterval = dailyData.length > 15 ? Math.ceil(dailyData.length / 7) : 4;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-24">
+        <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3">
+          <div className="flex items-center gap-3 max-w-lg mx-auto">
+            <Skeleton className="w-9 h-9 rounded-full" />
+            <Skeleton className="h-6 w-24 rounded" />
+          </div>
+        </div>
+        <main className="px-4 py-6 max-w-lg mx-auto space-y-6">
+          <div className="grid grid-cols-3 gap-3">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="bg-card rounded-2xl p-4 border border-border text-center space-y-2">
+                <Skeleton className="w-5 h-5 mx-auto rounded" />
+                <Skeleton className="h-3 w-12 mx-auto rounded" />
+                <Skeleton className="h-6 w-16 mx-auto rounded" />
+              </div>
+            ))}
+          </div>
+          <div className="bg-card rounded-3xl p-6 border border-border space-y-4">
+            <Skeleton className="h-5 w-40 rounded" />
+            <Skeleton className="h-[200px] w-full rounded-xl" />
+          </div>
+          <div className="bg-card rounded-3xl p-6 border border-border space-y-4">
+            <Skeleton className="h-5 w-36 rounded" />
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </main>
+        <BottomNav activeTab="stats" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
