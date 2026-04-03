@@ -75,7 +75,7 @@ const MonthlyTooltip = ({ active, payload, label }: any) => {
 
 const Reports = () => {
   const navigate = useNavigate();
-  const { data: transactions } = useTransactions();
+  const { data: transactions, isLoading } = useTransactions();
 
   const mappedTransactions = transactions?.map((t) => ({
     id: t.id,
