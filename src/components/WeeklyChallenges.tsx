@@ -291,9 +291,10 @@ export const WeeklyChallenges = () => {
                   </Button>
 
                   {/* Available Challenges */}
-                  <AnimatePresence>
+                  <AnimatePresence initial={false}>
                     {showAvailable && (
                       <motion.div
+                        key="available-challenges-list"
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}

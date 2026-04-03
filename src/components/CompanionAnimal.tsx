@@ -152,7 +152,7 @@ export const CompanionAnimal = ({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.8 }}
           transition={{ duration: 0.4 }}
-          className="relative mb-3 max-w-[220px] px-3 py-2 rounded-2xl bg-card border border-border/60 shadow-md"
+          className="relative mb-3 max-w-[220px] px-3 py-2 rounded-2xl bg-card border border-border/60 shadow-md z-10"
         >
           <p className="text-xs text-center text-foreground leading-snug">{speechBubble}</p>
           {/* Bubble tail */}

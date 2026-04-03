@@ -12,6 +12,7 @@ import { it } from "date-fns/locale";
 import { ArrowLeft, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const COLORS = [
   "hsl(var(--primary))",
