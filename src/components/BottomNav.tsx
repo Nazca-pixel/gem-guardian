@@ -14,7 +14,7 @@ const NavItem = ({ icon, label, isActive, onClick }: NavItemProps) => (
     whileTap={{ scale: 0.9 }}
     onClick={onClick}
     className={`
-      flex flex-col items-center gap-1 p-2 rounded-xl transition-all relative
+      flex flex-col items-center gap-1 p-2 min-h-[44px] min-w-[44px] rounded-xl transition-all relative
       ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}
     `}
   >

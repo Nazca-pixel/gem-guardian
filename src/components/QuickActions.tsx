@@ -19,9 +19,9 @@ const QuickAction = ({ icon, label, color, onClick }: QuickActionProps) => (
     whileTap={{ scale: 0.95 }}
     onClick={onClick}
     className={`
-      flex flex-col items-center gap-2 p-4
+      flex flex-col items-center gap-2 p-3 min-h-[72px]
       bg-card rounded-2xl shadow-soft border border-border
-      transition-all hover:shadow-card
+      transition-all hover:shadow-card active:scale-95
     `}
   >
     <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
