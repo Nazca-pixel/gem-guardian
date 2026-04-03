@@ -250,7 +250,7 @@ const Reports = () => {
                     tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
                     axisLine={false}
                     tickLine={false}
-                    interval={4}
+                    interval={dailyTickInterval}
                   />
                   <YAxis hide />
                   <Tooltip content={<DailyTooltip />} />
