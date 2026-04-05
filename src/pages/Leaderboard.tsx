@@ -95,7 +95,7 @@ const Leaderboard = () => {
   const tierBonus = TIER_BONUS[currentTier] || 1;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -66,7 +66,7 @@ const Badges = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-4 pb-24">
+      <div className="min-h-screen bg-background p-4 pb-32">
         <Skeleton className="h-10 w-32 mb-6" />
         <Skeleton className="h-32 w-full mb-6" />
         <div className="flex gap-2 mb-6">
@@ -84,7 +84,7 @@ const Badges = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border px-4 py-3">
         <div className="flex items-center gap-3">

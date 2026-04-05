@@ -103,7 +103,7 @@ export default function Bestiary() {
   const totalCount = categorizedMonsters.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-32">
       {/* Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}

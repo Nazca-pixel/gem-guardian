@@ -129,7 +129,7 @@ const Index = () => {
 
   if (companionLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto space-y-4">
+      <div className="min-h-screen bg-background pb-32 px-4 py-6 max-w-lg mx-auto space-y-4">
         <HeroSkeleton />
         <StreakSkeleton />
         <StreakSkeleton />
@@ -143,7 +143,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 overflow-x-hidden">
+    <div className="min-h-screen bg-background pb-32 overflow-x-hidden">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -318,7 +318,7 @@ const Index = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNav />
+      <BottomNav onStreakMilestone={setStreakMilestone} />
 
       {/* Level Up Modal */}
       <LevelUpModal

@@ -30,7 +30,7 @@ const Privacy = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}

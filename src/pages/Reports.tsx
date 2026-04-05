@@ -159,7 +159,7 @@ const Reports = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background pb-24">
+      <div className="min-h-screen bg-background pb-32">
         <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3">
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <Skeleton className="w-9 h-9 rounded-full" />
@@ -191,7 +191,7 @@ const Reports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
