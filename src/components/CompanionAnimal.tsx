@@ -216,8 +216,8 @@ export const CompanionAnimal = ({
         {/* Animal emoji */}
         <motion.span
           animate={isPetting ? { scale: [1, 1.2, 1] } : {}}
-          className="text-7xl leading-none select-none relative z-10 drop-shadow-lg"
-          style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))" }}
+          className="absolute inset-0 flex items-center justify-center text-7xl leading-[1] select-none z-10 drop-shadow-lg"
+          style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))", textAlign: "center" }}
         >
           {stage.emoji}
         </motion.span>
@@ -239,12 +239,12 @@ export const CompanionAnimal = ({
           <motion.div
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
-            className="absolute -top-1 left-1/2 -translate-x-1/2 z-20"
+            className="absolute -top-5 left-1/2 -translate-x-1/2 z-20"
           >
             <motion.span
               animate={{ y: [0, -2, 0], rotate: [-5, 5, -5] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="text-3xl drop-shadow-lg"
+              className="text-2xl drop-shadow-lg block"
               style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}
             >
               {equippedAccessory.emoji}
