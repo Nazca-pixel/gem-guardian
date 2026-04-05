@@ -239,7 +239,7 @@ export const CompanionAnimal = ({
           <motion.div
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
-            className="absolute -top-3 -right-3 z-20"
+            className="absolute -top-1 left-1/2 -translate-x-1/2 z-20"
           >
             <motion.span
               animate={{ y: [0, -2, 0], rotate: [-5, 5, -5] }}
