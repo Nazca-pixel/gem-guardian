@@ -143,7 +143,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 overflow-x-hidden">
+    <div className="min-h-screen bg-background pb-32 overflow-x-hidden">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
