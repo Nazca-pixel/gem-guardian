@@ -318,7 +318,7 @@ const Index = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNav />
+      <BottomNav onStreakMilestone={setStreakMilestone} />
 
       {/* Level Up Modal */}
       <LevelUpModal
