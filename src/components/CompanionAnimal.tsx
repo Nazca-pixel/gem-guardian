@@ -216,7 +216,7 @@ export const CompanionAnimal = ({
         {/* Animal emoji */}
         <motion.span
           animate={isPetting ? { scale: [1, 1.2, 1] } : {}}
-          className="text-7xl leading-none select-none relative z-10 drop-shadow-lg w-full h-full flex items-center justify-center"
+          className="text-7xl leading-none select-none relative z-10 drop-shadow-lg"
           style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))" }}
         >
           {stage.emoji}
