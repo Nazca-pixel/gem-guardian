@@ -19,6 +19,7 @@ interface CompanionAnimalProps {
   equippedAccessory?: EquippedAccessory | null;
   monthlyBalance?: number;
   onPet?: () => void;
+  onOpenDetails?: () => void;
 }
 
 const POSITIVE_PHRASES = [
