@@ -144,7 +144,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32 overflow-x-hidden">
+    <div className="min-h-screen bg-background pb-32 md:pb-8 md:pt-16 overflow-x-hidden">
+      {/* Desktop Navigation */}
+      <DesktopNav />
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
