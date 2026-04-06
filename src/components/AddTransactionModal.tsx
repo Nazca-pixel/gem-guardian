@@ -281,11 +281,11 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto"
+            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl max-h-[85vh] flex flex-col"
           >
-            <div className="max-w-lg mx-auto">
+            <div className="max-w-lg mx-auto flex flex-col h-full w-full">
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between p-6 pb-4">
                 <h2 className="text-xl font-bold text-foreground">
                   Nuova Transazione
                 </h2>
@@ -297,7 +297,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                 </button>
               </div>
 
-              <form onSubmit={handleFormSubmit} className="space-y-5">
+              <form id="add-transaction-form" onSubmit={handleFormSubmit} className="space-y-5 overflow-y-auto flex-1 px-6 pb-4">
                 {/* Amount */}
                 <div>
                   <Label className="text-foreground">Importo</Label>
@@ -336,20 +336,20 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                 {/* Category */}
                 <div>
                   <Label className="text-foreground mb-2 block">Categoria</Label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-2.5">
                     {categories.map((cat) => (
                       <button
                         key={cat.value}
                         type="button"
                         onClick={() => setCategory(cat.value)}
-                        className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
+                        className={`p-3.5 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${
                           category === cat.value
-                            ? "border-primary bg-primary/10"
+                            ? "border-primary bg-primary/15 shadow-md ring-2 ring-primary/20"
                             : "border-border bg-muted/50 hover:border-primary/50"
                         }`}
                       >
-                        <span className="text-xl">{cat.emoji}</span>
-                        <span className="text-xs font-medium text-foreground">{cat.label}</span>
+                        <span className="text-3xl">{cat.emoji}</span>
+                        <span className="text-xs font-semibold text-foreground">{cat.label}</span>
                       </button>
                     ))}
                   </div>
@@ -403,9 +403,13 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   </div>
                 )}
 
-                {/* Submit */}
+              </form>
+
+              {/* Sticky Submit */}
+              <div className="p-6 pt-3 border-t border-border/30 bg-card">
                 <Button
                   type="submit"
+                  form="add-transaction-form"
                   disabled={createTransaction.isPending || !rateLimitStatus.canSubmit}
                   className="w-full h-12 rounded-xl gradient-hero text-primary-foreground font-semibold"
                 >
@@ -420,7 +424,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                     </>
                   )}
                 </Button>
-              </form>
+              </div>
             </div>
           </motion.div>
         </>

@@ -9,6 +9,7 @@ import { FullTransactionList } from "@/components/FullTransactionList";
 import { AccessoriesBar } from "@/components/AccessoriesBar";
 import { BadgesGrid } from "@/components/BadgesGrid";
 import { BottomNav } from "@/components/BottomNav";
+import { DesktopNav } from "@/components/DesktopNav";
 import { LevelUpModal } from "@/components/LevelUpModal";
 import { AccessoryUnlockedToast } from "@/components/AccessoryUnlockedToast";
 import { StreakDisplay } from "@/components/StreakDisplay";
@@ -143,12 +144,14 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32 overflow-x-hidden">
+    <div className="min-h-screen bg-background pb-32 md:pb-8 md:pt-16 overflow-x-hidden">
+      {/* Desktop Navigation */}
+      <DesktopNav />
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-50 bg-card/40 backdrop-blur-2xl border-b border-border/30 px-4 py-3 shadow-soft"
+        className="sticky top-0 z-50 md:hidden bg-card/40 backdrop-blur-2xl border-b border-border/30 px-4 py-3 shadow-soft"
       >
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div>

@@ -24,7 +24,7 @@ const QuickAction = ({ icon, label, color, onClick }: QuickActionProps) => (
       transition-all hover:shadow-card active:scale-95
     `}
   >
-    <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
+    <div className={`w-14 h-14 rounded-xl ${color} flex items-center justify-center`}>
       {icon}
     </div>
     <span className="text-xs font-medium text-foreground">{label}</span>
@@ -61,7 +61,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.1 }}
         >
           <QuickAction
-            icon={<ArrowDownLeft className="w-5 h-5 text-primary-foreground" />}
+            icon={<ArrowDownLeft className="w-6 h-6 text-primary-foreground" />}
             label="Spesa"
             color="gradient-hero"
             onClick={() => setExpenseModalOpen(true)}
@@ -73,7 +73,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.15 }}
         >
           <QuickAction
-            icon={<ArrowUpRight className="w-5 h-5 text-white" />}
+            icon={<ArrowUpRight className="w-6 h-6 text-white" />}
             label="Entrata"
             color="bg-primary"
             onClick={() => setIncomeModalOpen(true)}
@@ -85,7 +85,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.2 }}
         >
           <QuickAction
-            icon={<Wallet className="w-5 h-5 text-secondary-foreground" />}
+            icon={<Wallet className="w-6 h-6 text-secondary-foreground" />}
             label="Saldo"
             color="bg-secondary"
             onClick={() => setBalanceModalOpen(true)}
@@ -97,7 +97,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.25 }}
         >
           <QuickAction
-            icon={<PiggyBank className="w-5 h-5 text-reward-foreground" />}
+            icon={<PiggyBank className="w-6 h-6 text-reward-foreground" />}
             label="Obiettivo"
             color="gradient-reward"
             onClick={() => setGoalModalOpen(true)}
@@ -109,9 +109,9 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.3 }}
         >
           <QuickAction
-            icon={<TrendingUp className="w-5 h-5 text-info-foreground" />}
+            icon={<TrendingUp className="w-6 h-6 text-white" />}
             label="Report"
-            color="bg-info"
+            color="bg-gradient-to-br from-blue-500 to-cyan-400"
             onClick={() => navigate("/reports")}
           />
         </motion.div>
