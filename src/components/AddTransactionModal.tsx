@@ -408,10 +408,9 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   )}
                 </Button>
               </div>
-            </div>
-          </motion.div>
-        </>
-      )}
+          </div>
+        </div>
+      </ResponsiveModal>
 
       {/* Warning dialog for resetting challenge progress */}
       <AlertDialog open={showResetWarning} onOpenChange={setShowResetWarning}>
