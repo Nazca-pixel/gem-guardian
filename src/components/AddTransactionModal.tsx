@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ResponsiveModal } from "./ResponsiveModal";
 import { X, Plus, Euro, AlertTriangle } from "lucide-react";
 import confetti from "canvas-confetti";
 import { z } from "zod";
@@ -264,38 +264,21 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50"
-          />
-          
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl max-h-[85vh] flex flex-col"
-          >
-            <div className="max-w-lg mx-auto flex flex-col h-full w-full">
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 pb-4">
-                <h2 className="text-xl font-bold text-foreground">
-                  Nuova Transazione
-                </h2>
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+    <>
+      <ResponsiveModal isOpen={isOpen} onClose={onClose}>
+        <div className="max-w-lg mx-auto flex flex-col h-full w-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 pb-4">
+            <h2 className="text-xl font-bold text-foreground">
+              Nuova Transazione
+            </h2>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
 
               <form id="add-transaction-form" onSubmit={handleFormSubmit} className="space-y-5 overflow-y-auto flex-1 px-6 pb-4">
                 {/* Amount */}
@@ -425,10 +408,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   )}
                 </Button>
               </div>
-            </div>
-          </motion.div>
-        </>
-      )}
+        </div>
+      </ResponsiveModal>
 
       {/* Warning dialog for resetting challenge progress */}
       <AlertDialog open={showResetWarning} onOpenChange={setShowResetWarning}>
@@ -459,6 +440,6 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </AnimatePresence>
+    </>
   );
 };

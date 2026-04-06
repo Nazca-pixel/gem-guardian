@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { ResponsiveModal } from "./ResponsiveModal";
 import { X, Target, Euro, Calendar, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,26 +73,8 @@ export const AddGoalModal = ({ isOpen, onClose }: AddGoalModalProps) => {
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50"
-          />
-          
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto"
-          >
-            <div className="max-w-lg mx-auto">
+    <ResponsiveModal isOpen={isOpen} onClose={onClose}>
+      <div className="max-w-lg mx-auto p-6 overflow-y-auto max-h-[80vh]">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-foreground">
@@ -214,10 +197,7 @@ export const AddGoalModal = ({ isOpen, onClose }: AddGoalModalProps) => {
                   )}
                 </Button>
               </form>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+      </div>
+    </ResponsiveModal>
   );
 };
