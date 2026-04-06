@@ -441,6 +441,6 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </AnimatePresence>
+    </>
   );
 };
