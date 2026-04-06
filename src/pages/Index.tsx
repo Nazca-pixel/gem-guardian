@@ -9,6 +9,7 @@ import { FullTransactionList } from "@/components/FullTransactionList";
 import { AccessoriesBar } from "@/components/AccessoriesBar";
 import { BadgesGrid } from "@/components/BadgesGrid";
 import { BottomNav } from "@/components/BottomNav";
+import { DesktopNav } from "@/components/DesktopNav";
 import { LevelUpModal } from "@/components/LevelUpModal";
 import { AccessoryUnlockedToast } from "@/components/AccessoryUnlockedToast";
 import { StreakDisplay } from "@/components/StreakDisplay";
