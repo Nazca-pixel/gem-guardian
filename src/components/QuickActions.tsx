@@ -85,7 +85,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.2 }}
         >
           <QuickAction
-            icon={<Wallet className="w-5 h-5 text-secondary-foreground" />}
+            icon={<Wallet className="w-6 h-6 text-secondary-foreground" />}
             label="Saldo"
             color="bg-secondary"
             onClick={() => setBalanceModalOpen(true)}
