@@ -61,7 +61,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.1 }}
         >
           <QuickAction
-            icon={<ArrowDownLeft className="w-5 h-5 text-primary-foreground" />}
+            icon={<ArrowDownLeft className="w-6 h-6 text-primary-foreground" />}
             label="Spesa"
             color="gradient-hero"
             onClick={() => setExpenseModalOpen(true)}
