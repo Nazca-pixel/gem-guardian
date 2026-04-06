@@ -408,7 +408,6 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   )}
                 </Button>
               </div>
-          </div>
         </div>
       </ResponsiveModal>
 
