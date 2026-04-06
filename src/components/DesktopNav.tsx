@@ -1,7 +1,9 @@
-import { Home, PieChart, BookOpen, Award, User, Crown } from "lucide-react";
+import { useState } from "react";
+import { Home, PieChart, BookOpen, Award, User, Crown, Plus } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { TierBadge } from "./TierBadge";
+import { AddTransactionModal } from "./AddTransactionModal";
 
 const navItems = [
   { id: "home", icon: Home, label: "Home", path: "/" },
