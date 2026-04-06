@@ -121,11 +121,16 @@ export const CompanionAnimal = ({
   }, [stage.emoji, stage.name, selectedMonster.evolutions]);
 
   const handlePet = () => {
-    if (isPetting) return;
-    setIsPetting(true);
-    onPet?.();
-    setTimeout(() => setIsPetting(false), 600);
-  };
+  if (isPetting) return;
+
+  setIsPetting(true);
+  onPet?.();
+
+  setTimeout(() => {
+    setIsPetting(false);
+    onOpenDetails?.();
+  }, 220);
+};
 
   const moodStyles = {
     happy: "companion-happy",
