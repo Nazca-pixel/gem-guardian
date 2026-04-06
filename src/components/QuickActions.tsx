@@ -73,7 +73,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.15 }}
         >
           <QuickAction
-            icon={<ArrowUpRight className="w-5 h-5 text-white" />}
+            icon={<ArrowUpRight className="w-6 h-6 text-white" />}
             label="Entrata"
             color="bg-primary"
             onClick={() => setIncomeModalOpen(true)}
