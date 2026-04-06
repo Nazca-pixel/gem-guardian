@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { ResponsiveModal } from "./ResponsiveModal";
 import { X, Target, Euro, Calendar, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
