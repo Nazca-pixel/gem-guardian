@@ -97,7 +97,7 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.25 }}
         >
           <QuickAction
-            icon={<PiggyBank className="w-5 h-5 text-reward-foreground" />}
+            icon={<PiggyBank className="w-6 h-6 text-reward-foreground" />}
             label="Obiettivo"
             color="gradient-reward"
             onClick={() => setGoalModalOpen(true)}
