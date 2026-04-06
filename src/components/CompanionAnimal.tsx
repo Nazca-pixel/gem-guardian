@@ -181,7 +181,8 @@ export const CompanionAnimal = ({
       {/* Main companion container */}
       <motion.div
         whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
+        animate={isPetting ? { scale: [1, 1.12, 0.95, 1.05, 1] } : { scale: 1 }}
+        transition={isPetting ? { duration: 0.6, ease: "easeOut" } : { duration: 0.2 }}
         onClick={handlePet}
         className={`
           relative cursor-pointer

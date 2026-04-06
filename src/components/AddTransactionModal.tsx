@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ResponsiveModal } from "./ResponsiveModal";
 import { X, Plus, Euro, AlertTriangle } from "lucide-react";
 import confetti from "canvas-confetti";
 import { z } from "zod";
