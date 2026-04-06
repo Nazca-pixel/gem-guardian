@@ -1,4 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { ResponsiveModal } from "./ResponsiveModal";
+import { motion } from "framer-motion";
 import { X, TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useTransactions } from "@/hooks/useUserData";
 import { startOfMonth, startOfWeek, isWithinInterval, subMonths } from "date-fns";
