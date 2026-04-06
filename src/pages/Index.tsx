@@ -151,7 +151,7 @@ const Index = () => {
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-50 bg-card/40 backdrop-blur-2xl border-b border-border/30 px-4 py-3 shadow-soft"
+        className="sticky top-0 z-50 md:hidden bg-card/40 backdrop-blur-2xl border-b border-border/30 px-4 py-3 shadow-soft"
       >
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div>
