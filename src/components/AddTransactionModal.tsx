@@ -297,7 +297,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                 </button>
               </div>
 
-              <form onSubmit={handleFormSubmit} className="space-y-5 overflow-y-auto flex-1 px-6">
+              <form id="add-transaction-form" onSubmit={handleFormSubmit} className="space-y-5 overflow-y-auto flex-1 px-6 pb-4">
                 {/* Amount */}
                 <div>
                   <Label className="text-foreground">Importo</Label>
