@@ -24,7 +24,7 @@ const QuickAction = ({ icon, label, color, onClick }: QuickActionProps) => (
       transition-all hover:shadow-card active:scale-95
     `}
   >
-    <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center`}>
+    <div className={`w-14 h-14 rounded-xl ${color} flex items-center justify-center`}>
       {icon}
     </div>
     <span className="text-xs font-medium text-foreground">{label}</span>
