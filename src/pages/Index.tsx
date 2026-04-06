@@ -1,3 +1,4 @@
+import { PetInteractionModal } from "@/components/PetInteractionModal";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { CompanionAnimal } from "@/components/CompanionAnimal";
