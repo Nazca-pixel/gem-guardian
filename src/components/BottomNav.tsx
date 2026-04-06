@@ -58,7 +58,7 @@ export const BottomNav = ({ activeTab = "home", onStreakMilestone }: BottomNavPr
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed bottom-0 left-0 right-0 z-50"
+        className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       >
         {/* Glass bar */}
         <div className="mx-3 mb-2 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/50 shadow-card">

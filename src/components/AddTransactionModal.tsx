@@ -403,9 +403,13 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                   </div>
                 )}
 
-                {/* Submit */}
+              </form>
+
+              {/* Sticky Submit */}
+              <div className="p-6 pt-3 border-t border-border/30 bg-card">
                 <Button
                   type="submit"
+                  form="add-transaction-form"
                   disabled={createTransaction.isPending || !rateLimitStatus.canSubmit}
                   className="w-full h-12 rounded-xl gradient-hero text-primary-foreground font-semibold"
                 >
@@ -420,7 +424,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                     </>
                   )}
                 </Button>
-              </form>
+              </div>
             </div>
           </motion.div>
         </>

@@ -109,9 +109,9 @@ export const QuickActions = ({ onStreakMilestone }: QuickActionsProps = {}) => {
           transition={{ delay: 0.3 }}
         >
           <QuickAction
-            icon={<TrendingUp className="w-5 h-5 text-info-foreground" />}
+            icon={<TrendingUp className="w-6 h-6 text-white" />}
             label="Report"
-            color="bg-info"
+            color="bg-gradient-to-br from-blue-500 to-cyan-400"
             onClick={() => navigate("/reports")}
           />
         </motion.div>

@@ -38,7 +38,9 @@ export const BalanceCard = ({ balance, monthlyChange, lastSync }: BalanceCardPro
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <h2 className="text-4xl font-bold text-primary-foreground mb-1">
+          <h2 className={`text-4xl font-bold mb-1 ${
+            balance < 0 ? "text-red-300" : "text-emerald-200"
+          }`}>
             {isVisible ? `€${balance.toLocaleString()}` : "€••••••"}
           </h2>
         </motion.div>
