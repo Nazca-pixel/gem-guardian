@@ -336,20 +336,20 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                 {/* Category */}
                 <div>
                   <Label className="text-foreground mb-2 block">Categoria</Label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-2.5">
                     {categories.map((cat) => (
                       <button
                         key={cat.value}
                         type="button"
                         onClick={() => setCategory(cat.value)}
-                        className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
+                        className={`p-3.5 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${
                           category === cat.value
-                            ? "border-primary bg-primary/10"
+                            ? "border-primary bg-primary/15 shadow-md ring-2 ring-primary/20"
                             : "border-border bg-muted/50 hover:border-primary/50"
                         }`}
                       >
-                        <span className="text-xl">{cat.emoji}</span>
-                        <span className="text-xs font-medium text-foreground">{cat.label}</span>
+                        <span className="text-3xl">{cat.emoji}</span>
+                        <span className="text-xs font-semibold text-foreground">{cat.label}</span>
                       </button>
                     ))}
                   </div>
