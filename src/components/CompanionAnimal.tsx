@@ -17,10 +17,10 @@ interface CompanionAnimalProps {
   name: string;
   selectedMonsterId?: string;
   equippedAccessory?: EquippedAccessory | null;
-  monthlyBalance?: number;
-  onPet?: () => void;
-  onOpenDetails?: () => void;
-}
+    monthlyBalance = 0,
+  onPet,
+  onOpenDetails,
+}: CompanionAnimalProps) => {
 
 const POSITIVE_PHRASES = [
   "Ottimo mese! Stai risparmiando bene! 💰",
