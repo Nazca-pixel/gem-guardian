@@ -276,10 +276,7 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
               >
                 💡 Registra le tue transazioni per avere statistiche più accurate!
               </motion.p>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+      </div>
+    </ResponsiveModal>
   );
 };

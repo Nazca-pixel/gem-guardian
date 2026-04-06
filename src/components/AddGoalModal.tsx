@@ -196,10 +196,7 @@ export const AddGoalModal = ({ isOpen, onClose }: AddGoalModalProps) => {
                   )}
                 </Button>
               </form>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+      </div>
+    </ResponsiveModal>
   );
 };
