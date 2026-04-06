@@ -283,9 +283,9 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
             exit={{ opacity: 0, y: 100 }}
             className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl max-h-[85vh] flex flex-col"
           >
-            <div className="max-w-lg mx-auto">
+            <div className="max-w-lg mx-auto flex flex-col h-full w-full">
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between p-6 pb-4">
                 <h2 className="text-xl font-bold text-foreground">
                   Nuova Transazione
                 </h2>
@@ -297,7 +297,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
                 </button>
               </div>
 
-              <form onSubmit={handleFormSubmit} className="space-y-5">
+              <form onSubmit={handleFormSubmit} className="space-y-5 overflow-y-auto flex-1 px-6">
                 {/* Amount */}
                 <div>
                   <Label className="text-foreground">Importo</Label>
