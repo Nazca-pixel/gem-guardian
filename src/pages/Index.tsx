@@ -207,6 +207,7 @@ const Index = () => {
               selectedMonsterId={companion?.selected_monster_id || "phoenix"}
               equippedAccessory={equippedForCompanion}
               monthlyBalance={monthlyChange}
+              onOpenDetails={() => setIsPetModalOpen(true)}
             />
           </div>
         </motion.section>
@@ -346,7 +347,19 @@ const Index = () => {
         milestone={streakMilestone?.milestone || 7}
         badgeName={streakMilestone?.badgeName || ""}
       />
-
+      
+      <PetInteractionModal
+        isOpen={isPetModalOpen}
+        onClose={() => setIsPetModalOpen(false)}
+        petName={companion?.name || "Pippo"}
+        level={companion?.level || 1}
+        stageName="Forma attuale"
+        moodText="Il tuo guardian reagisce a come stai gestendo le tue finanze."
+        fxp={companion?.fxp || 0}
+        maxFxp={getMaxFxpForLevel(companion?.level || 1)}
+        petEmoji="✨"
+      />
+      
       {/* DevMode Panel */}
       <DevModePanel onStreakMilestone={setStreakMilestone} />
     </div>
