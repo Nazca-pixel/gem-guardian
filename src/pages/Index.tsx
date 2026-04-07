@@ -52,7 +52,7 @@ const Index = () => {
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   const [unlockedAccessory, setUnlockedAccessory] = useState<{ name: string; emoji: string } | null>(null);
   const [streakMilestone, setStreakMilestone] = useState<{ milestone: number; badgeName: string } | null>(null);
-
+  const [isPetModalOpen, setIsPetModalOpen] = useState(false);
   const handleLevelUp = (result: LevelUpResult) => {
     setLevelUpData(result);
     setShowLevelUpModal(true);
