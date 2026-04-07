@@ -1,4 +1,5 @@
 import { PetInteractionModal } from "@/components/PetInteractionModal";
+import { monsters } from "@/lib/monsters";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { CompanionAnimal } from "@/components/CompanionAnimal";
@@ -102,6 +103,22 @@ const Index = () => {
     name: equippedAccessory.name,
   } : null;
 
+    const selectedMonster =
+    monsters.find((monster) => monster.id === companion?.selected_monster_id) || monsters[0];
+
+  const currentEvolution =
+    [...selectedMonster.evolutions]
+      .reverse()
+      .find((evolution) => (companion?.level || 1) >= evolution.minLevel) ||
+    selectedMonster.evolutions[0];
+
+  const companionMoodText =
+    companion?.mood === "excited"
+      ? "È super carico e pronto a festeggiare i tuoi progressi!"
+      : companion?.mood === "sad"
+      ? "Ha bisogno di un po' di attenzione e di buone abitudini finanziarie."
+      : "È tranquillo e continua a seguirti nei tuoi obiettivi.";
+
   // Map badges with earned status
   const mappedBadges = badges?.map(badge => {
     const userBadge = userBadges?.find(ub => ub.badge_id === badge.id);
@@ -198,7 +215,7 @@ const Index = () => {
           <div className="absolute top-8 right-16 w-2 h-2 bg-secondary rounded-full animate-sparkle" style={{ animationDelay: "0.5s" }} />
           
           <div className="flex justify-center">
-            <CompanionAnimal
+           <CompanionAnimal
               level={companion?.level || 1}
               mood={(companion?.mood as "happy" | "sad" | "excited") || "happy"}
               fxp={companion?.fxp || 0}
@@ -353,11 +370,11 @@ const Index = () => {
         onClose={() => setIsPetModalOpen(false)}
         petName={companion?.name || "Pippo"}
         level={companion?.level || 1}
-        stageName="Forma attuale"
-        moodText="Il tuo guardian reagisce a come stai gestendo le tue finanze."
+        stageName={currentEvolution.name}
+        moodText={companionMoodText}
         fxp={companion?.fxp || 0}
         maxFxp={getMaxFxpForLevel(companion?.level || 1)}
-        petEmoji="✨"
+        petEmoji={currentEvolution.emoji}
       />
       
       {/* DevMode Panel */}
