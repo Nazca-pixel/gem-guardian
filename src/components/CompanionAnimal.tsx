@@ -318,6 +318,15 @@ export const CompanionAnimal = ({
       >
         {moodMessages[mood]}
       </motion.p>
+      
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.45 }}
+        className="mt-2 text-xs text-center text-muted-foreground"
+      >
+        Tocca il tuo guardian per interagire ✨
+      </motion.p>
 
       {/* Evolution Animation */}
       {evolutionData && (
