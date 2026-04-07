@@ -266,7 +266,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
   return (
     <>
       <ResponsiveModal isOpen={isOpen} onClose={onClose}>
-        <div className="max-w-lg mx-auto flex flex-col h-full w-full">
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-lg flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-6 pb-4">
             <h2 className="text-xl font-bold text-foreground">
@@ -280,7 +280,11 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
             </button>
           </div>
 
-              <form id="add-transaction-form" onSubmit={handleFormSubmit} className="space-y-5 overflow-y-auto flex-1 px-6 pb-4">
+              <form
+  id="add-transaction-form"
+  onSubmit={handleFormSubmit}
+  className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 pb-4 space-y-5 [-webkit-overflow-scrolling:touch]"
+>
                 {/* Amount */}
                 <div>
                   <Label className="text-foreground">Importo</Label>
@@ -389,7 +393,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
               </form>
 
               {/* Sticky Submit */}
-              <div className="p-6 pt-3 border-t border-border/30 bg-card">
+              <div className="shrink-0 border-t border-border/30 bg-card p-6 pt-3">
                 <Button
                   type="submit"
                   form="add-transaction-form"
