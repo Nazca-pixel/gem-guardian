@@ -284,7 +284,7 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
               <form
   id="add-transaction-form"
   onSubmit={handleFormSubmit}
-  className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 pb-4 space-y-5 [-webkit-overflow-scrolling:touch]"
+  className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 pb-24 space-y-5 [-webkit-overflow-scrolling:touch]"
 >
                 {/* Amount */}
                 <div>
