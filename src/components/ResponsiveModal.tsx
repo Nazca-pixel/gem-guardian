@@ -1,58 +1,95 @@
+import { useEffect, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 
 interface ResponsiveModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  /** Optional max-width class for desktop dialog (default: max-w-lg) */
   maxWidth?: string;
 }
 
-/**
- * On mobile: bottom sheet (drawer from bottom).
- * On desktop: centered dialog with overlay.
- */
-export const ResponsiveModal = ({ isOpen, onClose, children, maxWidth = "max-w-lg" }: ResponsiveModalProps) => {
+export const ResponsiveModal = ({
+  isOpen,
+  onClose,
+  children,
+  maxWidth = "max-w-lg",
+}: ResponsiveModalProps) => {
   const isMobile = useIsMobile();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [isOpen]);
+
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const draggedFarEnough = info.offset.y > 120;
+    const draggedFastEnough = info.velocity.y > 700;
+
+    if (draggedFarEnough || draggedFastEnough) {
+      onClose();
+    }
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50"
+            className="fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm"
           />
 
           {isMobile ? (
-            /* Mobile: Bottom Sheet */
             <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 100 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl max-h-[85vh] flex flex-col"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 260 }}
+              drag="y"
+              dragDirectionLock
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.18 }}
+              onDragEnd={handleDragEnd}
+              className="fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl border-t border-border/40 bg-card shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* Drag handle */}
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+              <div className="flex justify-center pb-2 pt-3">
+                <div className="h-1.5 w-12 rounded-full bg-muted-foreground/30" />
               </div>
-              {children}
+
+              <div
+                ref={scrollRef}
+                className="min-h-0 flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]"
+              >
+                {children}
+              </div>
             </motion.div>
           ) : (
-            /* Desktop: Centered Dialog */
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-card rounded-2xl shadow-xl border border-border/50 max-h-[85vh] flex flex-col w-[95vw] ${maxWidth}`}
+              exit={{ opacity: 0, scale: 0.96, y: 20 }}
+              transition={{ type: "spring", damping: 28, stiffness: 260 }}
+              className={`fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] w-[95vw] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-border/50 bg-card shadow-xl ${maxWidth}`}
+              onClick={(e) => e.stopPropagation()}
             >
               {children}
             </motion.div>
