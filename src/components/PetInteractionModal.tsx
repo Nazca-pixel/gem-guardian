@@ -56,7 +56,7 @@ export const PetInteractionModal = ({
   return (
     <ResponsiveModal isOpen={isOpen} onClose={onClose}>
       <div className="mx-auto flex h-full min-h-0 w-full max-w-lg flex-col">
-        <div className="flex items-center justify-between p-6 pb-4">
+        <div className="shrink-0 flex items-center justify-between p-6 pb-4">
           <div>
             <h2 className="text-xl font-bold text-foreground">{petName}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
