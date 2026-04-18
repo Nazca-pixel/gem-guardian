@@ -268,13 +268,16 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
     <>
       <ResponsiveModal isOpen={isOpen} onClose={onClose}>
         <div className="mx-auto flex h-full min-h-0 w-full max-w-lg flex-col">
-          {/* Header */}
-          <div className="shrink-0 flex items-center justify-between p-6 pb-4">
+          <div
+            {...dragHandle}
+            className="shrink-0 flex items-center justify-between p-6 pb-4"
+          >
             <h2 className="text-xl font-bold text-foreground">
               Nuova Transazione
             </h2>
             <button
               type="button"
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
               >  
