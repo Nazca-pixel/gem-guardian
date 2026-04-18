@@ -339,7 +339,8 @@ export const FullTransactionList = ({
                             </div>
                           );
                         })}
-                      </div>
+                        </div>
+                      </SwipeableGroup>
                     </div>
                   ))
                 ) : (
