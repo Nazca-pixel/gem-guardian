@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Heart, Sparkles, UtensilsCrossed, Star } from "lucide-react";
-import { ResponsiveModal } from "./ResponsiveModal";
+import { ResponsiveModal, useResponsiveModalDragHandle } from "./ResponsiveModal";
 import { Button } from "@/components/ui/button";
 
 interface PetInteractionModalProps {
