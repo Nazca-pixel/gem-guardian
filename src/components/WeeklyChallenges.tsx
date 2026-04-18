@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Target, Plus, Trophy, Sparkles, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -156,7 +156,7 @@ const AvailableChallengeCard = ({
   );
 };
 
-export const WeeklyChallenges = () => {
+export const WeeklyChallenges = forwardRef<HTMLElement>((_props, _ref) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAvailable, setShowAvailable] = useState(false);
   const [hasUnnecessaryToday, setHasUnnecessaryToday] = useState(false);
@@ -319,4 +319,6 @@ export const WeeklyChallenges = () => {
       </AnimatePresence>
     </motion.section>
   );
-};
+});
+
+WeeklyChallenges.displayName = "WeeklyChallenges";
