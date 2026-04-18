@@ -102,17 +102,19 @@ export const PetInteractionModal = ({
               const Icon = action.icon;
 
               return (
-                <Button
-                  key={action.label}
-                  type="button"
-                  variant="outline"
-                  className="h-auto justify-start rounded-2xl px-4 py-4"
+              <Button
+               key={action.label}
+               type="button"
+               variant="outline"
+                className="h-auto justify-start rounded-2xl border-border/60 px-4 py-4 text-left transition-all active:scale-[0.98]"
                   onClick={() => {
                     setFeedback(`${action.emoji} ${action.text}`);
                     onPetAction?.();
                   }}
                 >
-                  <span className="mr-3 text-2xl">{action.emoji}</span>
+                  <span className="mr-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-2xl">
+  {action.emoji}
+</span>
 
                   <span className="flex flex-col items-start">
                     <span className="flex items-center gap-2 font-semibold text-foreground">
@@ -129,12 +131,12 @@ export const PetInteractionModal = ({
           </div>
 
           <div className="rounded-2xl bg-primary/10 p-4 text-sm text-muted-foreground">
-            <div className="mb-1 flex items-center gap-2 text-foreground">
-              <Star className="h-4 w-4" />
-              Prossimo upgrade
-            </div>
-            Puoi collegare queste azioni a mood, streak, frasi speciali o ricompense cosmetiche.
-          </div>
+  <div className="mb-1 flex items-center gap-2 text-foreground">
+    <Star className="h-4 w-4" />
+    Idee sbloccabili
+  </div>
+  Aggiungi bonus giornalieri, frasi rare, carezze con cooldown, o ricompense quando mantieni la streak.
+</div>
         </div>
       </div>
     </ResponsiveModal>
