@@ -70,7 +70,7 @@ const categories = [
 
 const STREAK_MILESTONES = [7, 30, 100];
 
-const AddTransactionModalInner = ({ isOpen, onClose, onAccessoryUnlocked, onStreakMilestone, defaultCategory = "other" }: AddTransactionModalProps) => {
+export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onStreakMilestone, defaultCategory = "other" }: AddTransactionModalProps) => {
   const dragHandle = useResponsiveModalDragHandle();
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
