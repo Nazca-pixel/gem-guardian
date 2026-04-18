@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ResponsiveModal } from "./ResponsiveModal";
+import { ResponsiveModal, useResponsiveModalDragHandle } from "./ResponsiveModal";
 import { X, Plus, Euro, AlertTriangle } from "lucide-react";
 import confetti from "canvas-confetti";
 import { z } from "zod";
