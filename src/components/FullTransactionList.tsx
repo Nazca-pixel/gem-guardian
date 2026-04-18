@@ -252,7 +252,8 @@ export const FullTransactionList = ({
                       </div>
 
                       {/* Transactions */}
-                      <div className="divide-y divide-border">
+                      <SwipeableGroup>
+                        <div className="divide-y divide-border">
                         {items.map((transaction, index) => {
                           const transactionContent = (
                             <motion.div
