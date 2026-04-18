@@ -74,12 +74,13 @@ export const PetInteractionModal = ({
         </div>
 
         <div className="flex-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain px-6 pb-5 [-webkit-overflow-scrolling:touch]">
-          <div className="flex flex-col items-center rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-card to-accent/10 p-5 text-center">
-            <div className="text-6xl drop-shadow-sm">{petEmoji}</div>
-            <p className="mt-3 text-sm font-medium text-foreground">{moodText}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{feedback}</p>
-          </div>
-
+          <div className="flex flex-col items-center rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-card to-accent/10 p-5 text-center shadow-sm">
+  <div className="text-7xl drop-shadow-sm">{petEmoji}</div>
+  <p className="mt-3 text-sm font-medium text-foreground">{moodText}</p>
+  <div className="mt-3 w-full rounded-2xl bg-background/70 px-4 py-3">
+    <p className="text-sm text-muted-foreground">{feedback}</p>
+  </div>
+</div>
           <div className="rounded-2xl border border-border/50 bg-card p-4">
             <div className="mb-2 flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Progresso FXP</span>
