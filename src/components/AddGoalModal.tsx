@@ -74,7 +74,7 @@ export const AddGoalModal = ({ isOpen, onClose }: AddGoalModalProps) => {
 
   return (
     <ResponsiveModal isOpen={isOpen} onClose={onClose}>
-      <div className="max-w-lg mx-auto p-6 overflow-y-auto max-h-[80vh]">
+      <div className="max-w-lg mx-auto p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-foreground">

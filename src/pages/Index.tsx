@@ -162,7 +162,8 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-8 md:pt-16 overflow-x-hidden">
+    <div className="min-h-screen bg-background pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-8 md:pt-16 overflow-x-hidden">
+      <a id="savings-goals" className="sr-only" />
       {/* Desktop Navigation */}
       <DesktopNav />
       {/* Header */}
@@ -281,7 +282,8 @@ const Index = () => {
 
         {/* Savings Goals */}
         {savingsGoals && savingsGoals.length > 0 && (
-          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.45 }} className="space-y-3">
+          <motion.section id="savings-goals" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.45 }} className="space-y-3 scroll-mt-20">
+            <h2 className="text-lg font-bold text-foreground px-1">🎯 Obiettivi di Risparmio</h2>
             {savingsGoals.map((goal) => (
               <SavingsGoalCard
                 key={goal.id}

@@ -46,7 +46,7 @@ const Profile = () => {
     { icon: <Crown className="w-5 h-5" />, label: "Piani Premium", action: () => navigate("/premium"), highlight: true },
     { icon: <Settings className="w-5 h-5" />, label: "Impostazioni", action: () => navigate("/settings") },
     { icon: <Award className="w-5 h-5" />, label: "I tuoi Badge", action: () => navigate("/badges") },
-    { icon: <Target className="w-5 h-5" />, label: "Obiettivi di Risparmio", action: () => navigate("/#savings-goals") },
+    { icon: <Target className="w-5 h-5" />, label: "Obiettivi di Risparmio", action: () => { navigate("/"); setTimeout(() => document.getElementById("savings-goals")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); } },
   ];
 
   const handleSignOut = async () => {
@@ -55,7 +55,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pb-[calc(7rem+env(safe-area-inset-bottom))]">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
