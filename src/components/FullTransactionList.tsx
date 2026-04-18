@@ -6,6 +6,7 @@ import { it } from "date-fns/locale";
 import { ChevronDown, TrendingUp, TrendingDown, Pencil, Trash2 } from "lucide-react";
 import { EditTransactionModal } from "./EditTransactionModal";
 import { SwipeableTransaction } from "./SwipeableTransaction";
+import { SwipeableGroup } from "./Swipeable";
 import { useDeleteTransaction } from "@/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
