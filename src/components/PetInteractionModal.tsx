@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Heart, Sparkles, UtensilsCrossed, Star } from "lucide-react";
-import { ResponsiveModal } from "./ResponsiveModal";
+import { ResponsiveModal, useResponsiveModalDragHandle } from "./ResponsiveModal";
 import { Button } from "@/components/ui/button";
 
 interface PetInteractionModalProps {
@@ -29,6 +29,7 @@ export const PetInteractionModal = ({
   onPetAction,
 }: PetInteractionModalProps) => {
   const [feedback, setFeedback] = useState("Il tuo guardian ti sta osservando 👀");
+  const dragHandle = useResponsiveModalDragHandle();
 
   const actions = [
     {
@@ -56,7 +57,7 @@ export const PetInteractionModal = ({
   return (
     <ResponsiveModal isOpen={isOpen} onClose={onClose}>
       <div className="mx-auto flex h-full min-h-0 w-full max-w-lg flex-col">
-        <div className="shrink-0 flex items-center justify-between p-6 pb-4">
+        <div {...dragHandle} className="shrink-0 flex items-center justify-between p-6 pb-4">
           <div>
             <h2 className="text-xl font-bold text-foreground">{petName}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -66,6 +67,7 @@ export const PetInteractionModal = ({
 
           <button
             type="button"
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={onClose}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-muted"
           >
