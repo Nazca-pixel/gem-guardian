@@ -29,6 +29,7 @@ export const PetInteractionModal = ({
   onPetAction,
 }: PetInteractionModalProps) => {
   const [feedback, setFeedback] = useState("Il tuo guardian ti sta osservando 👀");
+  const dragHandle = useResponsiveModalDragHandle();
 
   const actions = [
     {
