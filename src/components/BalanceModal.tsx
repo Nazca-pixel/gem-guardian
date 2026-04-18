@@ -116,7 +116,7 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
     },
   ];
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -133,7 +133,7 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
 
   return (
     <ResponsiveModal isOpen={isOpen} onClose={onClose}>
-      <div className="max-w-lg mx-auto p-6 overflow-y-auto max-h-[80vh]">
+      <div className="max-w-lg mx-auto p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
