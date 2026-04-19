@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { TierBadge } from "@/components/TierBadge";
-import { useProfile, useCompanion, useTransactions, useSavingsGoals, useUserBadges } from "@/hooks/useUserData";
+import { useProfile, useCompanion, useAllTransactions, useSavingsGoals, useUserBadges } from "@/hooks/useUserData";
 import { useAuth } from "@/contexts/AuthContext";
 import { useActiveTier, TIER_CONFIG } from "@/hooks/useSubscription";
 import { useTierLimits } from "@/hooks/useTierLimits";
@@ -17,7 +17,7 @@ const Profile = () => {
   const { signOut, user } = useAuth();
   const { data: profile } = useProfile();
   const { data: companion } = useCompanion();
-  const { data: transactions } = useTransactions();
+  const { data: transactions } = useAllTransactions();
   const { data: savingsGoals } = useSavingsGoals();
   const { data: userBadges } = useUserBadges();
 

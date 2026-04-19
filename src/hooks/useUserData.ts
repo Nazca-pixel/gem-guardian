@@ -1,6 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Tables } from "@/integrations/supabase/types";
+
+type TransactionRow = Tables<"transactions">;
 
 export interface CompanionAnimal {
   id: string;
@@ -145,27 +148,76 @@ export const useCreateSavingsGoal = () => {
   });
 };
 
-export const useTransactions = () => {
+/**
+ * Recent transactions for lightweight UI lists/previews.
+ * NEVER use this for balance, monthly change, or aggregated reports — it's capped.
+ */
+export const useRecentTransactions = (limit = 50) => {
   const { user } = useAuth();
-  
+
   return useQuery({
-    queryKey: ["transactions", user?.id],
+    queryKey: ["transactions", "recent", user?.id, limit],
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from("transactions")
         .select("*")
         .eq("user_id", user.id)
         .order("transaction_date", { ascending: false })
-        .limit(50);
-      
+        .limit(limit);
+
       if (error) throw error;
       return data;
     },
     enabled: !!user,
   });
 };
+
+/**
+ * Full transaction history for correct balance, monthly change, reports and aggregations.
+ * Paginates through Supabase 1000-row cap to fetch the entire user history.
+ */
+export const useAllTransactions = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["transactions", "all", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const PAGE = 1000;
+      let from = 0;
+      const all: TransactionRow[] = [];
+
+      // Page until a short page is returned — guarantees full history.
+      while (true) {
+        const { data, error } = await supabase
+          .from("transactions")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("transaction_date", { ascending: false })
+          .range(from, from + PAGE - 1);
+
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all.push(...data);
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+
+      return all;
+    },
+    enabled: !!user,
+    staleTime: 30_000,
+  });
+};
+
+/**
+ * @deprecated Use `useAllTransactions` for correctness or `useRecentTransactions` for previews.
+ * Kept temporarily as alias to avoid breaking imports during migration.
+ */
+export const useTransactions = useAllTransactions;
 
 export const useCreateTransaction = () => {
   const { user } = useAuth();
@@ -202,7 +254,7 @@ export const useCreateTransaction = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };
@@ -243,7 +295,7 @@ export const useUpdateTransaction = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };
@@ -265,7 +317,7 @@ export const useDeleteTransaction = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };

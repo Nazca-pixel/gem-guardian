@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { FullTransactionList } from "@/components/FullTransactionList";
-import { useTransactions } from "@/hooks/useUserData";
+import { useAllTransactions } from "@/hooks/useUserData";
 import {
   PieChart, Pie, Cell, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -75,7 +75,7 @@ const MonthlyTooltip = ({ active, payload, label }: any) => {
 
 const Reports = () => {
   const navigate = useNavigate();
-  const { data: transactions, isLoading } = useTransactions();
+  const { data: transactions, isLoading } = useAllTransactions();
 
   const mappedTransactions = transactions?.map((t) => ({
     id: t.id,

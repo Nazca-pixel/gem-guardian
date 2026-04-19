@@ -24,7 +24,7 @@ import { PremiumBanner } from "@/components/PremiumBanner";
 import { TierBadge } from "@/components/TierBadge";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useProfile, useCompanion, useSavingsGoals, useTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
+import { useProfile, useCompanion, useSavingsGoals, useAllTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
 import { LevelUpResult } from "@/hooks/useLevelUp";
 import {
   HeroSkeleton,
@@ -43,7 +43,7 @@ const Index = () => {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: companion, isLoading: companionLoading } = useCompanion();
   const { data: savingsGoals } = useSavingsGoals();
-  const { data: transactions } = useTransactions();
+  const { data: transactions } = useAllTransactions();
   const { data: accessories } = useAccessories();
   const { data: userAccessories } = useUserAccessories();
   const { data: badges } = useBadges();

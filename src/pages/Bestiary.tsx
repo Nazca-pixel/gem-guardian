@@ -15,7 +15,7 @@ import {
 import { 
   useCompanion, 
   useUpdateCompanion,
-  useTransactions, 
+  useAllTransactions, 
   useSavingsGoals,
   useUserBadges 
 } from "@/hooks/useUserData";
@@ -40,7 +40,7 @@ export default function Bestiary() {
   const { canAccessMonsterRarity, tier } = useTierLimits();
   const { data: companion } = useCompanion();
   const updateCompanion = useUpdateCompanion();
-  const { data: transactions } = useTransactions();
+  const { data: transactions } = useAllTransactions();
   const { data: savingsGoals } = useSavingsGoals();
   const { data: userBadges } = useUserBadges();
 

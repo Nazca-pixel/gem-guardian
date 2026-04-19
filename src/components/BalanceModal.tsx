@@ -1,7 +1,7 @@
 import { ResponsiveModal } from "./ResponsiveModal";
 import { motion } from "framer-motion";
 import { X, TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { useTransactions } from "@/hooks/useUserData";
+import { useAllTransactions } from "@/hooks/useUserData";
 import { startOfMonth, startOfWeek, isWithinInterval, subMonths } from "date-fns";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
@@ -37,7 +37,7 @@ const categoryColors: Record<string, string> = {
 };
 
 export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
-  const { data: transactions } = useTransactions();
+  const { data: transactions } = useAllTransactions();
 
   // Calculate totals
   const totalIncome = transactions?.filter(t => t.is_income).reduce((acc, t) => acc + Number(t.amount), 0) || 0;
