@@ -185,7 +185,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-8 md:pt-16 overflow-x-hidden">
-      <a id="savings-goals" className="sr-only" />
       {/* Desktop Navigation */}
       <DesktopNav />
       {/* Header */}
