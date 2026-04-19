@@ -41,6 +41,7 @@ import { it } from "date-fns/locale";
 
 const Index = () => {
   const { signOut } = useAuth();
+  const location = useLocation();
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: companion, isLoading: companionLoading } = useCompanion();
   const { data: savingsGoals } = useSavingsGoals();
