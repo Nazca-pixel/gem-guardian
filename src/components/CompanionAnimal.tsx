@@ -204,7 +204,9 @@ export const CompanionAnimal = ({
         whileHover={{ scale: 1.03 }}
         animate={isPetting ? { scale: [1, 1.12, 0.95, 1.05, 1] } : { scale: 1 }}
         transition={isPetting ? { duration: 0.6, ease: "easeOut" } : { duration: 0.2 }}
-        onClick={handlePet}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => { pointerStartRef.current = null; }}
         className={`
           relative cursor-pointer
           w-40 h-40 sm:w-44 sm:h-44 rounded-full
