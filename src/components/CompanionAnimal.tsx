@@ -121,17 +121,31 @@ export const CompanionAnimal = ({
     prevStageRef.current = stage.emoji;
   }, [stage.emoji, stage.name, selectedMonster.evolutions]);
 
-  const handlePet = () => {
-  if (isPetting) return;
+  // Distinguishes a real tap from a scroll/drag: requires short duration
+  // and minimal pointer movement before opening the details modal.
+  const pointerStartRef = useRef<{ x: number; y: number; t: number } | null>(null);
+  const TAP_MAX_MOVE = 8; // px
+  const TAP_MAX_DURATION = 400; // ms
 
-  setIsPetting(true);
-  onPet?.();
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY, t: performance.now() };
+  };
 
-  setTimeout(() => {
-    setIsPetting(false);
+  const handlePointerUp = (e: React.PointerEvent) => {
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (!start || isPetting) return;
+    const dx = Math.abs(e.clientX - start.x);
+    const dy = Math.abs(e.clientY - start.y);
+    const dt = performance.now() - start.t;
+    if (dx > TAP_MAX_MOVE || dy > TAP_MAX_MOVE || dt > TAP_MAX_DURATION) return;
+
+    setIsPetting(true);
+    onPet?.();
     onOpenDetails?.();
-  }, 220);
-};
+    // Reset wiggle after the animation completes
+    window.setTimeout(() => setIsPetting(false), 600);
+  };
 
   const moodStyles = {
     happy: "companion-happy",
