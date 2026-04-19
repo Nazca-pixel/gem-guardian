@@ -188,7 +188,7 @@ export const useAllTransactions = () => {
 
       const PAGE = 1000;
       let from = 0;
-      const all: any[] = [];
+      const all: TransactionRow[] = [];
 
       // Page until a short page is returned — guarantees full history.
       while (true) {
