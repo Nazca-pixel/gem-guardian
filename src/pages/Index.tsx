@@ -1,6 +1,7 @@
 import { PetInteractionModal } from "@/components/PetInteractionModal";
 import { monsters } from "@/lib/monsters";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CompanionAnimal } from "@/components/CompanionAnimal";
 import { XPDisplay } from "@/components/XPDisplay";
