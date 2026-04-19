@@ -1,6 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Tables } from "@/integrations/supabase/types";
+
+type TransactionRow = Tables<"transactions">;
 
 export interface CompanionAnimal {
   id: string;
