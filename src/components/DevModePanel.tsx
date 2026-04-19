@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useDevMode } from "@/contexts/DevModeContext";
-import { useCompanion, useUpdateCompanion, useAccessories, useBadges, useCreateTransaction, useTransactions, useDeleteTransaction, useSavingsGoals, useCreateSavingsGoal } from "@/hooks/useUserData";
+import { useCompanion, useUpdateCompanion, useAccessories, useBadges, useCreateTransaction, useAllTransactions, useDeleteTransaction, useSavingsGoals, useCreateSavingsGoal } from "@/hooks/useUserData";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
@@ -41,7 +41,7 @@ export const DevModePanel = ({ onStreakMilestone }: DevModePanelProps) => {
   const updateCompanion = useUpdateCompanion();
   const { data: accessories } = useAccessories();
   const { data: badges } = useBadges();
-  const { data: transactions } = useTransactions();
+  const { data: transactions } = useAllTransactions();
   const deleteTransaction = useDeleteTransaction();
   const createTransaction = useCreateTransaction();
   const { data: savingsGoals } = useSavingsGoals();
