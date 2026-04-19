@@ -1,6 +1,7 @@
 import { PetInteractionModal } from "@/components/PetInteractionModal";
 import { monsters } from "@/lib/monsters";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CompanionAnimal } from "@/components/CompanionAnimal";
 import { XPDisplay } from "@/components/XPDisplay";
@@ -40,6 +41,7 @@ import { it } from "date-fns/locale";
 
 const Index = () => {
   const { signOut } = useAuth();
+  const location = useLocation();
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: companion, isLoading: companionLoading } = useCompanion();
   const { data: savingsGoals } = useSavingsGoals();
@@ -62,6 +64,26 @@ const Index = () => {
   const handleAccessoryUnlocked = (accessory: { name: string; emoji: string }) => {
     setUnlockedAccessory(accessory);
   };
+
+  // Reliable scroll-to-section after navigation from other pages (e.g. Profile -> "Obiettivi di Risparmio")
+  const scrollTarget = (location.state as { scrollTo?: string } | null)?.scrollTo;
+  useEffect(() => {
+    if (!scrollTarget) return;
+    let cancelled = false;
+    const tryScroll = (attempt = 0) => {
+      if (cancelled) return;
+      const el = document.getElementById(scrollTarget);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Clear state so it doesn't re-fire on back/forward
+        window.history.replaceState({}, "");
+        return;
+      }
+      if (attempt < 20) requestAnimationFrame(() => tryScroll(attempt + 1));
+    };
+    tryScroll();
+    return () => { cancelled = true; };
+  }, [scrollTarget]);
 
   const displayName = profile?.display_name || "Utente";
   const currentMonth = format(new Date(), "MMMM yyyy", { locale: it });
@@ -163,7 +185,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-8 md:pt-16 overflow-x-hidden">
-      <a id="savings-goals" className="sr-only" />
       {/* Desktop Navigation */}
       <DesktopNav />
       {/* Header */}
