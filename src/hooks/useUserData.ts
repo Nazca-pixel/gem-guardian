@@ -254,7 +254,7 @@ export const useCreateTransaction = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };
@@ -295,7 +295,7 @@ export const useUpdateTransaction = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };
@@ -317,7 +317,7 @@ export const useDeleteTransaction = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 };
