@@ -74,19 +74,16 @@ export const FullTransactionList = ({
   const filteredTransactions = useMemo(() => {
     let filtered = [...transactions];
 
-    // Filter by month
     if (selectedMonth !== "all") {
       const monthDate = parse(selectedMonth, "yyyy-MM", new Date());
       const start = startOfMonth(monthDate);
       const end = endOfMonth(monthDate);
-      
       filtered = filtered.filter((t) => {
         const date = new Date(t.transaction_date);
         return date >= start && date <= end;
       });
     }
 
-    // Filter by category
     if (selectedCategory !== "all") {
       if (selectedCategory === "income") {
         filtered = filtered.filter((t) => t.is_income);
@@ -97,14 +94,12 @@ export const FullTransactionList = ({
       }
     }
 
-    // Sort by date (newest first)
     filtered.sort(
       (a, b) =>
         new Date(b.transaction_date).getTime() -
         new Date(a.transaction_date).getTime()
     );
 
-    // Apply max items limit
     if (maxItems) {
       filtered = filtered.slice(0, maxItems);
     }
@@ -112,7 +107,6 @@ export const FullTransactionList = ({
     return filtered;
   }, [transactions, selectedMonth, selectedCategory, maxItems]);
 
-  // Calculate summary
   const summary = useMemo(() => {
     const income = filteredTransactions
       .filter((t) => t.is_income)
@@ -123,10 +117,8 @@ export const FullTransactionList = ({
     return { income, expenses, balance: income - expenses };
   }, [filteredTransactions]);
 
-  // Group by date
   const groupedTransactions = useMemo(() => {
     const groups: Record<string, Transaction[]> = {};
-    
     filteredTransactions.forEach((t) => {
       const dateKey = format(new Date(t.transaction_date), "d MMMM yyyy", {
         locale: it,
@@ -136,13 +128,11 @@ export const FullTransactionList = ({
       }
       groups[dateKey].push(t);
     });
-
     return groups;
   }, [filteredTransactions]);
 
   const handleDelete = async () => {
     if (!deletingTransaction) return;
-
     try {
       await deleteTransaction.mutateAsync(deletingTransaction.id);
       toast({
@@ -212,7 +202,6 @@ export const FullTransactionList = ({
                     onCategoryChange={setSelectedCategory}
                   />
 
-                  {/* Summary */}
                   {filteredTransactions.length > 0 && (
                     <div className="flex gap-4 mt-3 text-sm">
                       <div className="flex items-center gap-1 text-primary">
@@ -239,19 +228,17 @@ export const FullTransactionList = ({
                 </div>
               )}
 
-              {/* Transaction Groups */}
-              <div className="max-h-96 overflow-y-auto">
+              {/* Transaction Groups — no nested scroll, flows naturally */}
+              <div className="overflow-visible">
                 {Object.keys(groupedTransactions).length > 0 ? (
                   Object.entries(groupedTransactions).map(([date, items]) => (
                     <div key={date}>
-                      {/* Date Header */}
                       <div className="px-4 py-2 bg-muted/50 sticky top-0">
                         <p className="text-xs font-medium text-muted-foreground uppercase">
                           {date}
                         </p>
                       </div>
 
-                      {/* Transactions */}
                       <SwipeableGroup>
                         <div className="divide-y divide-border">
                         {items.map((transaction, index) => {
@@ -276,7 +263,7 @@ export const FullTransactionList = ({
                                   </p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex items-center gap-2">
                                 <span
                                   className={`font-bold shrink-0 ${
@@ -288,8 +275,7 @@ export const FullTransactionList = ({
                                   {transaction.is_income ? "+" : "-"}€
                                   {Math.abs(transaction.amount).toLocaleString()}
                                 </span>
-                                
-                                {/* Action Buttons - only show on desktop */}
+
                                 {!isMobile && (
                                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
@@ -318,7 +304,6 @@ export const FullTransactionList = ({
                             </motion.div>
                           );
 
-                          // Wrap with swipeable on mobile
                           if (isMobile) {
                             return (
                               <SwipeableTransaction
@@ -357,7 +342,6 @@ export const FullTransactionList = ({
         </AnimatePresence>
       </motion.div>
 
-      {/* Edit Modal */}
       <EditTransactionModal
         open={!!editingTransaction}
         onClose={() => {
@@ -367,7 +351,6 @@ export const FullTransactionList = ({
         transaction={editingTransaction}
       />
 
-      {/* Delete Confirmation */}
       <AlertDialog open={!!deletingTransaction} onOpenChange={(open) => !open && setDeletingTransaction(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
