@@ -25,18 +25,18 @@ export interface CompanionAnimal {
 
 export const useCompanion = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ["companion", user?.id],
     queryFn: async () => {
       if (!user) return null;
-      
+
       const { data, error } = await supabase
         .from("companion_animals")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle();
-      
+
       if (error) throw error;
       return data as CompanionAnimal | null;
     },
@@ -47,29 +47,28 @@ export const useCompanion = () => {
 export const useUpdateCompanion = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (updates: Partial<CompanionAnimal>) => {
       if (!user) throw new Error("User not authenticated");
-      
+
       const { data, error } = await supabase
         .from("companion_animals")
         .update(updates)
         .eq("user_id", user.id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
     onSuccess: (data) => {
-      // Use the returned data's user_id to ensure we invalidate the right query
       if (data?.user_id) {
         queryClient.invalidateQueries({ queryKey: ["companion", data.user_id] });
       } else if (user?.id) {
         queryClient.invalidateQueries({ queryKey: ["companion", user.id] });
       }
-      // Also invalidate without user_id to catch any cached queries
+
       queryClient.invalidateQueries({ queryKey: ["companion"] });
     },
   });
@@ -77,18 +76,18 @@ export const useUpdateCompanion = () => {
 
 export const useProfile = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user) return null;
-      
+
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle();
-      
+
       if (error) throw error;
       return data;
     },
@@ -98,18 +97,18 @@ export const useProfile = () => {
 
 export const useSavingsGoals = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ["savings_goals", user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from("savings_goals")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      
+
       if (error) throw error;
       return data;
     },
@@ -120,7 +119,7 @@ export const useSavingsGoals = () => {
 export const useCreateSavingsGoal = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (goal: {
       name: string;
@@ -129,7 +128,7 @@ export const useCreateSavingsGoal = () => {
       deadline?: string;
     }) => {
       if (!user) throw new Error("User not authenticated");
-      
+
       const { data, error } = await supabase
         .from("savings_goals")
         .insert({
@@ -138,7 +137,7 @@ export const useCreateSavingsGoal = () => {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -150,7 +149,7 @@ export const useCreateSavingsGoal = () => {
 
 /**
  * Recent transactions for lightweight UI lists/previews.
- * NEVER use this for balance, monthly change, or aggregated reports — it's capped.
+ * Do not use for balance, monthly change, totals or reports.
  */
 export const useRecentTransactions = (limit = 50) => {
   const { user } = useAuth();
@@ -168,121 +167,137 @@ export const useRecentTransactions = (limit = 50) => {
         .limit(limit);
 
       if (error) throw error;
-      return data;
+      return data as TransactionRow[];
     },
     enabled: !!user,
   });
 };
 
 /**
- * Full transaction history for correct balance, monthly change, reports and aggregations.
- * Paginates through Supabase 1000-row cap to fetch the entire user history.
+ * Full transaction history for correct balance, reports and aggregations.
  */
-export const useTransactions = () => {
+export const useAllTransactions = () => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["transactions-all", user?.id],
+    queryKey: ["transactions", "all", user?.id],
     queryFn: async () => {
       if (!user) return [];
 
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("transaction_date", { ascending: false });
+      const PAGE_SIZE = 1000;
+      let from = 0;
+      const all: TransactionRow[] = [];
 
-      if (error) throw error;
-      return data;
+      while (true) {
+        const { data, error } = await supabase
+          .from("transactions")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("transaction_date", { ascending: false })
+          .range(from, from + PAGE_SIZE - 1);
+
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+
+        all.push(...(data as TransactionRow[]));
+
+        if (data.length < PAGE_SIZE) break;
+        from += PAGE_SIZE;
+      }
+
+      return all;
     },
     enabled: !!user,
-  });
-};
-
-export const useRecentTransactions = (limit = 50) => {
-  const { user } = useAuth();
-
-  return useQuery({
-    queryKey: ["transactions-recent", user?.id, limit],
-    queryFn: async () => {
-      if (!user) return [];
-
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("transaction_date", { ascending: false })
-        .limit(limit);
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user,
+    staleTime: 30_000,
   });
 };
 
 /**
- * @deprecated Use `useAllTransactions` for correctness or `useRecentTransactions` for previews.
- * Kept temporarily as alias to avoid breaking imports during migration.
+ * Temporary alias to avoid breaking old imports during migration.
+ * Prefer useAllTransactions for correctness or useRecentTransactions for lightweight lists.
  */
 export const useTransactions = useAllTransactions;
 
 export const useCreateTransaction = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (transaction: {
       description: string;
       amount: number;
-      category: "food" | "transport" | "entertainment" | "shopping" | "bills" | "health" | "education" | "savings" | "income" | "other";
+      category:
+        | "food"
+        | "transport"
+        | "entertainment"
+        | "shopping"
+        | "bills"
+        | "health"
+        | "education"
+        | "savings"
+        | "income"
+        | "other";
       emoji: string;
       is_income: boolean;
       is_necessary: boolean;
       transaction_date?: string;
     }) => {
       if (!user) throw new Error("User not authenticated");
-      
+
       const { data, error } = await supabase
         .from("transactions")
-        .insert([{
-          user_id: user.id,
-          description: transaction.description,
-          amount: transaction.amount,
-          category: transaction.category,
-          emoji: transaction.emoji,
-          is_income: transaction.is_income,
-          is_necessary: transaction.is_necessary,
-          transaction_date: transaction.transaction_date,
-        }])
+        .insert([
+          {
+            user_id: user.id,
+            description: transaction.description,
+            amount: transaction.amount,
+            category: transaction.category,
+            emoji: transaction.emoji,
+            is_income: transaction.is_income,
+            is_necessary: transaction.is_necessary,
+            transaction_date: transaction.transaction_date,
+          },
+        ])
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", "all", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", "recent", user?.id] });
     },
   });
 };
+
 export const useUpdateTransaction = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (transaction: {
       id: string;
       description: string;
       amount: number;
-      category: "food" | "transport" | "entertainment" | "shopping" | "bills" | "health" | "education" | "savings" | "income" | "other";
+      category:
+        | "food"
+        | "transport"
+        | "entertainment"
+        | "shopping"
+        | "bills"
+        | "health"
+        | "education"
+        | "savings"
+        | "income"
+        | "other";
       emoji: string;
       is_income: boolean;
       is_necessary: boolean;
       transaction_date?: string;
     }) => {
       if (!user) throw new Error("User not authenticated");
-      
+
       const { data, error } = await supabase
         .from("transactions")
         .update({
@@ -298,12 +313,13 @@ export const useUpdateTransaction = () => {
         .eq("user_id", user.id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", "all", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", "recent", user?.id] });
     },
   });
 };
@@ -311,21 +327,22 @@ export const useUpdateTransaction = () => {
 export const useDeleteTransaction = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (transactionId: string) => {
       if (!user) throw new Error("User not authenticated");
-      
+
       const { error } = await supabase
         .from("transactions")
         .delete()
         .eq("id", transactionId)
         .eq("user_id", user.id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", "all", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", "recent", user?.id] });
     },
   });
 };
@@ -338,7 +355,7 @@ export const useAccessories = () => {
         .from("accessories")
         .select("*")
         .order("bxp_required", { ascending: true });
-      
+
       if (error) throw error;
       return data;
     },
@@ -347,17 +364,17 @@ export const useAccessories = () => {
 
 export const useUserAccessories = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ["user_accessories", user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from("user_accessories")
         .select("*, accessory:accessories(*)")
         .eq("user_id", user.id);
-      
+
       if (error) throw error;
       return data;
     },
@@ -372,7 +389,7 @@ export const useBadges = () => {
       const { data, error } = await supabase
         .from("badges")
         .select("*");
-      
+
       if (error) throw error;
       return data;
     },
@@ -381,17 +398,17 @@ export const useBadges = () => {
 
 export const useUserBadges = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ["user_badges", user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from("user_badges")
         .select("*, badge:badges(*)")
         .eq("user_id", user.id);
-      
+
       if (error) throw error;
       return data;
     },
