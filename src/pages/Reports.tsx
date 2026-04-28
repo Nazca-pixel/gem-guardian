@@ -40,8 +40,29 @@ const categoryLabels: Record<string, string> = {
   other: "📦 Altro",
 };
 
-// Custom tooltip for the daily spending area chart
-const DailyTooltip = ({ active, payload, label }: any) => {
+interface ChartPayloadItem {
+  color?: string;
+  dataKey?: string;
+  value?: number;
+  payload?: {
+    uscite?: number;
+    topCategory?: string;
+  };
+}
+
+interface DailyTooltipProps {
+  active?: boolean;
+  payload?: ChartPayloadItem[];
+  label?: string;
+}
+
+interface MonthlyTooltipProps {
+  active?: boolean;
+  payload?: ChartPayloadItem[];
+  label?: string;
+}
+
+const DailyTooltip = ({ active, payload, label }: DailyTooltipProps) => {
   if (!active || !payload?.length) return null;
   const data = payload[0]?.payload;
   return (
@@ -57,13 +78,12 @@ const DailyTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-// Custom tooltip for bar chart
-const MonthlyTooltip = ({ active, payload, label }: any) => {
+const MonthlyTooltip = ({ active, payload, label }: MonthlyTooltipProps) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl p-3 shadow-lg text-sm min-w-[130px]">
       <p className="font-semibold text-foreground mb-1 capitalize">{label}</p>
-      {payload.map((p: any) => (
+      {payload.map((p) => (
         <div key={p.dataKey} className="flex justify-between gap-3">
           <span className="text-muted-foreground">{p.dataKey === "entrate" ? "Entrate" : "Uscite"}</span>
           <span className="font-bold" style={{ color: p.color }}>€{p.value?.toLocaleString()}</span>
@@ -76,7 +96,7 @@ const MonthlyTooltip = ({ active, payload, label }: any) => {
 const Reports = () => {
   const navigate = useNavigate();
   const { data: transactions, isLoading } = useAllTransactions();
-  
+
   const mappedTransactions = transactions?.map((t) => ({
     id: t.id,
     description: t.description,
@@ -87,7 +107,6 @@ const Reports = () => {
     is_income: t.is_income,
   })) || [];
 
-  // Spending by category
   const expensesByCategory = transactions
     ?.filter((t) => !t.is_income)
     .reduce((acc, t) => {
@@ -100,33 +119,26 @@ const Reports = () => {
     .map(([name, value]) => ({ name: categoryLabels[name] || name, value }))
     .sort((a, b) => b.value - a.value);
 
-  // Daily spending trend (last 30 days) with top category
   const dailyData = useMemo(() => {
     const days: { label: string; uscite: number; topCategory: string }[] = [];
     for (let i = 29; i >= 0; i--) {
       const day = subDays(new Date(), i);
       const dayStr = format(day, "yyyy-MM-dd");
       const dayLabel = format(day, "d MMM", { locale: it });
-
       const dayExpenses = transactions?.filter(
         (t) => !t.is_income && t.transaction_date === dayStr
       ) || [];
-
       const total = dayExpenses.reduce((s, t) => s + Number(t.amount), 0);
-
-      // Find top category for that day
       const catTotals: Record<string, number> = {};
       dayExpenses.forEach((t) => {
         catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount);
       });
       const topCategory = Object.entries(catTotals).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
-
       days.push({ label: dayLabel, uscite: total, topCategory });
     }
     return days;
   }, [transactions]);
 
-  // Monthly trends (last 6 months)
   const monthlyData = useMemo(() => {
     const data = [];
     for (let i = 5; i >= 0; i--) {
@@ -150,11 +162,8 @@ const Reports = () => {
   const totalExpenses = transactions?.filter((t) => !t.is_income).reduce((a, t) => a + Number(t.amount), 0) || 0;
   const balance = totalIncome - totalExpenses;
 
-  // Min width for scrollable charts on mobile
   const dailyChartWidth = Math.max(dailyData.length * 32, 400);
   const monthlyChartWidth = Math.max(monthlyData.length * 64, 360);
-
-  // Dynamic tick interval for mobile readability
   const dailyTickInterval = dailyData.length > 15 ? Math.ceil(dailyData.length / 7) : 4;
 
   if (isLoading) {
@@ -192,7 +201,6 @@ const Reports = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -207,7 +215,6 @@ const Reports = () => {
       </motion.header>
 
       <main className="px-4 py-6 max-w-lg mx-auto space-y-6">
-        {/* Summary Cards */}
         <div className="grid grid-cols-3 gap-3">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl p-4 border border-border text-center">
             <TrendingUp className="w-5 h-5 mx-auto text-primary mb-1" />
@@ -226,7 +233,6 @@ const Reports = () => {
           </motion.div>
         </div>
 
-        {/* Area Chart - Daily Spending Trend with Gradient Fill */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -269,7 +275,6 @@ const Reports = () => {
           </div>
         </motion.div>
 
-        {/* Pie Chart - Spending by Category */}
         {pieData.length > 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -309,7 +314,6 @@ const Reports = () => {
           </motion.div>
         )}
 
-        {/* Bar Chart - Monthly Trends */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -357,10 +361,8 @@ const Reports = () => {
           </div>
         </motion.div>
 
-        {/* Full Transaction List */}
         <FullTransactionList transactions={mappedTransactions} showFilters={true} title="Tutte le Transazioni" />
 
-        {/* Empty State */}
         {pieData.length === 0 && mappedTransactions.length === 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-card rounded-2xl p-6 shadow-card border border-border text-center">
             <span className="text-4xl">📈</span>

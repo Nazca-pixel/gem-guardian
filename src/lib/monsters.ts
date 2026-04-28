@@ -425,7 +425,6 @@ export const monsters: Monster[] = [
   },
 ];
 
-// Helper function to check if a monster is unlocked
 export const isMonsterUnlocked = (
   monster: Monster,
   stats: {
@@ -441,7 +440,7 @@ export const isMonsterUnlocked = (
   }
 ): boolean => {
   const { unlockCondition } = monster;
-  
+
   switch (unlockCondition.type) {
     case "level":
       return stats.level >= unlockCondition.value;
@@ -458,7 +457,6 @@ export const isMonsterUnlocked = (
     case "streak":
       return stats.currentStreak >= unlockCondition.value;
     case "special":
-      // Special conditions - e.g., complete all goals AND reach level 20
       return stats.completedGoals >= 3 && stats.level >= 20;
     case "premium":
       return stats.isPremium === true;
@@ -467,7 +465,6 @@ export const isMonsterUnlocked = (
   }
 };
 
-// Get unlock progress as percentage
 export const getUnlockProgress = (
   monster: Monster,
   stats: {
@@ -483,40 +480,48 @@ export const getUnlockProgress = (
   }
 ): number => {
   const { unlockCondition } = monster;
-  
+
   let current = 0;
   switch (unlockCondition.type) {
-    case "level":
+    case "level": {
       current = stats.level;
       break;
-    case "bxp":
+    }
+    case "bxp": {
       current = stats.bxp;
       break;
-    case "fxp":
+    }
+    case "fxp": {
       current = stats.fxp;
       break;
-    case "savings":
+    }
+    case "savings": {
       current = stats.totalSavings;
       break;
-    case "transactions":
+    }
+    case "transactions": {
       current = stats.transactionCount;
       break;
-    case "badges":
+    }
+    case "badges": {
       current = stats.badgeCount;
       break;
-    case "streak":
+    }
+    case "streak": {
       current = stats.currentStreak;
       break;
-    case "special":
-      // For special, use a combined metric
+    }
+    case "special": {
       const goalProgress = Math.min(stats.completedGoals / 3, 1) * 50;
       const levelProgress = Math.min(stats.level / 20, 1) * 50;
       return goalProgress + levelProgress;
-    case "premium":
+    }
+    case "premium": {
       return stats.isPremium ? 100 : 0;
+    }
     default:
       return 0;
   }
-  
+
   return Math.min((current / unlockCondition.value) * 100, 100);
 };
