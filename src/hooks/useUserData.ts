@@ -178,38 +178,46 @@ export const useRecentTransactions = (limit = 50) => {
  * Full transaction history for correct balance, monthly change, reports and aggregations.
  * Paginates through Supabase 1000-row cap to fetch the entire user history.
  */
-export const useAllTransactions = () => {
+export const useTransactions = () => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["transactions", "all", user?.id],
+    queryKey: ["transactions-all", user?.id],
     queryFn: async () => {
       if (!user) return [];
 
-      const PAGE = 1000;
-      let from = 0;
-      const all: TransactionRow[] = [];
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("transaction_date", { ascending: false });
 
-      // Page until a short page is returned — guarantees full history.
-      while (true) {
-        const { data, error } = await supabase
-          .from("transactions")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("transaction_date", { ascending: false })
-          .range(from, from + PAGE - 1);
-
-        if (error) throw error;
-        if (!data || data.length === 0) break;
-        all.push(...data);
-        if (data.length < PAGE) break;
-        from += PAGE;
-      }
-
-      return all;
+      if (error) throw error;
+      return data;
     },
     enabled: !!user,
-    staleTime: 30_000,
+  });
+};
+
+export const useRecentTransactions = (limit = 50) => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["transactions-recent", user?.id, limit],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("transaction_date", { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
   });
 };
 
