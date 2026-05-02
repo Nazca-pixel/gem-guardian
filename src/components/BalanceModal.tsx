@@ -116,19 +116,24 @@ export const BalanceModal = ({ isOpen, onClose }: BalanceModalProps) => {
     },
   ];
 
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number } }> }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-card border border-border rounded-lg p-2 shadow-lg">
-          <p className="font-medium text-foreground">{data.name}</p>
-          <p className="text-sm text-muted-foreground">
-            €{data.value.toLocaleString("it-IT", { minimumFractionDigits: 2 })}
-          </p>
-        </div>
-      );
-    }
-    return null;
+  type PieTooltipDatum = { name: string; value: number };
+  type PieTooltipProps = {
+    active?: boolean;
+    payload?: ReadonlyArray<{ payload?: PieTooltipDatum }>;
+  };
+
+  const CustomTooltip = ({ active, payload }: PieTooltipProps) => {
+    if (!active || !payload || payload.length === 0) return null;
+    const data = payload[0]?.payload;
+    if (!data) return null;
+    return (
+      <div className="bg-card border border-border rounded-lg p-2 shadow-lg">
+        <p className="font-medium text-foreground">{data.name}</p>
+        <p className="text-sm text-muted-foreground">
+          €{data.value.toLocaleString("it-IT", { minimumFractionDigits: 2 })}
+        </p>
+      </div>
+    );
   };
 
   return (

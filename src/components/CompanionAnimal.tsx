@@ -124,8 +124,23 @@ export const CompanionAnimal = ({
   // Distinguishes a real tap from a scroll/drag: requires short duration
   // and minimal pointer movement before opening the details modal.
   const pointerStartRef = useRef<{ x: number; y: number; t: number } | null>(null);
+  const pettingTimeoutRef = useRef<number | null>(null);
   const TAP_MAX_MOVE = 8; // px
   const TAP_MAX_DURATION = 400; // ms
+
+  // Clear any pending petting timeout on unmount to avoid setState on unmounted component
+  useEffect(() => {
+    return () => {
+      if (pettingTimeoutRef.current !== null) {
+        window.clearTimeout(pettingTimeoutRef.current);
+        pettingTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  const resetPointer = () => {
+    pointerStartRef.current = null;
+  };
 
   const handlePointerDown = (e: React.PointerEvent) => {
     pointerStartRef.current = { x: e.clientX, y: e.clientY, t: performance.now() };
@@ -144,7 +159,13 @@ export const CompanionAnimal = ({
     onPet?.();
     onOpenDetails?.();
     // Reset wiggle after the animation completes
-    window.setTimeout(() => setIsPetting(false), 600);
+    if (pettingTimeoutRef.current !== null) {
+      window.clearTimeout(pettingTimeoutRef.current);
+    }
+    pettingTimeoutRef.current = window.setTimeout(() => {
+      setIsPetting(false);
+      pettingTimeoutRef.current = null;
+    }, 600);
   };
 
   const moodStyles = {
@@ -206,7 +227,8 @@ export const CompanionAnimal = ({
         transition={isPetting ? { duration: 0.6, ease: "easeOut" } : { duration: 0.2 }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
-        onPointerCancel={() => { pointerStartRef.current = null; }}
+        onPointerCancel={resetPointer}
+        onPointerLeave={resetPointer}
         className={`
           relative cursor-pointer
           w-40 h-40 sm:w-44 sm:h-44 rounded-full
