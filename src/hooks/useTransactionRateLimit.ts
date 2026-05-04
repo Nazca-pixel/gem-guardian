@@ -100,7 +100,9 @@ export const useTransactionRateLimit = () => {
   const recordSubmit = useCallback(() => {
     const now = Date.now();
     setLastSubmitTime(now);
-    localStorage.setItem("lastTransactionTime", String(now));
+    try {
+      localStorage.setItem("lastTransactionTime", String(now));
+    } catch {}
     setTodayCount((prev) => prev + 1);
   }, []);
 
