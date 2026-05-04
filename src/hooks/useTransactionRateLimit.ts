@@ -16,8 +16,12 @@ interface RateLimitStatus {
 export const useTransactionRateLimit = () => {
   const { user } = useAuth();
   const [lastSubmitTime, setLastSubmitTime] = useState<number | null>(() => {
-    const stored = localStorage.getItem("lastTransactionTime");
-    return stored ? parseInt(stored, 10) : null;
+    try {
+      const stored = localStorage.getItem("lastTransactionTime");
+      return stored ? parseInt(stored, 10) : null;
+    } catch {
+      return null;
+    }
   });
   const [cooldownSecondsLeft, setCooldownSecondsLeft] = useState(0);
   const [todayCount, setTodayCount] = useState(0);
