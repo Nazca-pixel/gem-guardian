@@ -5,12 +5,39 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+// Safe localStorage adapter — falls back to in-memory when storage is blocked
+// (sandboxed iframes, private browsing, cross-origin contexts)
+const safeStorage = (() => {
+  const mem: Record<string, string> = {};
+  let useLocal = true;
+  try {
+    localStorage.setItem('__test__', '1');
+    localStorage.removeItem('__test__');
+  } catch {
+    useLocal = false;
+  }
+  return {
+    getItem: (key: string) => {
+      if (useLocal) { try { return localStorage.getItem(key); } catch { useLocal = false; } }
+      return mem[key] ?? null;
+    },
+    setItem: (key: string, value: string) => {
+      if (useLocal) { try { localStorage.setItem(key, value); return; } catch { useLocal = false; } }
+      mem[key] = value;
+    },
+    removeItem: (key: string) => {
+      if (useLocal) { try { localStorage.removeItem(key); return; } catch { useLocal = false; } }
+      delete mem[key];
+    },
+  };
+})();
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: safeStorage,
     persistSession: true,
     autoRefreshToken: true,
   }
