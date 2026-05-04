@@ -47,8 +47,12 @@ const Auth = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [rememberMe, setRememberMe] = useState(() => {
-    const stored = localStorage.getItem("gemsaver_remember_me");
-    return stored !== null ? stored === "true" : true;
+    try {
+      const stored = localStorage.getItem("gemsaver_remember_me");
+      return stored !== null ? stored === "true" : true;
+    } catch {
+      return true;
+    }
   });
   
   const { signIn, signUp, resetPassword, updatePassword } = useAuth();
@@ -56,14 +60,11 @@ const Auth = () => {
   // Handle remember me persistence
   const handleRememberMeChange = useCallback((checked: boolean) => {
     setRememberMe(checked);
-    localStorage.setItem("gemsaver_remember_me", String(checked));
-    
-    if (!checked) {
-      // If user unchecks "remember me", we'll clear session on window close
-      // This is handled by Supabase's persistSession setting
-      localStorage.setItem("gemsaver_session_type", "session");
-    } else {
-      localStorage.setItem("gemsaver_session_type", "persistent");
+    try {
+      localStorage.setItem("gemsaver_remember_me", String(checked));
+      localStorage.setItem("gemsaver_session_type", checked ? "persistent" : "session");
+    } catch {
+      // localStorage blocked in sandboxed context, skip persistence
     }
   }, []);
   const navigate = useNavigate();
