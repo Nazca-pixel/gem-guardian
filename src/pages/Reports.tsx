@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { format, subMonths, startOfMonth, endOfMonth, subDays, subWeeks, startOfWeek, endOfWeek } from "date-fns";
 import { it } from "date-fns/locale";
-import { ArrowLeft, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -102,12 +102,102 @@ const MonthlyTooltip = ({ active, payload, label }: MonthlyTooltipProps) => {
   );
 };
 
+// --- Savings Rate Ring ---
+const RING_SIZE = 120;
+const STROKE = 10;
+const R = (RING_SIZE - STROKE) / 2;
+const CIRC = 2 * Math.PI * R;
+
+function getSavingsColor(rate: number): string {
+  if (rate >= 20) return "hsl(var(--primary))";
+  if (rate >= 10) return "hsl(var(--accent))";
+  if (rate > 0)  return "hsl(var(--reward))";
+  return "hsl(var(--destructive))";
+}
+
+function getSavingsLabel(rate: number): string {
+  if (rate >= 30) return "Ottimo! 🚀";
+  if (rate >= 20) return "Buono 👍";
+  if (rate >= 10) return "Discreto 📈";
+  if (rate > 0)   return "Basso ⚠️";
+  return "In perdita 🔴";
+}
+
+interface SavingsRingProps {
+  rate: number;
+  saved: number;
+}
+
+const SavingsRing = ({ rate, saved }: SavingsRingProps) => {
+  const clamped = Math.max(0, Math.min(100, rate));
+  const offset = CIRC - (clamped / 100) * CIRC;
+  const color = getSavingsColor(rate);
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="relative" style={{ width: RING_SIZE, height: RING_SIZE }}>
+        <svg width={RING_SIZE} height={RING_SIZE} style={{ transform: "rotate(-90deg)" }}>
+          {/* Track */}
+          <circle
+            cx={RING_SIZE / 2}
+            cy={RING_SIZE / 2}
+            r={R}
+            fill="none"
+            stroke="hsl(var(--muted))"
+            strokeWidth={STROKE}
+          />
+          {/* Progress */}
+          <motion.circle
+            cx={RING_SIZE / 2}
+            cy={RING_SIZE / 2}
+            r={R}
+            fill="none"
+            stroke={color}
+            strokeWidth={STROKE}
+            strokeLinecap="round"
+            strokeDasharray={CIRC}
+            initial={{ strokeDashoffset: CIRC }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+          />
+        </svg>
+        {/* Center label */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <motion.span
+            className="text-2xl font-extrabold leading-none"
+            style={{ color }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            {rate > 0 ? `${Math.round(rate)}%` : "—"}
+          </motion.span>
+          <span className="text-[10px] text-muted-foreground mt-0.5">savings</span>
+        </div>
+      </div>
+      <div className="text-center space-y-0.5">
+        <p className="text-sm font-semibold text-foreground">{getSavingsLabel(rate)}</p>
+        {saved > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Risparmiato: <span className="font-semibold text-foreground">€{saved.toLocaleString()}</span>
+          </p>
+        )}
+        {saved < 0 && (
+          <p className="text-xs text-destructive font-medium">
+            Deficit: €{Math.abs(saved).toLocaleString()}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// --- Main Component ---
 const Reports = () => {
   const navigate = useNavigate();
   const { data: transactions, isLoading } = useAllTransactions();
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("1M");
 
-  // --- Filter transactions by selected period ---
   const filteredTransactions = useMemo(() => {
     if (!transactions) return [];
     const now = new Date();
@@ -123,7 +213,7 @@ const Reports = () => {
       const cutoff = subMonths(now, 3);
       return transactions.filter(t => new Date(t.transaction_date) >= cutoff);
     }
-    return transactions; // Tutto
+    return transactions;
   }, [transactions, selectedPeriod]);
 
   const mappedTransactions = filteredTransactions.map((t) => ({
@@ -148,7 +238,6 @@ const Reports = () => {
     .map(([name, value]) => ({ name: categoryLabels[name] || name, value }))
     .sort((a, b) => b.value - a.value);
 
-  // --- Area chart data (adapts to period) ---
   const areaData = useMemo(() => {
     const now = new Date();
 
@@ -181,7 +270,6 @@ const Reports = () => {
     }
 
     if (selectedPeriod === "3M") {
-      // Group by week — ~13 weeks
       return Array.from({ length: 13 }, (_, i) => {
         const weekStart = startOfWeek(subWeeks(now, 12 - i), { weekStartsOn: 1 });
         const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
@@ -198,7 +286,6 @@ const Reports = () => {
       });
     }
 
-    // Tutto — group by month (last 12 months)
     return Array.from({ length: 12 }, (_, i) => {
       const monthDate = subMonths(now, 11 - i);
       const start = startOfMonth(monthDate);
@@ -216,7 +303,6 @@ const Reports = () => {
     });
   }, [filteredTransactions, selectedPeriod]);
 
-  // --- Bar chart (monthly income vs expenses) ---
   const monthlyData = useMemo(() => {
     const now = new Date();
     const monthCount = selectedPeriod === "7G" ? 1 : selectedPeriod === "1M" ? 1 : selectedPeriod === "3M" ? 3 : 12;
@@ -236,19 +322,20 @@ const Reports = () => {
     });
   }, [filteredTransactions, selectedPeriod]);
 
-  const totalIncome = filteredTransactions.filter(t => t.is_income).reduce((a, t) => a + Number(t.amount), 0);
+  const totalIncome   = filteredTransactions.filter(t => t.is_income).reduce((a, t) => a + Number(t.amount), 0);
   const totalExpenses = filteredTransactions.filter(t => !t.is_income).reduce((a, t) => a + Number(t.amount), 0);
-  const balance = totalIncome - totalExpenses;
+  const balance       = totalIncome - totalExpenses;
+  const savingsRate   = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
 
   const areaChartMinWidth = Math.max(areaData.length * 32, 400);
   const monthlyChartWidth = Math.max(monthlyData.length * 80, 280);
-  const areaTickInterval = areaData.length > 15 ? Math.ceil(areaData.length / 7) : 1;
+  const areaTickInterval  = areaData.length > 15 ? Math.ceil(areaData.length / 7) : 1;
 
   const periodTitle = PERIOD_OPTIONS.find(p => p.key === selectedPeriod)?.title ?? "";
   const areaChartTitle =
-    selectedPeriod === "7G" ? "Andamento Spese (7gg)" :
-    selectedPeriod === "1M" ? "Andamento Spese (30gg)" :
-    selectedPeriod === "3M" ? "Andamento Spese (3 mesi)" :
+    selectedPeriod === "7G"    ? "Andamento Spese (7gg)" :
+    selectedPeriod === "1M"    ? "Andamento Spese (30gg)" :
+    selectedPeriod === "3M"    ? "Andamento Spese (3 mesi)" :
     "Andamento Spese (storico)";
 
   if (isLoading) {
@@ -271,6 +358,7 @@ const Reports = () => {
               </div>
             ))}
           </div>
+          <Skeleton className="h-48 w-full rounded-3xl" />
           <div className="bg-card rounded-3xl p-6 border border-border space-y-4">
             <Skeleton className="h-5 w-40 rounded" />
             <Skeleton className="h-[200px] w-full rounded-xl" />
@@ -341,6 +429,81 @@ const Reports = () => {
             <p className={`text-lg font-bold ${balance >= 0 ? "text-primary" : "text-destructive"}`}>€{balance.toLocaleString()}</p>
           </motion.div>
         </div>
+
+        {/* Savings Rate Card */}
+        <motion.div
+          key={`savings-${selectedPeriod}`}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-card rounded-3xl p-6 border border-border shadow-card"
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <PiggyBank className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-bold text-foreground">Savings Rate</h2>
+            <span className="ml-auto text-xs text-muted-foreground">{periodTitle}</span>
+          </div>
+
+          <div className="flex items-center justify-around gap-4">
+            <SavingsRing rate={savingsRate} saved={balance} />
+
+            <div className="flex-1 space-y-3">
+              {/* Entrate row */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Entrate</span>
+                  <span className="font-medium text-foreground">€{totalIncome.toLocaleString()}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full bg-primary"
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                  />
+                </div>
+              </div>
+              {/* Uscite row */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Uscite</span>
+                  <span className="font-medium text-foreground">€{totalExpenses.toLocaleString()}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full bg-secondary"
+                    initial={{ width: 0 }}
+                    animate={{ width: totalIncome > 0 ? `${Math.min(100, (totalExpenses / totalIncome) * 100)}%` : "0%" }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+                  />
+                </div>
+              </div>
+              {/* Risparmio row */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Risparmiato</span>
+                  <span className={`font-semibold ${balance >= 0 ? "text-primary" : "text-destructive"}`}>
+                    €{balance.toLocaleString()}
+                  </span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <motion.div
+                    className={`h-full rounded-full ${balance >= 0 ? "bg-primary" : "bg-destructive"}`}
+                    initial={{ width: 0 }}
+                    animate={{ width: totalIncome > 0 ? `${Math.max(0, Math.min(100, (Math.abs(balance) / totalIncome) * 100))}%` : "0%" }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                  />
+                </div>
+              </div>
+
+              {/* Benchmark */}
+              <p className="text-[11px] text-muted-foreground pt-1 leading-tight">
+                Obiettivo consigliato: <span className="font-semibold text-foreground">≥20%</span>
+                {savingsRate >= 20 ? " ✅" : " — continua così!"}
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Area chart */}
         <motion.div
