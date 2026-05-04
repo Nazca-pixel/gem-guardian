@@ -24,6 +24,22 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  // localStorage safety guard for sandboxed iframes (e.g. Lovable preview)
+  useEffect(() => {
+    try {
+      localStorage.setItem('_sb_test', '1');
+      localStorage.removeItem('_sb_test');
+    } catch {
+      // localStorage blocked (sandboxed iframe): clear any Supabase storage keys safely
+      // This forces Supabase to fall back to in-memory session handling
+      try {
+        Object.keys(sessionStorage).forEach(k => {
+          if (k.startsWith('sb-')) sessionStorage.removeItem(k);
+        });
+      } catch { /* fully blocked, nothing to do */ }
+    }
+  }, []);
+
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,6 +111,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           if (!cancelled) ensureUserBootstrap(uid);
         }, 0);
       }
+    }).catch(() => {
+      if (!cancelled) setLoading(false);
     });
 
     return () => {
