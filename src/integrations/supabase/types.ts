@@ -191,6 +191,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: number
+          payload: Json | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: number
+          payload?: Json | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: number
+          payload?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
@@ -396,6 +420,10 @@ export type Database = {
           subscription_tier: string
           user_id: string
         }[]
+      }
+      log_security_event: {
+        Args: { p_action: string; p_payload?: Json; p_user_id: string }
+        Returns: undefined
       }
       unlock_accessory: { Args: { _accessory_id: string }; Returns: undefined }
     }
