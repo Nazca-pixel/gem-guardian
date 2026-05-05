@@ -77,7 +77,7 @@ export const useLevelUp = () => {
 
         if (!existingBadge) {
           // Award the badge via secure RPC
-          await supabase.rpc("award_badge", { _badge_id: badgeId });
+          await supabase.rpc("award_badge", { p_badge_id: badgeId });
 
           // Fetch badge info for display
           const { data: badge } = await supabase
