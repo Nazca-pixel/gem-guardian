@@ -409,6 +409,10 @@ export type Database = {
         Args: { p_payment_intent_id?: string; p_tier: string }
         Returns: Json
       }
+      complete_challenge: {
+        Args: { p_challenge_id: string; p_progress: number }
+        Returns: Json
+      }
       get_leaderboard: {
         Args: never
         Returns: {
@@ -425,7 +429,12 @@ export type Database = {
         Args: { p_action: string; p_payload?: Json; p_user_id: string }
         Returns: undefined
       }
+      process_companion_xp: {
+        Args: { p_bxp_delta?: number; p_fxp_delta?: number; p_mood?: string }
+        Returns: Json
+      }
       unlock_accessory: { Args: { _accessory_id: string }; Returns: undefined }
+      update_companion_streak: { Args: { p_action: string }; Returns: Json }
     }
     Enums: {
       subscription_tier: "free" | "starter" | "pro" | "elite"
