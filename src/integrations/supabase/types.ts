@@ -380,12 +380,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      award_badge: { Args: { _badge_id: string }; Returns: undefined }
+      award_badge: { Args: { p_badge_id: string }; Returns: Json }
       checkout_subscription: {
-        Args: {
-          _is_annual: boolean
-          _tier: Database["public"]["Enums"]["subscription_tier"]
-        }
+        Args: { p_payment_intent_id?: string; p_tier: string }
         Returns: Json
       }
       get_leaderboard: {
