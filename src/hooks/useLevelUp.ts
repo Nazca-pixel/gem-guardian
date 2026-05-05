@@ -107,13 +107,19 @@ export const useLevelUp = () => {
   ): Promise<BxpUpdateResult> => {
     if (!user) throw new Error("User not authenticated");
 
-    const newBxp = currentBxp + bxpToAdd;
     const accessoriesUnlocked: BxpUpdateResult["accessoriesUnlocked"] = [];
 
-    // Find newly unlocked accessories
+    // Trusted server RPC writes BXP (bypasses anti-cheat trigger via SECURITY DEFINER)
+    const { data: xpResult, error: xpError } = await supabase.rpc("process_companion_xp", {
+      p_fxp_delta: 0,
+      p_bxp_delta: bxpToAdd,
+    });
+    if (xpError) throw xpError;
+    const newBxp: number = (xpResult as any)?.new_bxp ?? currentBxp + bxpToAdd;
+
+    // Find newly unlocked accessories (server-validates via unlock_accessory RPC)
     for (const threshold of BXP_ACCESSORY_THRESHOLDS) {
       if (currentBxp < threshold.bxp && newBxp >= threshold.bxp) {
-        // Check if user already has this accessory
         const { data: existing } = await supabase
           .from("user_accessories")
           .select("id")
@@ -122,30 +128,17 @@ export const useLevelUp = () => {
           .maybeSingle();
 
         if (!existing) {
-          // Unlock the accessory via secure RPC
           await supabase.rpc("unlock_accessory", { _accessory_id: threshold.accessoryId });
-
-          // Fetch accessory info for display
           const { data: accessory } = await supabase
             .from("accessories")
             .select("id, name, emoji")
             .eq("id", threshold.accessoryId)
             .single();
-
-          if (accessory) {
-            accessoriesUnlocked.push(accessory);
-          }
+          if (accessory) accessoriesUnlocked.push(accessory);
         }
       }
     }
 
-    // Update companion BXP
-    await supabase
-      .from("companion_animals")
-      .update({ bxp: newBxp })
-      .eq("user_id", user.id);
-
-    // Invalidate queries
     queryClient.invalidateQueries({ queryKey: ["companion", user.id] });
     queryClient.invalidateQueries({ queryKey: ["user_accessories", user.id] });
 
