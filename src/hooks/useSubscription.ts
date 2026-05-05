@@ -123,10 +123,9 @@ export function useCheckout() {
 
 
 
-      // Use secure server-side function
+      // Use secure server-side function (payment intent required for paid tiers)
       const { data, error } = await supabase.rpc("checkout_subscription", {
-        _tier: tier,
-        _is_annual: isAnnual,
+        p_tier: tier,
       });
 
       if (error) throw error;
