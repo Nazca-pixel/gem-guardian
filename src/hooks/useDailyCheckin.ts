@@ -75,32 +75,30 @@ export const useDailyCheckin = () => {
       if (!companion) throw new Error("Companion not found");
       
       const today = new Date().toISOString().split("T")[0];
-      
-      // Check if already checked in today
+
       if (hasCheckedInToday()) {
         throw new Error("Already checked in today");
       }
-      
-      // Calculate new streak
+
+      // Trusted RPC: update streak server-side
+      const { data: streakRes, error: streakErr } = await supabase.rpc(
+        "update_companion_streak",
+        { p_action: "checkin" }
+      );
+      if (streakErr) throw streakErr;
+      const streak = (streakRes as any) || {};
+      const newStreak: number = streak.current_streak ?? 1;
       const lastCheckin = (companion as any).last_checkin_date;
       const continuesStreak = wasYesterday(lastCheckin);
-      const currentStreak = (companion as any).checkin_streak || 0;
-      const newStreak = continuesStreak ? currentStreak + 1 : 1;
-      
-      // Calculate BXP reward based on new streak
+
+      // Trusted RPC: award BXP server-side
       const bxpReward = calculateBxpReward(newStreak);
-      const newBxp = (companion.bxp || 0) + bxpReward;
-      
-      const { error } = await supabase
-        .from("companion_animals")
-        .update({
-          bxp: newBxp,
-          last_checkin_date: today,
-          checkin_streak: newStreak,
-        })
-        .eq("user_id", user.id);
-      
-      if (error) throw error;
+      const { data: xpRes, error: xpErr } = await supabase.rpc("process_companion_xp", {
+        p_fxp_delta: 0,
+        p_bxp_delta: bxpReward,
+      });
+      if (xpErr) throw xpErr;
+      const newBxp: number = (xpRes as any)?.new_bxp ?? (companion.bxp || 0) + bxpReward;
       
       // Check and award milestone badges
       const milestoneAchieved = await awardMilestoneBadges(newStreak);

@@ -119,56 +119,21 @@ export const useUpdateChallengeProgress = () => {
     mutationFn: async ({ challengeId, progress }: { challengeId: string; progress: number }) => {
       if (!user) throw new Error("User not authenticated");
 
-      const weekStart = getWeekStart();
-
-      // Get current challenge
-      const { data: challenge, error: fetchError } = await supabase
-        .from("user_challenges")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("challenge_id", challengeId)
-        .eq("week_start", weekStart)
-        .maybeSingle();
-
-      if (fetchError) throw fetchError;
-      if (!challenge) throw new Error("Challenge not found");
-
-      const isNowCompleted = progress >= challenge.target && !challenge.is_completed;
-
-      // Update progress
-      const { data, error } = await supabase
-        .from("user_challenges")
-        .update({
-          progress: Math.min(progress, challenge.target),
-          is_completed: progress >= challenge.target,
-          completed_at: isNowCompleted ? new Date().toISOString() : challenge.completed_at,
-        })
-        .eq("id", challenge.id)
-        .select()
-        .single();
+      // Trusted server RPC: validates ownership, clamps progress, awards XP atomically
+      const { data, error } = await supabase.rpc("complete_challenge", {
+        p_challenge_id: challengeId,
+        p_progress: progress,
+      });
 
       if (error) throw error;
+      const res = (data as any) || {};
+      const justCompleted = res.is_completed === true && (res.fxp_awarded > 0 || res.bxp_awarded > 0);
 
-      // If just completed, award XP
-      if (isNowCompleted) {
-        const { data: companion } = await supabase
-          .from("companion_animals")
-          .select("fxp, bxp")
-          .eq("user_id", user.id)
-          .single();
-
-        if (companion) {
-          await supabase
-            .from("companion_animals")
-            .update({
-              fxp: companion.fxp + challenge.fxp_reward,
-              bxp: companion.bxp + challenge.bxp_reward,
-            })
-            .eq("user_id", user.id);
-        }
-      }
-
-      return { ...data, justCompleted: isNowCompleted };
+      return {
+        progress: res.progress,
+        is_completed: res.is_completed,
+        justCompleted,
+      };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["weekly-challenges"] });

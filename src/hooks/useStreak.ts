@@ -59,25 +59,24 @@ export const useUpdateStreak = () => {
       if (!user) throw new Error("User not authenticated");
 
       const today = format(new Date(), "yyyy-MM-dd");
-      
-      // Get current companion data
+
+      // Get current companion data (for streak-broken detection only)
       const { data: companion, error: fetchError } = await supabase
         .from("companion_animals")
-        .select("current_streak, longest_streak, last_activity_date")
+        .select("current_streak, longest_streak, last_activity_date, last_checkin_date")
         .eq("user_id", user.id)
         .single();
 
       if (fetchError) throw fetchError;
 
-      const currentStreak = companion?.current_streak || 0;
-      const longestStreak = companion?.longest_streak || 0;
-      const lastDate = companion?.last_activity_date;
+      const prevStreak = companion?.current_streak || 0;
+      const lastDate = companion?.last_activity_date || companion?.last_checkin_date;
 
-      // If already logged today, no update needed
+      // Already-active today: no-op
       if (lastDate === today) {
         return {
-          current_streak: currentStreak,
-          longest_streak: longestStreak,
+          current_streak: prevStreak,
+          longest_streak: companion?.longest_streak || 0,
           last_activity_date: today,
           streakBroken: false,
           isNewDay: false,
@@ -85,38 +84,21 @@ export const useUpdateStreak = () => {
         };
       }
 
-      let newStreak = 1;
+      // Detect broken streak (server will reset, we just report it)
       let streakBroken = false;
-
       if (lastDate) {
         const daysDiff = differenceInDays(new Date(today), parseISO(lastDate));
-        
-        if (daysDiff === 1) {
-          // Consecutive day - increase streak
-          newStreak = currentStreak + 1;
-        } else if (daysDiff > 1) {
-          // Streak broken
-          newStreak = 1;
-          streakBroken = currentStreak > 0;
-        } else {
-          // Same day (shouldn't happen due to check above)
-          newStreak = currentStreak;
-        }
+        if (daysDiff > 1 && prevStreak > 0) streakBroken = true;
       }
 
-      const newLongestStreak = Math.max(longestStreak, newStreak);
-
-      // Update the companion with new streak data
-      const { error: updateError } = await supabase
-        .from("companion_animals")
-        .update({
-          current_streak: newStreak,
-          longest_streak: newLongestStreak,
-          last_activity_date: today,
-        })
-        .eq("user_id", user.id);
-
-      if (updateError) throw updateError;
+      // Trusted RPC updates protected streak fields
+      const { data: rpcRes, error: rpcError } = await supabase.rpc("update_companion_streak", {
+        p_action: "checkin",
+      });
+      if (rpcError) throw rpcError;
+      const res = (rpcRes as any) || {};
+      const newStreak: number = res.current_streak ?? 1;
+      const newLongestStreak: number = res.longest_streak ?? newStreak;
 
       // Check and award streak badges
       const newBadges = await checkAndAwardStreakBadges(user.id, newStreak);

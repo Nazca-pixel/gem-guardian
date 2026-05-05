@@ -50,60 +50,43 @@ export const useLevelUp = () => {
   ): Promise<LevelUpResult> => {
     if (!user) throw new Error("User not authenticated");
 
-    let newFxp = currentFxp + fxpToAdd;
-    let newLevel = currentLevel;
-    let levelsGained = 0;
     let badgeEarned: LevelUpResult["badgeEarned"];
     const accessoriesUnlocked: LevelUpResult["accessoriesUnlocked"] = [];
 
-    // Process level ups
-    let maxFxp = LEVEL_THRESHOLDS.getMaxFxp(newLevel);
-    while (newFxp >= maxFxp) {
-      newFxp -= maxFxp;
-      newLevel++;
-      levelsGained++;
+    // Trusted server RPC: validates, level-loops, writes protected fields
+    const { data: xpResult, error: xpError } = await supabase.rpc("process_companion_xp", {
+      p_fxp_delta: fxpToAdd,
+      p_bxp_delta: 0,
+      p_mood: "happy",
+    });
+    if (xpError) throw xpError;
 
-      // Check for badge reward at this level
-      if (LEVEL_BADGE_REWARDS[newLevel]) {
-        const badgeId = LEVEL_BADGE_REWARDS[newLevel];
-        
-        // Check if user already has this badge
+    const result = (xpResult as any) || {};
+    const newLevel: number = result.new_level ?? currentLevel;
+    const newFxp: number = result.new_fxp ?? currentFxp;
+    const levelsGained: number = result.levels_gained ?? 0;
+
+    // Award level-milestone badges (server-validated via award_badge RPC)
+    if (levelsGained > 0) {
+      for (let lvl = currentLevel + 1; lvl <= newLevel; lvl++) {
+        const badgeId = LEVEL_BADGE_REWARDS[lvl];
+        if (!badgeId) continue;
         const { data: existingBadge } = await supabase
           .from("user_badges")
           .select("id")
           .eq("user_id", user.id)
           .eq("badge_id", badgeId)
           .maybeSingle();
-
-        if (!existingBadge) {
-          // Award the badge via secure RPC
-          await supabase.rpc("award_badge", { p_badge_id: badgeId });
-
-          // Fetch badge info for display
-          const { data: badge } = await supabase
-            .from("badges")
-            .select("id, name, emoji")
-            .eq("id", badgeId)
-            .single();
-
-          if (badge) {
-            badgeEarned = badge;
-          }
-        }
+        if (existingBadge) continue;
+        await supabase.rpc("award_badge", { p_badge_id: badgeId });
+        const { data: badge } = await supabase
+          .from("badges")
+          .select("id, name, emoji")
+          .eq("id", badgeId)
+          .single();
+        if (badge) badgeEarned = badge;
       }
-
-      maxFxp = LEVEL_THRESHOLDS.getMaxFxp(newLevel);
     }
-
-    // Update companion in database
-    await supabase
-      .from("companion_animals")
-      .update({
-        level: newLevel,
-        fxp: newFxp,
-        mood: levelsGained > 0 ? "excited" : "happy",
-      })
-      .eq("user_id", user.id);
 
     // Invalidate queries
     queryClient.invalidateQueries({ queryKey: ["companion", user.id] });
@@ -124,13 +107,19 @@ export const useLevelUp = () => {
   ): Promise<BxpUpdateResult> => {
     if (!user) throw new Error("User not authenticated");
 
-    const newBxp = currentBxp + bxpToAdd;
     const accessoriesUnlocked: BxpUpdateResult["accessoriesUnlocked"] = [];
 
-    // Find newly unlocked accessories
+    // Trusted server RPC writes BXP (bypasses anti-cheat trigger via SECURITY DEFINER)
+    const { data: xpResult, error: xpError } = await supabase.rpc("process_companion_xp", {
+      p_fxp_delta: 0,
+      p_bxp_delta: bxpToAdd,
+    });
+    if (xpError) throw xpError;
+    const newBxp: number = (xpResult as any)?.new_bxp ?? currentBxp + bxpToAdd;
+
+    // Find newly unlocked accessories (server-validates via unlock_accessory RPC)
     for (const threshold of BXP_ACCESSORY_THRESHOLDS) {
       if (currentBxp < threshold.bxp && newBxp >= threshold.bxp) {
-        // Check if user already has this accessory
         const { data: existing } = await supabase
           .from("user_accessories")
           .select("id")
@@ -139,30 +128,17 @@ export const useLevelUp = () => {
           .maybeSingle();
 
         if (!existing) {
-          // Unlock the accessory via secure RPC
           await supabase.rpc("unlock_accessory", { _accessory_id: threshold.accessoryId });
-
-          // Fetch accessory info for display
           const { data: accessory } = await supabase
             .from("accessories")
             .select("id, name, emoji")
             .eq("id", threshold.accessoryId)
             .single();
-
-          if (accessory) {
-            accessoriesUnlocked.push(accessory);
-          }
+          if (accessory) accessoriesUnlocked.push(accessory);
         }
       }
     }
 
-    // Update companion BXP
-    await supabase
-      .from("companion_animals")
-      .update({ bxp: newBxp })
-      .eq("user_id", user.id);
-
-    // Invalidate queries
     queryClient.invalidateQueries({ queryKey: ["companion", user.id] });
     queryClient.invalidateQueries({ queryKey: ["user_accessories", user.id] });
 
