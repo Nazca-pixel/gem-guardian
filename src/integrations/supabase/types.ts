@@ -41,6 +41,24 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_users: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           badge_type: string
@@ -404,6 +422,45 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _assert_admin: { Args: never; Returns: string }
+      admin_adjust_companion_stats: {
+        Args: {
+          p_bxp?: number
+          p_current_streak?: number
+          p_fxp?: number
+          p_level?: number
+          p_longest_streak?: number
+          p_mood?: string
+          p_target_user_id: string
+        }
+        Returns: Json
+      }
+      admin_complete_challenge: {
+        Args: {
+          p_challenge_id: string
+          p_mark_completed: boolean
+          p_progress: number
+          p_target_user_id: string
+        }
+        Returns: Json
+      }
+      admin_grant_badge: {
+        Args: { p_badge_id: string; p_target_user_id: string }
+        Returns: Json
+      }
+      admin_set_subscription: {
+        Args: {
+          p_expires_at: string
+          p_is_active: boolean
+          p_target_user_id: string
+          p_tier: string
+        }
+        Returns: Json
+      }
+      admin_unlock_accessory: {
+        Args: { p_accessory_id: string; p_target_user_id: string }
+        Returns: Json
+      }
       award_badge: { Args: { p_badge_id: string }; Returns: Json }
       checkout_subscription: {
         Args: { p_payment_intent_id?: string; p_tier: string }
@@ -425,6 +482,8 @@ export type Database = {
           user_id: string
         }[]
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_current_user_admin: { Args: never; Returns: boolean }
       log_security_event: {
         Args: { p_action: string; p_payload?: Json; p_user_id: string }
         Returns: undefined
