@@ -86,6 +86,39 @@ export type Database = {
         }
         Relationships: []
       }
+      challenge_catalog: {
+        Row: {
+          bxp_reward: number
+          challenge_id: string
+          challenge_type: string
+          created_at: string
+          fxp_reward: number
+          is_active: boolean
+          name: string
+          target: number
+        }
+        Insert: {
+          bxp_reward: number
+          challenge_id: string
+          challenge_type: string
+          created_at?: string
+          fxp_reward: number
+          is_active?: boolean
+          name: string
+          target: number
+        }
+        Update: {
+          bxp_reward?: number
+          challenge_id?: string
+          challenge_type?: string
+          created_at?: string
+          fxp_reward?: number
+          is_active?: boolean
+          name?: string
+          target?: number
+        }
+        Relationships: []
+      }
       companion_animals: {
         Row: {
           bxp: number
