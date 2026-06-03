@@ -34,7 +34,7 @@ const Help = () => {
     {
       icon: <Mail className="w-5 h-5" />,
       label: "Email",
-      description: "support@gemsaver.app",
+      description: "support@walletmonster.app",
     },
     {
       icon: <Book className="w-5 h-5" />,
