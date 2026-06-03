@@ -25,7 +25,7 @@ export const DesktopNav = () => {
         <div className="max-w-5xl mx-auto w-full flex items-center justify-between px-6 py-2">
           <button onClick={() => navigate("/")} className="flex items-center gap-2">
             <span className="text-2xl">💎</span>
-            <span className="font-bold text-lg text-foreground">Gem Guardian</span>
+            <span className="font-bold text-lg text-foreground">Wallet Monster</span>
           </button>
 
           <div className="flex items-center gap-1">
