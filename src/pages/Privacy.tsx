@@ -62,7 +62,7 @@ const Privacy = () => {
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
-            GemSaver utilizza le migliori pratiche di sicurezza per proteggere i tuoi dati finanziari e personali.
+            Wallet Monster utilizza le migliori pratiche di sicurezza per proteggere i tuoi dati finanziari e personali.
           </p>
         </motion.div>
 
