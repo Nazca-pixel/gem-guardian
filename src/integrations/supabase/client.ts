@@ -2,8 +2,21 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Fallback constants ensure the published build still initializes even if
+// VITE_* env vars are not inlined at build time. These are publishable values
+// (anon key is safe to ship to the client).
+const FALLBACK_SUPABASE_URL = "https://ybfsnmvxuxdifjmpfcph.supabase.co";
+const FALLBACK_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliZnNubXZ4dXhkaWZqbXBmY3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNTQ1NTksImV4cCI6MjA4MjkzMDU1OX0.z0ktO8JPdC8Q7JObUNP0UxFyLCLyS9B5zgqkscF1cKo";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || FALLBACK_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || FALLBACK_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL) {
+  throw new Error("[Supabase] Missing VITE_SUPABASE_URL — env var was not inlined at build time and no fallback is configured.");
+}
+if (!SUPABASE_PUBLISHABLE_KEY) {
+  throw new Error("[Supabase] Missing VITE_SUPABASE_PUBLISHABLE_KEY — env var was not inlined at build time and no fallback is configured.");
+}
 
 // Safe localStorage adapter — falls back to in-memory when storage is blocked
 // (sandboxed iframes, private browsing, cross-origin contexts)
