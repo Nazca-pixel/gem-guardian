@@ -1,7 +1,7 @@
 {
-  "name": "Gem Guardian - Proteggi le tue Finanze",
-  "short_name": "Gem Guardian",
-  "description": "Il compagno cristallino che cresce mentre risparmi. Traccia spese, conquista badge e fai evolvere il tuo Guardian.",
+  "name": "Wallet Monster - Proteggi le tue Finanze",
+  "short_name": "Wallet Monster",
+  "description": "Il compagno che cresce mentre risparmi. Traccia spese, conquista badge e fai evolvere il tuo Monster.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f7f5f0",
