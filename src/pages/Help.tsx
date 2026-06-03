@@ -34,7 +34,7 @@ const Help = () => {
     {
       icon: <Mail className="w-5 h-5" />,
       label: "Email",
-      description: "support@gemsaver.app",
+      description: "support@walletmonster.app",
     },
     {
       icon: <Book className="w-5 h-5" />,
@@ -141,7 +141,7 @@ const Help = () => {
           transition={{ delay: 0.3 }}
           className="text-center text-xs text-muted-foreground"
         >
-          GemSaver v1.0.0
+          Wallet Monster v1.0.0
         </motion.p>
       </main>
 

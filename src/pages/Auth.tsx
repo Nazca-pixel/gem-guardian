@@ -275,7 +275,7 @@ const Auth = () => {
               {mode === "forgot" ? "🔑" : mode === "reset" ? "🔐" : "🐣"}
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-foreground">GemSaver</h1>
+          <h1 className="text-3xl font-bold text-foreground">Wallet Monster</h1>
           <p className="text-muted-foreground mt-2">{getTitle()}</p>
         </motion.div>
 
