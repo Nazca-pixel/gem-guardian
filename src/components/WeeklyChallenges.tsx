@@ -268,12 +268,12 @@ export const WeeklyChallenges = forwardRef<HTMLElement>((_props, _ref) => {
                 ))
               ) : (
                 <div className="text-center py-6">
-                  <div className="text-4xl mb-2">🎯</div>
-                  <p className="text-sm text-muted-foreground">
-                    Nessuna sfida attiva questa settimana
+                  <div className="text-4xl mb-2" aria-hidden>🎯</div>
+                  <p className="text-sm font-semibold text-foreground">
+                    Pronto a sfidare te stesso?
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Aggiungi una sfida per guadagnare XP extra!
+                    Scegli una sfida qui sotto: completarla fa salire di livello il tuo Monster.
                   </p>
                 </div>
               )}

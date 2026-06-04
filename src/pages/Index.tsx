@@ -353,10 +353,13 @@ const Index = () => {
             transition={{ delay: 0.7, duration: 0.45 }}
             className="bg-card rounded-2xl p-6 shadow-card border border-border text-center"
           >
-            <span className="text-4xl">📝</span>
-            <h3 className="font-bold text-foreground mt-3">Nessuna transazione</h3>
+            <span className="text-4xl" aria-hidden>👋</span>
+            <h3 className="font-bold text-foreground mt-3">Inizia da qui</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Inizia a tracciare le tue spese per guadagnare BXP!
+              Aggiungi la tua prima transazione per nutrire il tuo Monster e guadagnare BXP.
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Suggerimento: tocca il pulsante <span className="font-semibold text-foreground">+</span> in basso per iniziare.
             </p>
           </motion.div>
         )}
