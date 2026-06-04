@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { track } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -166,6 +167,7 @@ const Auth = () => {
             });
           }
         } else {
+          track("login_completed");
           toast({
             title: "Bentornato! 🎉",
             description: "Accesso effettuato con successo",
@@ -189,6 +191,7 @@ const Auth = () => {
             });
           }
         } else {
+          track("signup_completed");
           toast({
             title: "Benvenuto! 🐣",
             description: "Account creato con successo! Il tuo compagno ti aspetta.",

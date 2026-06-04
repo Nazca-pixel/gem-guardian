@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { track } from "@/lib/analytics";
 import { ArrowLeft, Check, Crown, Sparkles, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,8 +40,13 @@ export default function Premium() {
   const checkout = useCheckout();
   const { toast } = useToast();
 
+  useEffect(() => {
+    track("paywall_viewed");
+  }, []);
+
   const handleCheckout = async () => {
     if (!confirmTier) return;
+    track("upgrade_cta_clicked", { tier: confirmTier, billing: isAnnual ? "annual" : "monthly" });
     try {
       await checkout.mutateAsync({ tier: confirmTier, isAnnual });
       toast({
@@ -48,12 +54,19 @@ export default function Premium() {
         description: isAnnual ? "Abbonamento annuale attivo" : "Abbonamento mensile attivo",
       });
       setConfirmTier(null);
-    } catch {
+    } catch (e: unknown) {
+      // The RPC raises a friendly message when paid tiers are not yet wired to Stripe.
+      // Surface that message verbatim instead of a generic error.
+      const raw = (e as { message?: string })?.message || "";
+      const isPaymentNotReady = /Pagamento non ancora integrato/i.test(raw);
       toast({
-        title: "Errore",
-        description: "Impossibile completare l'acquisto",
-        variant: "destructive",
+        title: isPaymentNotReady ? "Pagamenti in arrivo" : "Errore",
+        description: isPaymentNotReady
+          ? "I piani a pagamento richiedono Stripe (in arrivo a breve). Per ora rimani sul piano Free."
+          : raw || "Impossibile completare l'acquisto",
+        variant: isPaymentNotReady ? "default" : "destructive",
       });
+      setConfirmTier(null);
     }
   };
 
