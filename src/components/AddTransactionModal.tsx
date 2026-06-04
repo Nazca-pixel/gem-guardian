@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useCreateTransaction, useCompanion } from "@/hooks/useUserData";
 import { useUpdateStreak } from "@/hooks/useStreak";
+import { trackOnce } from "@/lib/analytics";
 import { getStreakBonus } from "@/components/StreakDisplay";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -156,6 +157,8 @@ export const AddTransactionModal = ({ isOpen, onClose, onAccessoryUnlocked, onSt
         is_necessary: isNecessary,
         transaction_date: new Date().toISOString().split('T')[0],
       });
+
+      trackOnce("first_transaction_created");
 
       // Update streak
       let streakBonus = 1;
