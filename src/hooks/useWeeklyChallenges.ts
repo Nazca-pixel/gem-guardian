@@ -129,6 +129,11 @@ export const useUpdateChallengeProgress = () => {
       const res = (data as any) || {};
       const justCompleted = res.is_completed === true && (res.fxp_awarded > 0 || res.bxp_awarded > 0);
 
+      if (justCompleted) {
+        const { trackOnce } = await import("@/lib/analytics");
+        trackOnce("first_challenge_completed");
+      }
+
       return {
         progress: res.progress,
         is_completed: res.is_completed,
