@@ -239,7 +239,11 @@ export default function Bestiary() {
                       </>
                     )}
                   </DialogTitle>
+                  <DialogDescription className="sr-only">
+                    {isUnlocked ? `Dettagli del mostro ${selectedMonster.name}` : "Dettagli del mostro bloccato e progresso di sblocco"}
+                  </DialogDescription>
                 </DialogHeader>
+
 
                 <div className="space-y-4 relative z-10">
                   {/* Rarity badge */}
