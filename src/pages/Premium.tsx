@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { track } from "@/lib/analytics";
 import { ArrowLeft, Check, Crown, Sparkles, Zap } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/BottomNav";
@@ -72,10 +73,11 @@ export default function Premium() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      <SEO title="Piani Premium — Wallet Monster" description="Scopri i piani Premium di Wallet Monster: più obiettivi, moltiplicatori XP e funzionalità avanzate per il tuo Monster." path="/premium" />
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border">
         <div className="max-w-lg mx-auto flex items-center gap-3 px-4 py-3">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-muted">
+          <button onClick={() => navigate(-1)} aria-label="Indietro" className="p-2 rounded-xl hover:bg-muted">
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
           <h1 className="text-lg font-bold text-foreground">Piani Premium</h1>

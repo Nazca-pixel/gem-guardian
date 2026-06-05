@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { ArrowLeft, Shield, Lock, Eye, Database, Trash2 } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 
 const Privacy = () => {
@@ -37,8 +38,9 @@ const Privacy = () => {
         animate={{ opacity: 1, y: 0 }}
         className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3"
       >
+        <SEO title="Privacy e Sicurezza — Wallet Monster" description="Scopri come Wallet Monster protegge i tuoi dati finanziari con crittografia e controlli di sicurezza." path="/privacy" />
         <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <button onClick={() => navigate("/settings")} className="p-2 rounded-full bg-muted">
+          <button onClick={() => navigate("/settings")} aria-label="Torna alle impostazioni" className="p-2 rounded-full bg-muted">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold text-foreground">Privacy e Sicurezza 🔒</h1>

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { useCompanion, useProfile } from "@/hooks/useUserData";
 import { ArrowLeft, Trophy, Crown, Medal, Star, Sparkles } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,8 +102,9 @@ const Leaderboard = () => {
         animate={{ opacity: 1, y: 0 }}
         className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3"
       >
+        <SEO title="Classifica — Wallet Monster" description="Scopri la classifica dei risparmiatori Wallet Monster e confronta i tuoi progressi con la community." path="/leaderboard" />
         <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <button onClick={() => navigate("/")} className="p-2 rounded-full bg-muted">
+          <button onClick={() => navigate("/")} aria-label="Torna alla home" className="p-2 rounded-full bg-muted">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold text-foreground">Classifica 🏆</h1>

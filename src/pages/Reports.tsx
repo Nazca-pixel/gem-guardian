@@ -10,6 +10,7 @@ import {
 import { format, subMonths, startOfMonth, endOfMonth, subDays, subWeeks, startOfWeek, endOfWeek } from "date-fns";
 import { it } from "date-fns/locale";
 import { ArrowLeft, TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -375,13 +376,14 @@ const Reports = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      <SEO title="Report — Wallet Monster" description="Analizza entrate, spese e categorie con grafici settimanali e mensili per capire dove vanno i tuoi soldi." path="/reports" />
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3"
       >
         <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <button onClick={() => navigate("/")} className="p-2 rounded-full bg-muted">
+          <button onClick={() => navigate("/")} aria-label="Torna alla home" className="p-2 rounded-full bg-muted">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold text-foreground">Report 📊</h1>

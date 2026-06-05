@@ -5,6 +5,7 @@ import { useProfile, useCompanion } from "@/hooks/useUserData";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
 import { ArrowLeft, User, Bell, Moon, Shield, HelpCircle, ChevronRight, Save } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,8 +115,9 @@ const Settings = () => {
         animate={{ opacity: 1, y: 0 }}
         className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3"
       >
+        <SEO title="Impostazioni — Wallet Monster" description="Configura il tuo account Wallet Monster: notifiche, tema, privacy e preferenze del compagno." path="/settings" />
         <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <button onClick={() => navigate("/profile")} className="p-2 rounded-full bg-muted">
+          <button onClick={() => navigate("/profile")} aria-label="Torna al profilo" className="p-2 rounded-full bg-muted">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold text-foreground">Impostazioni ⚙️</h1>

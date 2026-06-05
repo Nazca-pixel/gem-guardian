@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Sparkles, Check, ArrowLeft, Crown, Star } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import { MonsterPreviewCard } from "@/components/MonsterPreviewCard";
@@ -105,6 +106,7 @@ export default function Bestiary() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-32">
+      <SEO title="Bestiario — Wallet Monster" description="Esplora la collezione di Monster sbloccabili in Wallet Monster e scopri come farli evolvere." path="/bestiary" jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Bestiario Wallet Monster" }} />
       {/* Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
@@ -117,6 +119,7 @@ export default function Bestiary() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => navigate(-1)}
+              aria-label="Indietro"
               className="p-2.5 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
