@@ -80,6 +80,7 @@ export const BottomNav = ({ activeTab = "home", onStreakMilestone }: BottomNavPr
                 whileTap={{ scale: 0.9 }}
                 whileHover={{ scale: 1.05 }}
                 onClick={() => setShowAddModal(true)}
+                aria-label="Aggiungi transazione"
                 className="w-14 h-14 rounded-full gradient-hero shadow-float flex items-center justify-center border-4 border-background"
               >
                 <Plus className="w-7 h-7 text-primary-foreground" strokeWidth={2.5} />
