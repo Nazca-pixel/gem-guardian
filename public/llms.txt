@@ -1,0 +1,11 @@
+# Wallet Monster
+
+> Wallet Monster is a gamified personal finance tracker. Log income and expenses, complete weekly challenges, earn badges, and evolve a virtual companion as your saving habits grow.
+
+## Pages
+
+- [Home](/): Dashboard with your companion, balance, streak, weekly challenges and recent transactions.
+- [Sign in](/auth): Create an account or log in to start tracking your finances.
+- [Premium](/premium): Subscription plans with extra goals and XP multipliers.
+- [Help](/help): Frequently asked questions about XP, streaks, transactions and accessories.
+- [Privacy](/privacy): How Wallet Monster handles your data and security.
