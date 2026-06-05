@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { ArrowLeft, HelpCircle, MessageCircle, Mail, Book, ChevronRight } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 
 const Help = () => {
@@ -45,6 +46,20 @@ const Help = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      <SEO
+        title="Aiuto e Supporto — Wallet Monster"
+        description="Domande frequenti su XP, streak, transazioni e accessori in Wallet Monster, più i canali di contatto del supporto."
+        path="/help"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        }}
+      />
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -52,7 +67,7 @@ const Help = () => {
         className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3"
       >
         <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <button onClick={() => navigate("/settings")} className="p-2 rounded-full bg-muted">
+          <button onClick={() => navigate("/settings")} aria-label="Torna alle impostazioni" className="p-2 rounded-full bg-muted">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold text-foreground">Aiuto e Supporto ❓</h1>

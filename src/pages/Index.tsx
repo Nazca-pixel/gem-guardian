@@ -23,6 +23,7 @@ import { DailyCheckin } from "@/components/DailyCheckin";
 import { DevModePanel } from "@/components/DevModePanel";
 import { PremiumBanner } from "@/components/PremiumBanner";
 import { TierBadge } from "@/components/TierBadge";
+import { SEO } from "@/components/SEO";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCompanion, useSavingsGoals, useAllTransactions, useAccessories, useUserAccessories, useBadges, useUserBadges } from "@/hooks/useUserData";
@@ -185,6 +186,30 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-8 md:pt-16 overflow-x-hidden">
+      <SEO
+        title="Dashboard — Wallet Monster"
+        description="La tua dashboard Wallet Monster: traccia spese, segui il tuo Monster, completa sfide settimanali e fai crescere i tuoi risparmi."
+        path="/"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Wallet Monster",
+            url: "https://walletmonster.lovable.app/",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "Wallet Monster",
+            applicationCategory: "FinanceApplication",
+            operatingSystem: "Web",
+            description:
+              "Tracker di finanza personale gamificato con compagno virtuale, badge e sfide settimanali.",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+          },
+        ]}
+      />
+      <h1 className="sr-only">Dashboard</h1>
       {/* Desktop Navigation */}
       <DesktopNav />
       {/* Header */}
@@ -195,7 +220,7 @@ const Index = () => {
       >
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Ciao, {displayName}! 👋</h1>
+            <p className="text-xl font-bold text-foreground">Ciao, {displayName}! 👋</p>
             <div className="flex items-center gap-2">
               <p className="text-xs text-muted-foreground capitalize">{currentMonth}</p>
               <TierBadge size="sm" />
@@ -205,6 +230,7 @@ const Index = () => {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              aria-label="Notifiche"
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center"
             >
               <Bell className="w-5 h-5 text-muted-foreground" />
@@ -213,6 +239,7 @@ const Index = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={signOut}
+              aria-label="Esci dall'account"
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center"
             >
               <LogOut className="w-5 h-5 text-muted-foreground" />

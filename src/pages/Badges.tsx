@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Filter, Trophy, Flame, TrendingUp, PiggyBank, Sparkles } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { useBadges, useUserBadges } from "@/hooks/useUserData";
 import { BottomNav } from "@/components/BottomNav";
@@ -85,10 +86,11 @@ const Badges = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      <SEO title="Trofei — Wallet Monster" description="Sblocca trofei e badge in Wallet Monster completando streak, obiettivi di risparmio e sfide." path="/badges" jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Trofei Wallet Monster" }} />
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border px-4 py-3">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Indietro">
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-xl font-bold text-foreground">Trofei</h1>

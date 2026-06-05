@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useActiveTier, TIER_CONFIG } from "@/hooks/useSubscription";
 import { useTierLimits } from "@/hooks/useTierLimits";
 import { ArrowLeft, LogOut, Settings, Award, Target, Wallet, Calendar, ChevronRight, Crown } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -62,8 +63,9 @@ const Profile = () => {
         animate={{ opacity: 1, y: 0 }}
         className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border px-4 py-3"
       >
+        <SEO title="Profilo — Wallet Monster" description="Gestisci il tuo profilo Wallet Monster, segui i tuoi badge e monitora i tuoi obiettivi di risparmio." path="/profile" />
         <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <button onClick={() => navigate("/")} className="p-2 rounded-full bg-muted">
+          <button onClick={() => navigate("/")} aria-label="Torna alla home" className="p-2 rounded-full bg-muted">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold text-foreground">Profilo 👤</h1>

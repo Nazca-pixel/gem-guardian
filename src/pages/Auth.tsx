@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { Loader2, Mail, Lock, User, ArrowRight, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SEO } from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 
 const loginSchema = z.object({
@@ -254,6 +255,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <SEO
+        title="Accedi a Wallet Monster"
+        description="Accedi al tuo account Wallet Monster o registrati per iniziare a risparmiare, completare sfide settimanali e far evolvere il tuo compagno."
+        path="/auth"
+      />
       {/* Background decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
@@ -278,7 +284,9 @@ const Auth = () => {
               {mode === "forgot" ? "🔑" : mode === "reset" ? "🔐" : "🐣"}
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Wallet Monster</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            {mode === "signup" ? "Registrati a Wallet Monster" : "Accedi a Wallet Monster"}
+          </h1>
           <p className="text-muted-foreground mt-2">{getTitle()}</p>
         </motion.div>
 
