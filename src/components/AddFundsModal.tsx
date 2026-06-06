@@ -51,22 +51,21 @@ export const AddFundsModal = ({ isOpen, onClose, goal, onLevelUp }: AddFundsModa
     setLoading(true);
 
     try {
-      const newAmount = goal.current_amount + parseFloat(amount);
-      const isCompleted = newAmount >= goal.target_amount;
+      const addedAmount = parseFloat(amount);
 
-      const { error } = await supabase
-        .from("savings_goals")
-        .update({ 
-          current_amount: newAmount,
-          is_completed: isCompleted,
-        })
-        .eq("id", goal.id);
+      const { data: rpcData, error } = await supabase.rpc("add_savings_funds", {
+        p_goal_id: goal.id,
+        p_amount: addedAmount,
+      });
 
       if (error) throw error;
 
+      const result = (rpcData as any) || {};
+      const isCompleted: boolean = Boolean(result.is_completed);
+
       // Update savings challenge progress
       try {
-        await updateSavingsChallenge(parseFloat(amount));
+        await updateSavingsChallenge(addedAmount);
       } catch {
         // Continue even if challenge update fails
       }
