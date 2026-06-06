@@ -456,6 +456,10 @@ export type Database = {
     }
     Functions: {
       _assert_admin: { Args: never; Returns: string }
+      add_savings_funds: {
+        Args: { p_amount: number; p_goal_id: string }
+        Returns: Json
+      }
       admin_adjust_companion_stats: {
         Args: {
           p_bxp?: number
