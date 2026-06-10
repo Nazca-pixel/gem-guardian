@@ -22,6 +22,7 @@ import { WeeklyChallenges } from "@/components/WeeklyChallenges";
 import { DailyCheckin } from "@/components/DailyCheckin";
 import { DevModePanel } from "@/components/DevModePanel";
 import { PremiumBanner } from "@/components/PremiumBanner";
+import { TodaySummary } from "@/components/TodaySummary";
 import { TierBadge } from "@/components/TierBadge";
 import { SEO } from "@/components/SEO";
 import { Bell, LogOut } from "lucide-react";
