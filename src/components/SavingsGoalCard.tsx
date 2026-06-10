@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Target, TrendingUp, Calendar, Plus } from "lucide-react";
+import { TrendingUp, Calendar, Plus } from "lucide-react";
 import { AddFundsModal } from "./AddFundsModal";
+import { formatCurrency } from "@/lib/format";
 
 interface SavingsGoalCardProps {
   id: string;
@@ -21,9 +22,12 @@ export const SavingsGoalCard = ({
   emoji = "🎯",
 }: SavingsGoalCardProps) => {
   const [showAddFunds, setShowAddFunds] = useState(false);
-  const progress = Math.min((currentAmount / targetAmount) * 100, 100);
-  const remaining = targetAmount - currentAmount;
+  const safeTarget = targetAmount > 0 ? targetAmount : 1;
+  const progress = Math.min((currentAmount / safeTarget) * 100, 100);
+  const remaining = Math.max(targetAmount - currentAmount, 0);
   const isCompleted = currentAmount >= targetAmount;
+  const milestone =
+    progress >= 100 ? null : progress >= 75 ? 75 : progress >= 50 ? 50 : progress >= 25 ? 25 : null;
 
   return (
     <>
