@@ -164,7 +164,7 @@ export const DailyCheckin = () => {
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {alreadyCheckedIn ? (
-                    <>Torna domani per continuare la streak!</>
+                    <>Fatto per oggi. Torna domani per non perdere la streak.</>
                   ) : (
                     <>
                       Guadagna +{baseBxpReward}
