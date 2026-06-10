@@ -63,15 +63,29 @@ export const SavingsGoalCard = ({
             </div>
           </div>
           {!isCompleted && (
-            <div className="flex items-center gap-1 text-primary text-sm font-medium">
-              <TrendingUp className="w-4 h-4" />
-              <span>{progress.toFixed(0)}%</span>
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-1 text-primary text-sm font-medium">
+                <TrendingUp className="w-4 h-4" aria-hidden />
+                <span>{progress.toFixed(0)}%</span>
+              </div>
+              {milestone && (
+                <span className="px-1.5 py-0.5 rounded-full bg-reward/20 text-[10px] font-bold text-reward-foreground">
+                  Tappa {milestone}%
+                </span>
+              )}
             </div>
           )}
         </div>
 
         {/* Progress bar */}
-        <div className="relative mb-3">
+        <div
+          className="relative mb-3"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progress)}
+          aria-label={`Progresso obiettivo ${goalName}`}
+        >
           <div className="h-4 bg-muted rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
@@ -93,22 +107,26 @@ export const SavingsGoalCard = ({
         </div>
 
         {/* Amount display */}
-        <div className="flex justify-between items-end">
-          <div>
-            <p className="text-2xl font-bold text-foreground">
-              €{currentAmount.toLocaleString()}
+        <div className="flex justify-between items-end gap-3">
+          <div className="min-w-0">
+            <p className="text-2xl font-bold text-foreground truncate">
+              {formatCurrency(currentAmount)}
             </p>
-            <p className="text-xs text-muted-foreground">
-              di €{targetAmount.toLocaleString()}
+            <p className="text-xs text-muted-foreground truncate">
+              di {formatCurrency(targetAmount)}
+              {!isCompleted && remaining > 0 && (
+                <span className="ml-1 text-foreground/70">· mancano {formatCurrency(remaining)}</span>
+              )}
             </p>
           </div>
-          
+
           {!isCompleted ? (
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowAddFunds(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl gradient-hero text-primary-foreground font-medium text-sm"
+              aria-label={`Aggiungi fondi a ${goalName}`}
+              className="flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-xl gradient-hero text-primary-foreground font-medium text-sm"
             >
               <Plus className="w-4 h-4" />
               Aggiungi
