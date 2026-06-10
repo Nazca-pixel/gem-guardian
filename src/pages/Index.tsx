@@ -319,6 +319,11 @@ const Index = () => {
           />
         </motion.div>
 
+        {/* Today Summary */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42, duration: 0.45 }}>
+          <TodaySummary transactions={fullTransactions} />
+        </motion.div>
+
         {/* Quick Actions */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.45 }} whileHover={{ scale: 1.02 }} className="hover-glow rounded-2xl">
           <QuickActions onStreakMilestone={setStreakMilestone} />
@@ -332,7 +337,13 @@ const Index = () => {
         {/* Savings Goals */}
         {savingsGoals && savingsGoals.length > 0 && (
           <motion.section id="savings-goals" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.45 }} className="space-y-3 scroll-mt-20">
-            <h2 className="text-lg font-bold text-foreground px-1">🎯 Obiettivi di Risparmio</h2>
+            <div className="flex items-baseline justify-between px-1">
+              <h2 className="text-lg font-bold text-foreground">🎯 Obiettivi di Risparmio</h2>
+              <span className="text-xs text-muted-foreground">
+                {savingsGoals.filter((g) => Number(g.current_amount) >= Number(g.target_amount)).length}
+                /{savingsGoals.length} completati
+              </span>
+            </div>
             {savingsGoals.map((goal) => (
               <SavingsGoalCard
                 key={goal.id}
